@@ -407,4 +407,50 @@ class FPrenotazione
 
         return (int) $row['totale'];
     }
+
+    public static function esisteSovrapposizione(
+        string $data,
+        string $oraInizio,
+        int $durata
+    ): bool {
+        $prenotazioni = self::loadByData($data);
+
+        $partiNuovoInizio = explode(':', $oraInizio);
+
+        $nuovoInizioMinuti =
+            ((int) $partiNuovoInizio[0] * 60) +
+            (int) $partiNuovoInizio[1];
+
+        $nuovaFineMinuti =
+            $nuovoInizioMinuti + $durata;
+
+        foreach ($prenotazioni as $prenotazione) {
+
+            if ($prenotazione->getStato() !== "prenotata") {
+                continue;
+            }
+
+            $partiOraEsistente = explode(
+                ':',
+                $prenotazione->getOra()
+            );
+
+            $inizioEsistenteMinuti =
+                ((int) $partiOraEsistente[0] * 60) +
+                (int) $partiOraEsistente[1];
+
+            $fineEsistenteMinuti =
+                $inizioEsistenteMinuti +
+                $prenotazione->getDurata();
+
+            if (
+                $nuovoInizioMinuti < $fineEsistenteMinuti &&
+                $nuovaFineMinuti > $inizioEsistenteMinuti
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
