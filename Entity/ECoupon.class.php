@@ -3,16 +3,12 @@
 class ECoupon
 {
     private ?int $id = null;
-
     private string $codice;
     private EUtente $cliente;
-
     private float $valoreIniziale;
     private float $creditoResiduo;
-
     private string $dataOraGenerazione;
     private string $stato;
-
     private int $traguardoCompletamenti;
 
     public function __construct(
@@ -26,27 +22,17 @@ class ECoupon
         string $stato = "disponibile"
     ) {
         $this->id = $id;
-
         $this->codice = $codice;
         $this->cliente = $cliente;
+        $this->valoreIniziale = $valoreIniziale;
 
-        $this->valoreIniziale = round(
-            $valoreIniziale,
-            2
-        );
+        $this->creditoResiduo = $creditoResiduo === null
+            ? $valoreIniziale
+            : $creditoResiduo;
 
-        $this->creditoResiduo = round(
-            $creditoResiduo ?? $valoreIniziale,
-            2
-        );
-
-        $this->dataOraGenerazione =
-            $dataOraGenerazione;
-
+        $this->dataOraGenerazione = $dataOraGenerazione;
         $this->stato = $stato;
-
-        $this->traguardoCompletamenti =
-            $traguardoCompletamenti;
+        $this->traguardoCompletamenti = $traguardoCompletamenti;
     }
 
     public function getId(): ?int
@@ -115,64 +101,84 @@ class ECoupon
             $this->cliente->getId() !== null &&
             $cliente->getId() !== null
         ) {
-            return $this->cliente->getId()
-                === $cliente->getId();
+            return $this->cliente->getId() === $cliente->getId();
         }
 
         return $this->cliente === $cliente;
     }
 
-    public function riserva(): bool
+    public function riserva(): void
     {
         if (!$this->isDisponibile()) {
-            return false;
-        }
-
-        if ($this->creditoResiduo <= 0) {
-            return false;
+            throw new LogicException(
+                "Il coupon non è disponibile."
+            );
         }
 
         $this->stato = "riservato";
-
-        return true;
     }
 
     public function libera(): void
     {
-        if ($this->isRiservato()) {
+        if (!$this->isRiservato()) {
+            throw new LogicException(
+                "Il coupon non è riservato."
+            );
+        }
+
+        if ($this->creditoResiduo <= 0) {
+            $this->stato = "esaurito";
+        } else {
             $this->stato = "disponibile";
         }
     }
 
-    public function utilizza(float $importo): bool
+    public function utilizza(float $importo): void
     {
         if (!$this->isRiservato()) {
-            return false;
+            throw new LogicException(
+                "Il coupon deve essere riservato prima di essere utilizzato."
+            );
         }
 
-        if (
-            $importo <= 0 ||
-            $importo > $this->creditoResiduo
-        ) {
-            return false;
+        if ($importo <= 0) {
+            throw new InvalidArgumentException(
+                "L'importo utilizzato deve essere maggiore di zero."
+            );
+        }
+
+        if ($importo > $this->creditoResiduo) {
+            throw new InvalidArgumentException(
+                "L'importo supera il credito residuo del coupon."
+            );
         }
 
         $this->creditoResiduo -= $importo;
 
+        if ($this->creditoResiduo <= 0) {
+            $this->creditoResiduo = 0;
+            $this->stato = "esaurito";
+        } else {
+            $this->stato = "disponibile";
+        }
+    }
+
+    public function dimezzaCreditoResiduo(): void
+    {
+        if (!$this->isDisponibile()) {
+            throw new LogicException(
+                "La penalità può essere applicata solo a un coupon disponibile."
+            );
+        }
+
         $this->creditoResiduo = round(
-            $this->creditoResiduo,
+            $this->creditoResiduo * 0.50,
             2
         );
 
         if ($this->creditoResiduo <= 0) {
-
             $this->creditoResiduo = 0;
             $this->stato = "esaurito";
-        } else {
-
-            $this->stato = "disponibile";
         }
-
-        return true;
     }
 }
