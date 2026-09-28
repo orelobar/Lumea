@@ -1,0 +1,206 @@
+<?php
+
+require_once __DIR__ . '/FConnectionDB.class.php';
+require_once __DIR__ . '/../Entity/EUtente.class.php';
+
+class FUtente
+{
+    public static function exist(int $id): bool
+    {
+        $connection = FConnectionDB::connect();
+
+
+        $query = "
+        SELECT id
+        FROM utenti
+        WHERE id = :id
+    
+    ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':id' => $id
+
+        ]);
+
+        $result = $statement->fetch();
+
+
+        return $result !== false;
+    }
+
+    public static function load(int $id): ?EUtente
+    {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT *
+            FROM utenti 
+            WHERE id = :id
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':id' => $id
+
+        ]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($row === false) {
+            return null;
+        }
+
+
+
+
+        return new EUtente(
+            $row['nome'],
+            $row['cognome'],
+            $row['email'],
+            $row['password_hash'],
+            $row['ruolo'],
+            (int) $row['id'],
+            (int) $row['no_show_consecutivi'],
+            (bool) $row['prenotazioni_online_abilitate']
+        );
+    }
+    public static function loadByEmail(string $email): ?EUtente
+    {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT *
+            FROM utenti
+            WHERE email = :email
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':email' => $email
+        ]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($row === false) {
+            return null;
+        }
+
+
+        return new EUtente(
+            $row['nome'],
+            $row['cognome'],
+            $row['email'],
+            $row['password_hash'],
+            $row['ruolo'],
+            (int) $row['id'],
+            (int) $row['no_show_consecutivi'],
+            (bool) $row['prenotazioni_online_abilitate']
+
+        );
+    }
+
+
+    public static function store(EUtente $utente): bool
+    {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+        INSERT INTO utenti (
+            nome,
+            cognome,
+            email,
+            password_hash,
+            ruolo,
+            no_show_consecutivi,
+            prenotazioni_online_abilitate
+        )
+        
+        VALUES (
+            :nome,
+            :cognome,
+            :email,
+            :password_hash,
+            :ruolo,
+            :no_show_consecutivi,
+            :prenotazioni_online_abilitate
+        )
+    ";
+
+        $statement = $connection->prepare($query);
+
+        $result = $statement->execute([
+            ':nome' => $utente->getNome(),
+            ':cognome' => $utente->getCognome(),
+            ':email' => $utente->getEmail(),
+            ':password_hash' => $utente->getPasswordHash(),
+            ':ruolo' => $utente->getRuolo(),
+            ':no_show_consecutivi' => $utente->getNoShowConsecutivi(),
+            ':prenotazioni_online_abilitate' => $utente->isPrenotazioniOnlineAbilitate() ? 1 : 0
+        ]);
+
+        if ($result) {
+            $utente->setId((int) $connection->lastInsertId());
+        }
+
+        return $result;
+    }
+
+    public static function update(EUtente $utente): bool
+    {
+        if ($utente->getId() === null) {
+            return false;
+        }
+
+        $connection = FConnectionDB::connect();
+
+        $query = "
+    UPDATE utenti
+    SET
+        nome = :nome,
+        cognome = :cognome,
+        email = :email,
+        password_hash = :password_hash,
+        ruolo = :ruolo,
+        no_show_consecutivi = :no_show_consecutivi,
+        prenotazioni_online_abilitate = :prenotazioni_online_abilitate
+    WHERE id = :id
+    ";
+
+
+        $statement = $connection->prepare($query);
+
+        $result = $statement->execute([
+            ':nome' => $utente->getNome(),
+            ':cognome' => $utente->getCognome(),
+            ':email' => $utente->getEmail(),
+            ':password_hash' => $utente->getPasswordHash(),
+            ':ruolo' => $utente->getRuolo(),
+            ':no_show_consecutivi' => $utente->getNoShowConsecutivi(),
+            ':prenotazioni_online_abilitate' => $utente->isPrenotazioniOnlineAbilitate() ? 1 : 0,
+            ':id' => $utente->getId()
+        ]);
+
+        return $result;
+    }
+    public static function delete(int $id): bool
+    {
+
+        $connection = FConnectionDB::connect();
+        $query = "
+            DELETE FROM utenti
+            WHERE id = :id
+            ";
+
+        $statement = $connection->prepare($query);
+
+        $result = $statement->execute([
+            ':id' => $id
+        ]);
+
+        return $result;
+    }
+}
