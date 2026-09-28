@@ -166,9 +166,7 @@ class EPrenotazione
             return false;
         }
 
-        if (!$coupon->riserva()) {
-            return false;
-        }
+        $coupon->riserva();
 
         $this->couponApplicato = $coupon;
 
@@ -208,6 +206,13 @@ class EPrenotazione
     public function completa(): void
     {
         if ($this->stato === "prenotata") {
+
+            if ($this->couponApplicato !== null) {
+                $this->couponApplicato->utilizza(
+                    $this->scontoCoupon
+                );
+            }
+
             $this->stato = "completata";
 
             $this->cliente
@@ -224,9 +229,6 @@ class EPrenotazione
             }
 
             $this->stato = "cancellata";
-
-            $this->cliente
-                ->resetNoShowConsecutivi();
         }
     }
 
