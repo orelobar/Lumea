@@ -27,6 +27,29 @@ class FCoupon
         return $result !== false;
     }
 
+    public static function existByClienteAndTraguardo(int $idCliente, int $traguardoCompletamenti): bool
+    {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT id
+            FROM coupon
+            WHERE id_cliente = :id_cliente
+            AND traguardo_completamenti = :traguardo_completamenti
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':id_cliente' => $idCliente,
+            ':traguardo_completamenti' => $traguardoCompletamenti
+        ]);
+
+        $result = $statement->fetch();
+
+        return $result !== false;
+    }
+
     public static function load(int $id): ?ECoupon
     {
         $connection = FConnectionDB::connect();
@@ -49,9 +72,7 @@ class FCoupon
             return null;
         }
 
-        $cliente = FUtente::load(
-            (int) $row['id_cliente']
-        );
+        $cliente = FUtente::load((int) $row['id_cliente']);
 
         if ($cliente === null) {
             return null;
@@ -67,6 +88,51 @@ class FCoupon
             (float) $row['credito_residuo'],
             $row['stato']
         );
+    }
+
+    public static function loadDisponibiliByCliente(int $idCliente): array
+    {
+        $cliente = FUtente::load($idCliente);
+
+        if ($cliente === null) {
+            return [];
+        }
+
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT *
+            FROM coupon
+            WHERE id_cliente = :id_cliente
+            AND stato = 'disponibile'
+            AND credito_residuo > 0
+            ORDER BY data_ora_generazione ASC
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':id_cliente' => $idCliente
+        ]);
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $couponDisponibili = [];
+
+        foreach ($rows as $row) {
+            $couponDisponibili[] = new ECoupon(
+                $row['codice'],
+                $cliente,
+                (float) $row['valore_iniziale'],
+                $row['data_ora_generazione'],
+                (int) $row['traguardo_completamenti'],
+                (int) $row['id'],
+                (float) $row['credito_residuo'],
+                $row['stato']
+            );
+        }
+
+        return $couponDisponibili;
     }
 
     public static function store(ECoupon $coupon): bool
@@ -111,9 +177,7 @@ class FCoupon
         ]);
 
         if ($result) {
-            $coupon->setId(
-                (int) $connection->lastInsertId()
-            );
+            $coupon->setId((int) $connection->lastInsertId());
         }
 
         return $result;
@@ -173,77 +237,5 @@ class FCoupon
             ':id' => $id
         ]);
     }
-
-    public static function loadDisponibiliByCliente(
-        int $idCliente
-    ): array {
-        $cliente = FUtente::load($idCliente);
-
-        if ($cliente === null) {
-            return [];
-        }
-
-        $connection = FConnectionDB::connect();
-
-        $query = "
-            SELECT *
-            FROM coupon
-            WHERE id_cliente = :id_cliente
-            AND stato = 'disponibile'
-            AND credito_residuo > 0
-            ORDER BY data_ora_generazione ASC
-        ";
-
-        $statement = $connection->prepare($query);
-
-        $statement->execute([
-            ':id_cliente' => $idCliente
-        ]);
-
-        $rows = $statement->fetchAll(
-            PDO::FETCH_ASSOC
-        );
-
-        $couponDisponibili = [];
-
-        foreach ($rows as $row) {
-            $couponDisponibili[] = new ECoupon(
-                $row['codice'],
-                $cliente,
-                (float) $row['valore_iniziale'],
-                $row['data_ora_generazione'],
-                (int) $row['traguardo_completamenti'],
-                (int) $row['id'],
-                (float) $row['credito_residuo'],
-                $row['stato']
-            );
-        }
-
-        return $couponDisponibili;
-    }
-
-    public static function existByClienteAndTraguardo(
-        int $idCliente,
-        int $traguardoCompletamenti
-    ): bool {
-        $connection = FConnectionDB::connect();
-
-        $query = "
-            SELECT id
-            FROM coupon
-            WHERE id_cliente = :id_cliente
-            AND traguardo_completamenti = :traguardo_completamenti
-        ";
-
-        $statement = $connection->prepare($query);
-
-        $statement->execute([
-            ':id_cliente' => $idCliente,
-            ':traguardo_completamenti' => $traguardoCompletamenti
-        ]);
-
-        $result = $statement->fetch();
-
-        return $result !== false;
-    }
 }
+

@@ -46,7 +46,9 @@ class FPrenotazione
             ':id' => $id
         ]);
 
-        $row = $statement->fetch(PDO::FETCH_ASSOC);
+        $row = $statement->fetch(
+            PDO::FETCH_ASSOC
+        );
 
         if ($row === false) {
             return null;
@@ -383,6 +385,47 @@ class FPrenotazione
     }
 
 
+    public static function loadByPeriodo(
+        string $dataInizio,
+        string $dataFine
+    ): array {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT id
+            FROM prenotazioni
+            WHERE data >= :data_inizio
+            AND data <= :data_fine
+            ORDER BY data ASC, ora ASC
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':data_inizio' => $dataInizio,
+            ':data_fine' => $dataFine
+        ]);
+
+        $rows = $statement->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+
+        $prenotazioni = [];
+
+        foreach ($rows as $row) {
+            $prenotazione = self::load(
+                (int) $row['id']
+            );
+
+            if ($prenotazione !== null) {
+                $prenotazioni[] = $prenotazione;
+            }
+        }
+
+        return $prenotazioni;
+    }
+
+
     public static function countCompletateByCliente(
         int $idCliente
     ): int {
@@ -408,6 +451,7 @@ class FPrenotazione
         return (int) $row['totale'];
     }
 
+
     public static function esisteSovrapposizione(
         string $data,
         string $oraInizio,
@@ -415,7 +459,10 @@ class FPrenotazione
     ): bool {
         $prenotazioni = self::loadByData($data);
 
-        $partiNuovoInizio = explode(':', $oraInizio);
+        $partiNuovoInizio = explode(
+            ':',
+            $oraInizio
+        );
 
         $nuovoInizioMinuti =
             ((int) $partiNuovoInizio[0] * 60) +
@@ -425,7 +472,6 @@ class FPrenotazione
             $nuovoInizioMinuti + $durata;
 
         foreach ($prenotazioni as $prenotazione) {
-
             if ($prenotazione->getStato() !== "prenotata") {
                 continue;
             }

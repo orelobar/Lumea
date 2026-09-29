@@ -56,6 +56,39 @@ class FDisponibilita
         );
     }
 
+    public static function loadByData(string $data): array
+    {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT *
+            FROM disponibilita
+            WHERE data = :data
+            ORDER BY ora_inizio
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':data' => $data
+        ]);
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $disponibilita = [];
+
+        foreach ($rows as $row) {
+            $disponibilita[] = new EDisponibilita(
+                $row['data'],
+                $row['ora_inizio'],
+                $row['ora_fine'],
+                (int) $row['id']
+            );
+        }
+
+        return $disponibilita;
+    }
+
     public static function store(EDisponibilita $disponibilita): bool
     {
         $connection = FConnectionDB::connect();
@@ -82,9 +115,7 @@ class FDisponibilita
         ]);
 
         if ($result) {
-            $disponibilita->setId(
-                (int) $connection->lastInsertId()
-            );
+            $disponibilita->setId((int) $connection->lastInsertId());
         }
 
         return $result;
@@ -135,38 +166,5 @@ class FDisponibilita
         ]);
 
         return $result;
-    }
-
-    public static function loadByData(string $data): array
-    {
-        $connection = FConnectionDB::connect();
-
-        $query = "
-            SELECT *
-            FROM disponibilita
-            WHERE data = :data
-            ORDER BY ora_inizio
-        ";
-
-        $statement = $connection->prepare($query);
-
-        $statement->execute([
-            ':data' => $data
-        ]);
-
-        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        $disponibilita = [];
-
-        foreach ($rows as $row) {
-            $disponibilita[] = new EDisponibilita(
-                $row['data'],
-                $row['ora_inizio'],
-                $row['ora_fine'],
-                (int) $row['id']
-            );
-        }
-
-        return $disponibilita;
     }
 }

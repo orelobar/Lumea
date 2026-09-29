@@ -26,6 +26,7 @@ class FServizio
         return $result !== false;
     }
 
+
     public static function load(int $id): ?EServizio
     {
         $connection = FConnectionDB::connect();
@@ -58,6 +59,7 @@ class FServizio
         );
     }
 
+
     public static function store(EServizio $servizio): bool
     {
         $connection = FConnectionDB::connect();
@@ -86,15 +88,18 @@ class FServizio
             ':categoria' => $servizio->getCategoria(),
             ':prezzo' => $servizio->getPrezzo(),
             ':durata' => $servizio->getDurata(),
-            ':attivo' => $servizio->isAttivo() ? 1 : 0
+            ':attivo' => $servizio->isAttivo()
         ]);
 
         if ($result) {
-            $servizio->setId((int) $connection->lastInsertId());
+            $servizio->setId(
+                (int) $connection->lastInsertId()
+            );
         }
 
         return $result;
     }
+
 
     public static function update(EServizio $servizio): bool
     {
@@ -117,17 +122,16 @@ class FServizio
 
         $statement = $connection->prepare($query);
 
-        $result = $statement->execute([
+        return $statement->execute([
             ':nome' => $servizio->getNome(),
             ':categoria' => $servizio->getCategoria(),
             ':prezzo' => $servizio->getPrezzo(),
             ':durata' => $servizio->getDurata(),
-            ':attivo' => $servizio->isAttivo() ? 1 : 0,
+            ':attivo' => $servizio->isAttivo(),
             ':id' => $servizio->getId()
         ]);
-
-        return $result;
     }
+
 
     public static function delete(int $id): bool
     {
@@ -140,10 +144,116 @@ class FServizio
 
         $statement = $connection->prepare($query);
 
-        $result = $statement->execute([
+        return $statement->execute([
             ':id' => $id
         ]);
+    }
 
-        return $result;
+
+    public static function loadAll(): array
+    {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT id
+            FROM servizi
+            ORDER BY categoria ASC, nome ASC
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute();
+
+        $rows = $statement->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+
+        $servizi = [];
+
+        foreach ($rows as $row) {
+            $servizio = self::load(
+                (int) $row['id']
+            );
+
+            if ($servizio !== null) {
+                $servizi[] = $servizio;
+            }
+        }
+
+        return $servizi;
+    }
+
+
+    public static function loadAttivi(): array
+    {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT id
+            FROM servizi
+            WHERE attivo = 1
+            ORDER BY categoria ASC, nome ASC
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute();
+
+        $rows = $statement->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+
+        $servizi = [];
+
+        foreach ($rows as $row) {
+            $servizio = self::load(
+                (int) $row['id']
+            );
+
+            if ($servizio !== null) {
+                $servizi[] = $servizio;
+            }
+        }
+
+        return $servizi;
+    }
+
+
+    public static function loadAttiviByCategoria(
+        string $categoria
+    ): array {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT id
+            FROM servizi
+            WHERE attivo = 1
+            AND categoria = :categoria
+            ORDER BY nome ASC
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':categoria' => $categoria
+        ]);
+
+        $rows = $statement->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+
+        $servizi = [];
+
+        foreach ($rows as $row) {
+            $servizio = self::load(
+                (int) $row['id']
+            );
+
+            if ($servizio !== null) {
+                $servizi[] = $servizio;
+            }
+        }
+
+        return $servizi;
     }
 }

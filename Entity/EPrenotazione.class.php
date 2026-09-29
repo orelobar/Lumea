@@ -39,32 +39,16 @@ class EPrenotazione
         $this->cliente = $cliente;
         $this->servizio = $servizio;
 
-        $this->nomeServizio =
-            $nomeServizio ?? $servizio->getNome();
-
+        $this->nomeServizio = $nomeServizio ?? $servizio->getNome();
         $this->data = $data;
         $this->ora = $ora;
-
-        $this->durata =
-            $durata ?? $servizio->getDurata();
-
-        $this->prezzo = round(
-            $prezzo ?? $servizio->getPrezzo(),
-            2
-        );
-
+        $this->durata = $durata ?? $servizio->getDurata();
+        $this->prezzo = round($prezzo ?? $servizio->getPrezzo(), 2);
         $this->stato = $stato;
-
         $this->couponApplicato = $couponApplicato;
-
-        $this->scontoCoupon = round(
-            $scontoCoupon,
-            2
-        );
-
+        $this->scontoCoupon = round($scontoCoupon, 2);
         $this->importoDaPagare = round(
-            $importoDaPagare ??
-                ($this->prezzo - $this->scontoCoupon),
+            $importoDaPagare ?? ($this->prezzo - $this->scontoCoupon),
             2
         );
     }
@@ -208,22 +192,17 @@ class EPrenotazione
         if ($this->stato === "prenotata") {
 
             if ($this->couponApplicato !== null) {
-                $this->couponApplicato->utilizza(
-                    $this->scontoCoupon
-                );
+                $this->couponApplicato->utilizza($this->scontoCoupon);
             }
 
             $this->stato = "completata";
-
-            $this->cliente
-                ->resetNoShowConsecutivi();
+            $this->cliente->resetNoShowConsecutivi();
         }
     }
 
     public function cancella(): void
     {
         if ($this->stato === "prenotata") {
-
             if ($this->couponApplicato !== null) {
                 $this->rimuoviCoupon();
             }
@@ -235,15 +214,12 @@ class EPrenotazione
     public function segnaNoShow(): void
     {
         if ($this->stato === "prenotata") {
-
             if ($this->couponApplicato !== null) {
                 $this->rimuoviCoupon();
             }
 
             $this->stato = "no-show";
-
-            $this->cliente
-                ->registraNoShow();
+            $this->cliente->registraNoShow();
         }
     }
 }

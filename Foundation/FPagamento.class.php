@@ -28,7 +28,6 @@ class FPagamento
         return $result !== false;
     }
 
-
     public static function load(int $id): ?EPagamento
     {
         $connection = FConnectionDB::connect();
@@ -51,9 +50,7 @@ class FPagamento
             return null;
         }
 
-        $prenotazione = FPrenotazione::load(
-            (int) $row['id_prenotazione']
-        );
+        $prenotazione = FPrenotazione::load((int) $row['id_prenotazione']);
 
         if ($prenotazione === null) {
             return null;
@@ -62,9 +59,7 @@ class FPagamento
         $coupon = null;
 
         if ($row['id_coupon'] !== null) {
-            $coupon = FCoupon::load(
-                (int) $row['id_coupon']
-            );
+            $coupon = FCoupon::load((int) $row['id_coupon']);
 
             if ($coupon === null) {
                 return null;
@@ -81,33 +76,20 @@ class FPagamento
         );
     }
 
-
-    public static function store(
-        EPagamento $pagamento
-    ): bool {
-        if (
-            $pagamento
-            ->getPrenotazione()
-            ->getId() === null
-        ) {
+    public static function store(EPagamento $pagamento): bool
+    {
+        if ($pagamento->getPrenotazione()->getId() === null) {
             return false;
         }
 
         $idCoupon = null;
 
         if ($pagamento->getCouponUtilizzato() !== null) {
-
-            if (
-                $pagamento
-                ->getCouponUtilizzato()
-                ->getId() === null
-            ) {
+            if ($pagamento->getCouponUtilizzato()->getId() === null) {
                 return false;
             }
 
-            $idCoupon = $pagamento
-                ->getCouponUtilizzato()
-                ->getId();
+            $idCoupon = $pagamento->getCouponUtilizzato()->getId();
         }
 
         $connection = FConnectionDB::connect();
@@ -132,64 +114,38 @@ class FPagamento
         $statement = $connection->prepare($query);
 
         $result = $statement->execute([
-            ':id_prenotazione' =>
-            $pagamento
-                ->getPrenotazione()
-                ->getId(),
-
-            ':importo_pagato' =>
-            $pagamento->getImportoPagato(),
-
-            ':id_coupon' =>
-            $idCoupon,
-
-            ':importo_coupon_utilizzato' =>
-            $pagamento->getImportoCouponUtilizzato(),
-
-            ':data_ora_pagamento' =>
-            $pagamento->getDataOraPagamento()
+            ':id_prenotazione' => $pagamento->getPrenotazione()->getId(),
+            ':importo_pagato' => $pagamento->getImportoPagato(),
+            ':id_coupon' => $idCoupon,
+            ':importo_coupon_utilizzato' => $pagamento->getImportoCouponUtilizzato(),
+            ':data_ora_pagamento' => $pagamento->getDataOraPagamento()
         ]);
 
         if ($result) {
-            $pagamento->setId(
-                (int) $connection->lastInsertId()
-            );
+            $pagamento->setId((int) $connection->lastInsertId());
         }
 
         return $result;
     }
 
-
-    public static function update(
-        EPagamento $pagamento
-    ): bool {
+    public static function update(EPagamento $pagamento): bool
+    {
         if ($pagamento->getId() === null) {
             return false;
         }
 
-        if (
-            $pagamento
-            ->getPrenotazione()
-            ->getId() === null
-        ) {
+        if ($pagamento->getPrenotazione()->getId() === null) {
             return false;
         }
 
         $idCoupon = null;
 
         if ($pagamento->getCouponUtilizzato() !== null) {
-
-            if (
-                $pagamento
-                ->getCouponUtilizzato()
-                ->getId() === null
-            ) {
+            if ($pagamento->getCouponUtilizzato()->getId() === null) {
                 return false;
             }
 
-            $idCoupon = $pagamento
-                ->getCouponUtilizzato()
-                ->getId();
+            $idCoupon = $pagamento->getCouponUtilizzato()->getId();
         }
 
         $connection = FConnectionDB::connect();
@@ -208,28 +164,14 @@ class FPagamento
         $statement = $connection->prepare($query);
 
         return $statement->execute([
-            ':id_prenotazione' =>
-            $pagamento
-                ->getPrenotazione()
-                ->getId(),
-
-            ':importo_pagato' =>
-            $pagamento->getImportoPagato(),
-
-            ':id_coupon' =>
-            $idCoupon,
-
-            ':importo_coupon_utilizzato' =>
-            $pagamento->getImportoCouponUtilizzato(),
-
-            ':data_ora_pagamento' =>
-            $pagamento->getDataOraPagamento(),
-
-            ':id' =>
-            $pagamento->getId()
+            ':id_prenotazione' => $pagamento->getPrenotazione()->getId(),
+            ':importo_pagato' => $pagamento->getImportoPagato(),
+            ':id_coupon' => $idCoupon,
+            ':importo_coupon_utilizzato' => $pagamento->getImportoCouponUtilizzato(),
+            ':data_ora_pagamento' => $pagamento->getDataOraPagamento(),
+            ':id' => $pagamento->getId()
         ]);
     }
-
 
     public static function delete(int $id): bool
     {
@@ -247,10 +189,8 @@ class FPagamento
         ]);
     }
 
-    public static function totaleIncassiPeriodo(
-        string $dataInizio,
-        string $dataFine
-    ): float {
+    public static function totaleIncassiPeriodo(string $dataInizio, string $dataFine): float
+    {
         $connection = FConnectionDB::connect();
 
         $query = "
@@ -269,16 +209,11 @@ class FPagamento
 
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-        return $row['totale'] !== null
-            ? (float) $row['totale']
-            : 0.0;
+        return $row['totale'] !== null ? (float) $row['totale'] : 0.0;
     }
 
-    public static function totaleClientePeriodo(
-        int $idCliente,
-        string $dataInizio,
-        string $dataFine
-    ): float {
+    public static function totaleClientePeriodo(int $idCliente, string $dataInizio, string $dataFine): float
+    {
         $connection = FConnectionDB::connect();
 
         $query = "
@@ -301,8 +236,7 @@ class FPagamento
 
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-        return $row['totale'] !== null
-            ? (float) $row['totale']
-            : 0.0;
+        return $row['totale'] !== null ? (float) $row['totale'] : 0.0;
     }
 }
+

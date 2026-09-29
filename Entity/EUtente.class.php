@@ -30,8 +30,7 @@ class EUtente
         $this->ruolo = $ruolo;
 
         $this->noShowConsecutivi = $noShowConsecutivi;
-        $this->prenotazioniOnlineAbilitate =
-            $prenotazioniOnlineAbilitate;
+        $this->prenotazioniOnlineAbilitate = $prenotazioniOnlineAbilitate;
     }
 
     public function getId(): ?int

@@ -33,12 +33,8 @@ class EListaAttesa
         $this->dataDesiderata = $dataDesiderata;
         $this->oraDesiderata = $oraDesiderata;
 
-        $this->dataOraInserimento =
-            $dataOraInserimento;
-
-        $this->prenotazioneAlternativa =
-            $prenotazioneAlternativa;
-
+        $this->dataOraInserimento = $dataOraInserimento;
+        $this->prenotazioneAlternativa = $prenotazioneAlternativa;
         $this->stato = $stato;
     }
 
@@ -103,8 +99,7 @@ class EListaAttesa
             return false;
         }
 
-        $this->prenotazioneAlternativa =
-            $prenotazione;
+        $this->prenotazioneAlternativa = $prenotazione;
 
         return true;
     }

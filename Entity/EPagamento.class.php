@@ -25,23 +25,13 @@ class EPagamento
 
         $this->prenotazione = $prenotazione;
 
-        $this->importoPagato = round(
-            $importoPagato,
-            2
-        );
-
-        $this->couponUtilizzato =
-            $couponUtilizzato ??
-            $prenotazione->getCouponApplicato();
-
+        $this->importoPagato = round($importoPagato, 2);
+        $this->couponUtilizzato = $couponUtilizzato ?? $prenotazione->getCouponApplicato();
         $this->importoCouponUtilizzato = round(
-            $importoCouponUtilizzato ??
-                $prenotazione->getScontoCoupon(),
+            $importoCouponUtilizzato ?? $prenotazione->getScontoCoupon(),
             2
         );
-
-        $this->dataOraPagamento =
-            $dataOraPagamento;
+        $this->dataOraPagamento = $dataOraPagamento;
     }
 
     public function getId(): ?int
