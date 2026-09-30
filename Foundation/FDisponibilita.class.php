@@ -64,7 +64,7 @@ class FDisponibilita
             SELECT *
             FROM disponibilita
             WHERE data = :data
-            ORDER BY ora_inizio
+            ORDER BY ora_inizio ASC
         ";
 
         $statement = $connection->prepare($query);
@@ -89,8 +89,42 @@ class FDisponibilita
         return $disponibilita;
     }
 
-    public static function store(EDisponibilita $disponibilita): bool
+    public static function loadFromDate(string $dataInizio): array
     {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT *
+            FROM disponibilita
+            WHERE data >= :data_inizio
+            ORDER BY data ASC, ora_inizio ASC
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':data_inizio' => $dataInizio
+        ]);
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $disponibilita = [];
+
+        foreach ($rows as $row) {
+            $disponibilita[] = new EDisponibilita(
+                $row['data'],
+                $row['ora_inizio'],
+                $row['ora_fine'],
+                (int) $row['id']
+            );
+        }
+
+        return $disponibilita;
+    }
+
+    public static function store(
+        EDisponibilita $disponibilita
+    ): bool {
         $connection = FConnectionDB::connect();
 
         $query = "
@@ -115,14 +149,17 @@ class FDisponibilita
         ]);
 
         if ($result) {
-            $disponibilita->setId((int) $connection->lastInsertId());
+            $disponibilita->setId(
+                (int) $connection->lastInsertId()
+            );
         }
 
         return $result;
     }
 
-    public static function update(EDisponibilita $disponibilita): bool
-    {
+    public static function update(
+        EDisponibilita $disponibilita
+    ): bool {
         if ($disponibilita->getId() === null) {
             return false;
         }
@@ -140,14 +177,12 @@ class FDisponibilita
 
         $statement = $connection->prepare($query);
 
-        $result = $statement->execute([
+        return $statement->execute([
             ':data' => $disponibilita->getData(),
             ':ora_inizio' => $disponibilita->getOraInizio(),
             ':ora_fine' => $disponibilita->getOraFine(),
             ':id' => $disponibilita->getId()
         ]);
-
-        return $result;
     }
 
     public static function delete(int $id): bool
@@ -161,10 +196,8 @@ class FDisponibilita
 
         $statement = $connection->prepare($query);
 
-        $result = $statement->execute([
+        return $statement->execute([
             ':id' => $id
         ]);
-
-        return $result;
     }
 }
