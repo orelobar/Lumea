@@ -8,11 +8,14 @@ CREATE TABLE utenti (
     nome VARCHAR(50) NOT NULL,
     cognome VARCHAR(50) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
+    telefono VARCHAR(20) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     ruolo VARCHAR(20) NOT NULL DEFAULT 'cliente',
     no_show_consecutivi INT UNSIGNED NOT NULL DEFAULT 0,
     prenotazioni_online_abilitate BOOLEAN NOT NULL DEFAULT TRUE,
-    CONSTRAINT chk_ruolo CHECK (ruolo IN ('cliente', 'proprietario'))
+    CONSTRAINT chk_ruolo CHECK (
+        ruolo IN ('cliente', 'proprietario')
+    )
 ) ENGINE = InnoDB;
 /* =========================================================
  SERVIZI
@@ -47,7 +50,6 @@ CREATE TABLE coupon (
     CONSTRAINT chk_stato_coupon CHECK (
         stato IN (
             'disponibile',
-            'riservato',
             'esaurito'
         )
     ),
@@ -62,7 +64,7 @@ CREATE TABLE coupon (
     )
 ) ENGINE = InnoDB;
 /* =========================================================
- PRENOTAZIONI
+ PRENOTAZIONI: solo appuntamento e snapshot del servizio, nessun credito coupon.
  ========================================================= */
 CREATE TABLE prenotazioni (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -74,12 +76,8 @@ CREATE TABLE prenotazioni (
     durata INT UNSIGNED NOT NULL,
     prezzo DECIMAL(10, 2) NOT NULL,
     stato VARCHAR(20) NOT NULL DEFAULT 'prenotata',
-    id_coupon INT UNSIGNED NULL,
-    sconto_coupon DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    importo_da_pagare DECIMAL(10, 2) NOT NULL,
     CONSTRAINT fk_prenotazione_cliente FOREIGN KEY (id_cliente) REFERENCES utenti(id),
     CONSTRAINT fk_prenotazione_servizio FOREIGN KEY (id_servizio) REFERENCES servizi(id),
-    CONSTRAINT fk_prenotazione_coupon FOREIGN KEY (id_coupon) REFERENCES coupon(id),
     CONSTRAINT chk_stato_prenotazione CHECK (
         stato IN (
             'prenotata',
@@ -92,15 +90,7 @@ CREATE TABLE prenotazioni (
         durata > 0
         AND MOD(durata, 15) = 0
     ),
-    CONSTRAINT chk_prezzo_prenotazione CHECK (prezzo >= 0),
-    CONSTRAINT chk_sconto_prenotazione CHECK (
-        sconto_coupon >= 0
-        AND sconto_coupon <= prezzo
-    ),
-    CONSTRAINT chk_importo_prenotazione CHECK (
-        importo_da_pagare >= 0
-        AND importo_da_pagare = prezzo - sconto_coupon
-    )
+    CONSTRAINT chk_prezzo_prenotazione CHECK (prezzo >= 0)
 ) ENGINE = InnoDB;
 /* =========================================================
  LISTA D'ATTESA
@@ -127,7 +117,7 @@ CREATE TABLE lista_attesa (
     )
 ) ENGINE = InnoDB;
 /* =========================================================
- PAGAMENTI
+ PAGAMENTI: incasso reale in salone ed eventuale credito coupon utilizzato.
  ========================================================= */
 CREATE TABLE pagamenti (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

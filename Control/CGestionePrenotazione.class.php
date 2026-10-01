@@ -5,7 +5,6 @@ require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FServizio.class.php';
 require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
 require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
-require_once __DIR__ . '/../Foundation/FCoupon.class.php';
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 
 class CGestionePrenotazione
@@ -203,20 +202,11 @@ class CGestionePrenotazione
         return false;
     }
 
-    public function couponDisponibiliPerCliente(
-        int $idCliente
-    ): array {
-        return FCoupon::loadDisponibiliByCliente(
-            $idCliente
-        );
-    }
-
     public function confermaPrenotazione(
         int $idCliente,
         int $idServizio,
         string $data,
-        string $oraInizio,
-        ?int $idCoupon = null
+        string $oraInizio
     ): ?EPrenotazione {
         $cliente =
             FUtente::load(
@@ -274,30 +264,7 @@ class CGestionePrenotazione
             return null;
         }
 
-        $coupon = null;
 
-        if ($idCoupon !== null) {
-            $coupon =
-                FCoupon::load(
-                    $idCoupon
-                );
-
-            if ($coupon === null) {
-                return null;
-            }
-
-            if (
-                !$coupon->appartieneA(
-                    $cliente
-                )
-            ) {
-                return null;
-            }
-
-            if (!$coupon->isDisponibile()) {
-                return null;
-            }
-        }
 
         $oraNormalizzata =
             $this->minutiInOra(
@@ -344,19 +311,6 @@ class CGestionePrenotazione
                         . ':00'
                 );
 
-            if ($coupon !== null) {
-                $couponApplicato =
-                    $prenotazione
-                    ->applicaCoupon(
-                        $coupon
-                    );
-
-                if (!$couponApplicato) {
-                    $connection->rollBack();
-                    return null;
-                }
-            }
-
             $prenotazioneSalvata =
                 FPrenotazione::store(
                     $prenotazione
@@ -367,22 +321,11 @@ class CGestionePrenotazione
                 return null;
             }
 
-            if ($coupon !== null) {
-                $couponAggiornato =
-                    FCoupon::update(
-                        $coupon
-                    );
-
-                if (!$couponAggiornato) {
-                    $connection->rollBack();
-                    return null;
-                }
-            }
-
             $connection->commit();
 
+            // TODO email di conferma prenotazione, soltanto dopo commit.
             return $prenotazione;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $connection->rollBack();
 
             return null;

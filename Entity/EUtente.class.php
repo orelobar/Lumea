@@ -2,13 +2,13 @@
 
 class EUtente
 {
-    private ?int $id = null;
+    private ?int $id;
     private string $nome;
     private string $cognome;
     private string $email;
+    private string $telefono;
     private string $passwordHash;
     private string $ruolo;
-
     private int $noShowConsecutivi;
     private bool $prenotazioniOnlineAbilitate;
 
@@ -16,21 +16,23 @@ class EUtente
         string $nome,
         string $cognome,
         string $email,
+        string $telefono,
         string $passwordHash,
         string $ruolo = "cliente",
         ?int $id = null,
         int $noShowConsecutivi = 0,
         bool $prenotazioniOnlineAbilitate = true
     ) {
-        $this->id = $id;
         $this->nome = $nome;
         $this->cognome = $cognome;
         $this->email = $email;
+        $this->telefono = $telefono;
         $this->passwordHash = $passwordHash;
         $this->ruolo = $ruolo;
-
+        $this->id = $id;
         $this->noShowConsecutivi = $noShowConsecutivi;
-        $this->prenotazioniOnlineAbilitate = $prenotazioniOnlineAbilitate;
+        $this->prenotazioniOnlineAbilitate =
+            $prenotazioniOnlineAbilitate;
     }
 
     public function getId(): ?int
@@ -71,6 +73,16 @@ class EUtente
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    public function getTelefono(): string
+    {
+        return $this->telefono;
+    }
+
+    public function setTelefono(string $telefono): void
+    {
+        $this->telefono = $telefono;
     }
 
     public function getPasswordHash(): string

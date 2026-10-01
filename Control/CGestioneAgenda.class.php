@@ -47,260 +47,169 @@ class CGestioneAgenda
         );
     }
 
-    public function completaAppuntamento(
-        int $idPrenotazione
-    ): bool {
-        $prenotazione =
-            FPrenotazione::load(
-                $idPrenotazione
-            );
-
-        if ($prenotazione === null) {
-            return false;
-        }
-
-        if (
-            $prenotazione->getStato()
-            !== 'prenotata'
-        ) {
-            return false;
-        }
-
-        if (
-            !$this->orarioAppuntamentoRaggiunto(
-                $prenotazione
-            )
-        ) {
-            return false;
-        }
-
-        $cliente =
-            $prenotazione->getCliente();
-
-        $coupon =
-            $prenotazione
-            ->getCouponApplicato();
-
-        $connection =
-            FConnectionDB::connect();
-
-        $connection->beginTransaction();
-
-        try {
-            $prenotazione->completa();
-
-            if (
-                !FPrenotazione::update(
-                    $prenotazione
-                )
-            ) {
-                throw new Exception(
-                    'Errore aggiornamento prenotazione.'
-                );
-            }
-
-            if (
-                !FUtente::update(
-                    $cliente
-                )
-            ) {
-                throw new Exception(
-                    'Errore aggiornamento cliente.'
-                );
-            }
-
-            if ($coupon !== null) {
-                if (
-                    !FCoupon::update(
-                        $coupon
-                    )
-                ) {
-                    throw new Exception(
-                        'Errore aggiornamento coupon.'
-                    );
-                }
-            }
-
-            /*
-             * Il pagamento è avvenuto
-             * fisicamente in salone.
-             *
-             * HairBooking registra
-             * soltanto l'incasso reale.
-             */
-            $pagamento =
-                new EPagamento(
-                    $prenotazione,
-                    $prenotazione
-                        ->getImportoDaPagare(),
-                    date('Y-m-d H:i:s')
-                );
-
-            if (
-                !FPagamento::store(
-                    $pagamento
-                )
-            ) {
-                throw new Exception(
-                    'Errore registrazione pagamento.'
-                );
-            }
-
-            $numeroCompletamenti =
-                FPrenotazione
-                ::countCompletateByCliente(
-                    $cliente->getId()
-                );
-
-            $this
-                ->generaCouponFedeltaSeSpetta(
-                    $cliente,
-                    $numeroCompletamenti
-                );
-
-            $connection->commit();
-
-            /*
-             * In futuro:
-             * eventuale notifica per
-             * nuovo coupon fedeltà.
-             */
-
-            return true;
-        } catch (Exception $e) {
-            $connection->rollBack();
-
-            return false;
-        }
+    public function storicoPagamenti(string $dataInizio, string $dataFine): array
+    {
+        return FPagamento::loadByPeriodo($dataInizio, $dataFine);
     }
 
-    public function segnaNoShow(
-        int $idPrenotazione
+    // Verifica pura: mostra anche coupon esauriti, senza modificare il credito.
+    public function verificaCoupon(string $codice): ?ECoupon
+    {
+        return FCoupon::loadByCodice($codice);
+    }
+
+    /** Riepilogo prima della conferma; la chiusura rilegge e rivalida tutto. */
+    public function riepilogoPagamento(
+        int $idPrenotazione,
+        ?string $codiceCoupon = null
+    ): ?array {
+        $prenotazione = FPrenotazione::load($idPrenotazione);
+        if (!$this->appuntamentoChiudibile($prenotazione)) {
+            return null;
+        }
+
+        return $this->calcolaPagamento($prenotazione, $codiceCoupon);
+    }
+
+    public function chiudiAppuntamento(
+        int $idPrenotazione,
+        ?string $codiceCoupon = null
     ): bool {
-        $prenotazione =
-            FPrenotazione::load(
-                $idPrenotazione
-            );
-
-        if ($prenotazione === null) {
-            return false;
-        }
-
-        if (
-            $prenotazione->getStato()
-            !== 'prenotata'
-        ) {
-            return false;
-        }
-
-        if (
-            !$this->orarioAppuntamentoRaggiunto(
-                $prenotazione
-            )
-        ) {
-            return false;
-        }
-
-        $cliente =
-            $prenotazione->getCliente();
-
-        $noShowPrima =
-            $cliente
-            ->getNoShowConsecutivi();
-
-        $couponPrenotazione =
-            $prenotazione
-            ->getCouponApplicato();
-
-        $connection =
-            FConnectionDB::connect();
-
+        $connection = FConnectionDB::connect();
         $connection->beginTransaction();
 
         try {
-            $prenotazione->segnaNoShow();
-
-            if (
-                !FPrenotazione::update(
-                    $prenotazione
-                )
-            ) {
-                throw new Exception(
-                    'Errore aggiornamento prenotazione.'
-                );
+            // Blocca appuntamento e cliente prima di leggere stato e contatori.
+            $prenotazione = FPrenotazione::loadPerAggiornamento($idPrenotazione);
+            if (!$this->appuntamentoChiudibile($prenotazione)) {
+                $connection->rollBack();
+                return false;
             }
 
-            if (
-                !FUtente::update(
-                    $cliente
-                )
-            ) {
-                throw new Exception(
-                    'Errore aggiornamento cliente.'
-                );
+            $dati = $this->calcolaPagamento($prenotazione, $codiceCoupon, true);
+            if ($dati === null) {
+                $connection->rollBack();
+                return false;
             }
 
-            if (
-                $couponPrenotazione
-                !== null
-            ) {
-                if (
-                    !FCoupon::update(
-                        $couponPrenotazione
-                    )
-                ) {
-                    throw new Exception(
-                        'Errore aggiornamento coupon.'
-                    );
+            $cliente = $prenotazione->getCliente();
+            $coupon = $dati['coupon'];
+            if ($coupon !== null && $dati['importoCouponUtilizzato'] > 0) {
+                $coupon->utilizza($dati['importoCouponUtilizzato']);
+                if (!FCoupon::update($coupon)) {
+                    throw new RuntimeException('Errore aggiornamento coupon.');
                 }
             }
 
-            $noShowDopo =
-                $cliente
-                ->getNoShowConsecutivi();
+            $pagamento = new EPagamento(
+                $prenotazione,
+                $dati['importoPagato'],
+                date('Y-m-d H:i:s'),
+                null,
+                $coupon,
+                $dati['importoCouponUtilizzato']
+            );
+            if (!FPagamento::store($pagamento)) {
+                throw new RuntimeException('Errore registrazione pagamento.');
+            }
 
-            /*
-             * Penalità soltanto nel
-             * passaggio esatto 2 -> 3.
-             */
-            if (
-                $noShowPrima === 2
-                &&
-                $noShowDopo === 3
-            ) {
-                $couponDisponibili =
-                    FCoupon
-                    ::loadDisponibiliByCliente(
-                        $cliente->getId()
-                    );
+            $prenotazione->completa();
+            if (!FPrenotazione::update($prenotazione) || !FUtente::update($cliente)) {
+                throw new RuntimeException('Errore completamento appuntamento.');
+            }
 
-                foreach (
-                    $couponDisponibili
-                    as $coupon
-                ) {
-                    $coupon
-                        ->dimezzaCreditoResiduo();
+            // Solo dopo pagamento e completamento: il premio non è retroattivo.
+            $nuovoCoupon = $this->generaCouponFedeltaSeSpetta(
+                $cliente,
+                FPrenotazione::countCompletateByCliente($cliente->getId())
+            );
+            $connection->commit();
+        } catch (Throwable $e) {
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
+            return false;
+        }
 
-                    if (
-                        !FCoupon::update(
-                            $coupon
-                        )
-                    ) {
-                        throw new Exception(
-                            'Errore applicazione penalità coupon.'
-                        );
+        // TODO email, soltanto dopo commit, se $nuovoCoupon !== null:
+        // premio/traguardo, valore, codice, visibile nell'account e usabile in salone.
+        return true;
+    }
+
+    public function segnaNoShow(int $idPrenotazione): bool
+    {
+        $connection = FConnectionDB::connect();
+        $connection->beginTransaction();
+
+        try {
+            $prenotazione = FPrenotazione::loadPerAggiornamento($idPrenotazione);
+            if (!$this->appuntamentoChiudibile($prenotazione)) {
+                $connection->rollBack();
+                return false;
+            }
+
+            $cliente = $prenotazione->getCliente();
+            $noShowPrima = $cliente->getNoShowConsecutivi();
+            $prenotazione->segnaNoShow();
+            $noShowDopo = $cliente->getNoShowConsecutivi();
+
+            if (!FPrenotazione::update($prenotazione) || !FUtente::update($cliente)) {
+                throw new RuntimeException('Errore registrazione no-show.');
+            }
+
+            $terzoNoShow = $noShowPrima === 2 && $noShowDopo === 3;
+            if ($terzoNoShow) {
+                foreach (FCoupon::loadDisponibiliByCliente($cliente->getId(), true) as $coupon) {
+                    $coupon->dimezzaCreditoResiduo();
+                    if (!FCoupon::update($coupon)) {
+                        throw new RuntimeException('Errore applicazione penalità coupon.');
                     }
                 }
             }
-
             $connection->commit();
-
-            return true;
-        } catch (Exception $e) {
-            $connection->rollBack();
-
+        } catch (Throwable $e) {
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
             return false;
         }
+
+        // TODO email dopo commit solo se $terzoNoShow: sospensione e penalità credito.
+        return true;
+    }
+
+    private function appuntamentoChiudibile(?EPrenotazione $prenotazione): bool
+    {
+        return $prenotazione !== null
+            && $prenotazione->getStato() === 'prenotata'
+            && $this->orarioAppuntamentoRaggiunto($prenotazione);
+    }
+
+    private function calcolaPagamento(
+        EPrenotazione $prenotazione,
+        ?string $codiceCoupon,
+        bool $perAggiornamento = false
+    ): ?array {
+        $coupon = null;
+        $creditoUsato = 0.0;
+        if ($codiceCoupon !== null) {
+            $coupon = FCoupon::loadByCodice($codiceCoupon, $perAggiornamento);
+            if ($coupon === null
+                || !$coupon->appartieneA($prenotazione->getCliente())
+                || !$coupon->isDisponibile()
+                || $coupon->getCreditoResiduo() <= 0
+            ) {
+                return null;
+            }
+            $creditoUsato = min($prenotazione->getPrezzo(), $coupon->getCreditoResiduo());
+        }
+
+        return [
+            'prezzo' => $prenotazione->getPrezzo(),
+            'coupon' => $coupon,
+            'importoCouponUtilizzato' => $creditoUsato,
+            'importoPagato' => round($prenotazione->getPrezzo() - $creditoUsato, 2)
+        ];
     }
 
     public function annullaAppuntamentoPerChiusura(
@@ -329,20 +238,22 @@ class CGestioneAgenda
          * effettuata dal proprietario
          * per necessità del salone.
          */
-        $coupon =
-            $prenotazione
-            ->getCouponApplicato();
-
         $connection =
             FConnectionDB::connect();
 
         $connection->beginTransaction();
 
         try {
+            // Una cancellazione del proprietario può concorrere con la chiusura.
+            $prenotazione = FPrenotazione::loadPerAggiornamento($idPrenotazione);
+            if ($prenotazione === null || $prenotazione->getStato() !== 'prenotata') {
+                $connection->rollBack();
+                return false;
+            }
+
             /*
              * cancella():
              *
-             * - libera eventuale coupon;
              * - stato -> cancellata.
              */
             $prenotazione->cancella();
@@ -355,18 +266,6 @@ class CGestioneAgenda
                 throw new Exception(
                     'Errore cancellazione prenotazione.'
                 );
-            }
-
-            if ($coupon !== null) {
-                if (
-                    !FCoupon::update(
-                        $coupon
-                    )
-                ) {
-                    throw new Exception(
-                        'Errore restituzione coupon.'
-                    );
-                }
             }
 
             /*
@@ -382,7 +281,7 @@ class CGestioneAgenda
             $connection->commit();
 
             /*
-             * QUI dovrà partire la notifica
+             * TODO email dopo commit
              * al cliente:
              *
              * "Il salone ha annullato il tuo
@@ -391,7 +290,7 @@ class CGestioneAgenda
              */
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $connection->rollBack();
 
             return false;
@@ -401,7 +300,7 @@ class CGestioneAgenda
     private function generaCouponFedeltaSeSpetta(
         EUtente $cliente,
         int $numeroCompletamenti
-    ): void {
+    ): ?ECoupon {
         $valoreCoupon = null;
 
         $posizioneNelCiclo =
@@ -424,7 +323,7 @@ class CGestioneAgenda
         }
 
         if ($valoreCoupon === null) {
-            return;
+            return null;
         }
 
         if (
@@ -434,7 +333,7 @@ class CGestioneAgenda
                 $numeroCompletamenti
             )
         ) {
-            return;
+            return null;
         }
 
         $codice =
@@ -462,10 +361,7 @@ class CGestioneAgenda
             );
         }
 
-        /*
-         * In futuro:
-         * notifica nuovo coupon.
-         */
+        return $coupon;
     }
 
     private function orarioAppuntamentoRaggiunto(

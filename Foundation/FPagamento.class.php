@@ -76,6 +76,44 @@ class FPagamento
         );
     }
 
+    public static function loadByPrenotazione(int $idPrenotazione): ?EPagamento
+    {
+        $statement = FConnectionDB::connect()->prepare(
+            'SELECT id FROM pagamenti WHERE id_prenotazione = :id'
+        );
+        $statement->execute([':id' => $idPrenotazione]);
+        $id = $statement->fetchColumn();
+        return $id === false ? null : self::load((int) $id);
+    }
+
+    public static function loadByCliente(int $idCliente): array
+    {
+        $statement = FConnectionDB::connect()->prepare('
+            SELECT p.id FROM pagamenti p
+            JOIN prenotazioni pr ON pr.id = p.id_prenotazione
+            WHERE pr.id_cliente = :id ORDER BY p.data_ora_pagamento DESC, p.id DESC
+        ');
+        $statement->execute([':id' => $idCliente]);
+        return array_values(array_filter(array_map(
+            static fn($id) => self::load((int) $id),
+            $statement->fetchAll(PDO::FETCH_COLUMN)
+        )));
+    }
+
+    public static function loadByPeriodo(string $dataInizio, string $dataFine): array
+    {
+        $statement = FConnectionDB::connect()->prepare('
+            SELECT id FROM pagamenti
+            WHERE data_ora_pagamento >= :inizio AND data_ora_pagamento < :fine
+            ORDER BY data_ora_pagamento DESC, id DESC
+        ');
+        $statement->execute([':inizio' => $dataInizio, ':fine' => $dataFine]);
+        return array_values(array_filter(array_map(
+            static fn($id) => self::load((int) $id),
+            $statement->fetchAll(PDO::FETCH_COLUMN)
+        )));
+    }
+
     public static function store(EPagamento $pagamento): bool
     {
         if ($pagamento->getPrenotazione()->getId() === null) {

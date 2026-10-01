@@ -4,7 +4,8 @@ require_once __DIR__ . '/../Foundation/FConnectionDB.class.php';
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
 require_once __DIR__ . '/../Foundation/FListaAttesa.class.php';
-require_once __DIR__ . '/../Foundation/FCoupon.class.php';
+require_once __DIR__ . '/../Foundation/FPagamento.class.php';
+
 
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 require_once __DIR__ . '/../Entity/EListaAttesa.class.php';
@@ -85,6 +86,16 @@ class CGestioneAppuntamenti
         }
 
         return $storico;
+    }
+
+    public function storicoPagamentiCliente(int $idCliente): array
+    {
+        return FPagamento::loadByCliente($idCliente);
+    }
+
+    public function couponCliente(int $idCliente): array
+    {
+        return FCoupon::loadByCliente($idCliente);
     }
 
     public function puoAnnullareOnline(
@@ -178,16 +189,6 @@ class CGestioneAppuntamenti
             return null;
         }
 
-        /*
-         * Prima di cancellare salviamo
-         * il riferimento al coupon,
-         * perché cancella() lo rimuove
-         * dalla prenotazione e lo libera.
-         */
-        $couponPrenotazione =
-            $prenotazione
-            ->getCouponApplicato();
-
         $connection =
             FConnectionDB::connect();
 
@@ -212,62 +213,16 @@ class CGestioneAppuntamenti
             }
 
             /*
-             * Se la prenotazione aveva
-             * un coupon, cancella() lo
-             * ha liberato in memoria.
-             * Ora persistiamo il nuovo stato.
-             */
-            if (
-                $couponPrenotazione
-                !== null
-            ) {
-                $couponAggiornato =
-                    FCoupon::update(
-                        $couponPrenotazione
-                    );
-
-                if (!$couponAggiornato) {
-                    throw new Exception(
-                        'Errore nell\'aggiornamento del coupon.'
-                    );
-                }
-            }
-
-            /*
              * 2. Il posto è libero:
              * controlliamo la lista d'attesa
              * FIFO per servizio/data/ora.
              */
-            $richiestaSoddisfatta =
-                $this
+            $this
                 ->assegnaPrimaRichiestaValida(
                     $prenotazione
                 );
 
             $connection->commit();
-
-            /*
-             * QUI dovrà partire la notifica
-             * al cliente eventualmente
-             * soddisfatto:
-             *
-             * "La tua richiesta di lista
-             * d'attesa è stata soddisfatta.
-             * Il tuo appuntamento è stato
-             * spostato nell'orario richiesto."
-             *
-             * La notifica deve essere
-             * inviata DOPO il commit,
-             * perché prima non abbiamo
-             * ancora la certezza che il DB
-             * sia stato aggiornato.
-             */
-            if (
-                $richiestaSoddisfatta
-                !== null
-            ) {
-                // futuro componente notifiche
-            }
 
             /*
              * Restituiamo la prenotazione
@@ -280,7 +235,7 @@ class CGestioneAppuntamenti
              * servizio in un altro giorno?"
              */
             return $prenotazione;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $connection->rollBack();
 
             return null;
@@ -443,12 +398,6 @@ class CGestioneAppuntamenti
                     );
                 }
 
-                /*
-                 * QUI dovrà partire la
-                 * notifica di richiesta
-                 * NON soddisfatta.
-                 */
-
                 continue;
             }
 
@@ -571,21 +520,14 @@ class CGestioneAppuntamenti
                 continue;
             }
 
-            $couponAlternativa = null;
-
             /*
              * Se esiste un'alternativa,
-             * prima recuperiamo l'eventuale
-             * coupon e poi la cancelliamo.
+             * la cancelliamo.
              */
             if (
                 $prenotazioneAlternativa
                 !== null
             ) {
-                $couponAlternativa =
-                    $prenotazioneAlternativa
-                    ->getCouponApplicato();
-
                 $prenotazioneAlternativa
                     ->cancella();
 
@@ -615,31 +557,6 @@ class CGestioneAppuntamenti
                         ->getOraDesiderata()
                 );
 
-            /*
-             * Se l'alternativa aveva un
-             * coupon, cancella() lo ha
-             * liberato.
-             *
-             * Ora lo riserviamo sulla
-             * nuova prenotazione.
-             */
-            if (
-                $couponAlternativa
-                !== null
-            ) {
-                $couponApplicato =
-                    $nuovaPrenotazione
-                    ->applicaCoupon(
-                        $couponAlternativa
-                    );
-
-                if (!$couponApplicato) {
-                    throw new Exception(
-                        'Errore nel trasferimento del coupon.'
-                    );
-                }
-            }
-
             $prenotazioneSalvata =
                 FPrenotazione::store(
                     $nuovaPrenotazione
@@ -649,29 +566,6 @@ class CGestioneAppuntamenti
                 throw new Exception(
                     'Errore nella creazione della prenotazione da lista d\'attesa.'
                 );
-            }
-
-            /*
-             * Persistiamo lo stato finale
-             * del coupon:
-             *
-             * riservato sulla nuova
-             * prenotazione.
-             */
-            if (
-                $couponAlternativa
-                !== null
-            ) {
-                $couponAggiornato =
-                    FCoupon::update(
-                        $couponAlternativa
-                    );
-
-                if (!$couponAggiornato) {
-                    throw new Exception(
-                        'Errore nell\'aggiornamento del coupon trasferito.'
-                    );
-                }
             }
 
             /*

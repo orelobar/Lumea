@@ -43,7 +43,9 @@ class FServizio
             ':id' => $id
         ]);
 
-        $row = $statement->fetch(PDO::FETCH_ASSOC);
+        $row = $statement->fetch(
+            PDO::FETCH_ASSOC
+        );
 
         if ($row === false) {
             return null;
@@ -60,8 +62,9 @@ class FServizio
     }
 
 
-    public static function store(EServizio $servizio): bool
-    {
+    public static function store(
+        EServizio $servizio
+    ): bool {
         $connection = FConnectionDB::connect();
 
         $query = "
@@ -84,11 +87,20 @@ class FServizio
         $statement = $connection->prepare($query);
 
         $result = $statement->execute([
-            ':nome' => $servizio->getNome(),
-            ':categoria' => $servizio->getCategoria(),
-            ':prezzo' => $servizio->getPrezzo(),
-            ':durata' => $servizio->getDurata(),
-            ':attivo' => $servizio->isAttivo()
+            ':nome' =>
+            $servizio->getNome(),
+
+            ':categoria' =>
+            $servizio->getCategoria(),
+
+            ':prezzo' =>
+            $servizio->getPrezzo(),
+
+            ':durata' =>
+            $servizio->getDurata(),
+
+            ':attivo' =>
+            (int) $servizio->isAttivo()
         ]);
 
         if ($result) {
@@ -101,8 +113,9 @@ class FServizio
     }
 
 
-    public static function update(EServizio $servizio): bool
-    {
+    public static function update(
+        EServizio $servizio
+    ): bool {
         if ($servizio->getId() === null) {
             return false;
         }
@@ -123,12 +136,23 @@ class FServizio
         $statement = $connection->prepare($query);
 
         return $statement->execute([
-            ':nome' => $servizio->getNome(),
-            ':categoria' => $servizio->getCategoria(),
-            ':prezzo' => $servizio->getPrezzo(),
-            ':durata' => $servizio->getDurata(),
-            ':attivo' => $servizio->isAttivo(),
-            ':id' => $servizio->getId()
+            ':nome' =>
+            $servizio->getNome(),
+
+            ':categoria' =>
+            $servizio->getCategoria(),
+
+            ':prezzo' =>
+            $servizio->getPrezzo(),
+
+            ':durata' =>
+            $servizio->getDurata(),
+
+            ':attivo' =>
+            (int) $servizio->isAttivo(),
+
+            ':id' =>
+            $servizio->getId()
         ]);
     }
 

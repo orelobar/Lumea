@@ -90,7 +90,53 @@ class FCoupon
         );
     }
 
-    public static function loadDisponibiliByCliente(int $idCliente): array
+    public static function loadByCodice(string $codice, bool $perAggiornamento = false): ?ECoupon
+    {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT *
+            FROM coupon
+            WHERE codice = :codice
+        ";
+
+        if ($perAggiornamento) {
+            if (!$connection->inTransaction()) {
+                throw new LogicException('Il blocco richiede una transazione attiva.');
+            }
+            $query .= ' FOR UPDATE';
+        }
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':codice' => $codice
+        ]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($row === false) {
+            return null;
+        }
+
+        $cliente = FUtente::load((int) $row['id_cliente']);
+
+        if ($cliente === null) {
+            return null;
+        }
+
+        return new ECoupon(
+            $row['codice'],
+            $cliente,
+            (float) $row['valore_iniziale'],
+            $row['data_ora_generazione'],
+            (int) $row['traguardo_completamenti'],
+            (int) $row['id'],
+            (float) $row['credito_residuo'],
+            $row['stato']
+        );
+    }
+
+    public static function loadDisponibiliByCliente(int $idCliente, bool $perAggiornamento = false): array
     {
         $cliente = FUtente::load($idCliente);
 
@@ -109,6 +155,12 @@ class FCoupon
             ORDER BY data_ora_generazione ASC
         ";
 
+        if ($perAggiornamento) {
+            if (!$connection->inTransaction()) {
+                throw new LogicException('Il blocco richiede una transazione attiva.');
+            }
+            $query .= ' FOR UPDATE';
+        }
         $statement = $connection->prepare($query);
 
         $statement->execute([
@@ -133,6 +185,19 @@ class FCoupon
         }
 
         return $couponDisponibili;
+    }
+
+    // Include gli esauriti per lo storico e la sezione coupon del cliente.
+    public static function loadByCliente(int $idCliente): array
+    {
+        $statement = FConnectionDB::connect()->prepare(
+            'SELECT id FROM coupon WHERE id_cliente = :id ORDER BY data_ora_generazione, id'
+        );
+        $statement->execute([':id' => $idCliente]);
+        return array_values(array_filter(array_map(
+            static fn($id) => self::load((int) $id),
+            $statement->fetchAll(PDO::FETCH_COLUMN)
+        )));
     }
 
     public static function store(ECoupon $coupon): bool

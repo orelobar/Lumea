@@ -26,11 +26,23 @@ class EPagamento
         $this->prenotazione = $prenotazione;
 
         $this->importoPagato = round($importoPagato, 2);
-        $this->couponUtilizzato = $couponUtilizzato ?? $prenotazione->getCouponApplicato();
+        $this->couponUtilizzato = $couponUtilizzato;
         $this->importoCouponUtilizzato = round(
-            $importoCouponUtilizzato ?? $prenotazione->getScontoCoupon(),
+            $importoCouponUtilizzato ?? 0.0,
             2
         );
+        if (!is_finite($importoPagato)
+            || !is_finite($importoCouponUtilizzato ?? 0.0)
+            || $importoPagato < 0 || ($importoCouponUtilizzato ?? 0.0) < 0
+            || $this->importoCouponUtilizzato > $prenotazione->getPrezzo()
+            || round($this->importoPagato + $this->importoCouponUtilizzato, 2)
+                !== round($prenotazione->getPrezzo(), 2)
+            || ($couponUtilizzato === null && $this->importoCouponUtilizzato !== 0.0)
+            || ($couponUtilizzato !== null && !$couponUtilizzato->appartieneA($prenotazione->getCliente()))
+        ) {
+            throw new InvalidArgumentException('Importi o cliente del pagamento non coerenti.');
+        }
+        // Non confrontare con il residuo attuale: questo è uno storico di incasso.
         $this->dataOraPagamento = $dataOraPagamento;
     }
 

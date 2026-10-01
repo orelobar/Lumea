@@ -55,6 +55,7 @@ class FUtente
             $row['nome'],
             $row['cognome'],
             $row['email'],
+            $row['telefono'],
             $row['password_hash'],
             $row['ruolo'],
             (int) $row['id'],
@@ -93,6 +94,46 @@ class FUtente
             $row['nome'],
             $row['cognome'],
             $row['email'],
+            $row['telefono'],
+            $row['password_hash'],
+            $row['ruolo'],
+            (int) $row['id'],
+            (int) $row['no_show_consecutivi'],
+            (bool) $row['prenotazioni_online_abilitate']
+        );
+    }
+
+
+    public static function loadByTelefono(
+        string $telefono
+    ): ?EUtente {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT *
+            FROM utenti
+            WHERE telefono = :telefono
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':telefono' => $telefono
+        ]);
+
+        $row = $statement->fetch(
+            PDO::FETCH_ASSOC
+        );
+
+        if ($row === false) {
+            return null;
+        }
+
+        return new EUtente(
+            $row['nome'],
+            $row['cognome'],
+            $row['email'],
+            $row['telefono'],
             $row['password_hash'],
             $row['ruolo'],
             (int) $row['id'],
@@ -112,6 +153,7 @@ class FUtente
                 nome,
                 cognome,
                 email,
+                telefono,
                 password_hash,
                 ruolo,
                 no_show_consecutivi,
@@ -121,6 +163,7 @@ class FUtente
                 :nome,
                 :cognome,
                 :email,
+                :telefono,
                 :password_hash,
                 :ruolo,
                 :no_show_consecutivi,
@@ -140,6 +183,9 @@ class FUtente
             ':email' =>
             $utente->getEmail(),
 
+            ':telefono' =>
+            $utente->getTelefono(),
+
             ':password_hash' =>
             $utente->getPasswordHash(),
 
@@ -150,7 +196,7 @@ class FUtente
             $utente->getNoShowConsecutivi(),
 
             ':prenotazioni_online_abilitate' =>
-            $utente->isPrenotazioniOnlineAbilitate()
+            (int) $utente->isPrenotazioniOnlineAbilitate()
         ]);
 
         if ($result) {
@@ -178,6 +224,7 @@ class FUtente
                 nome = :nome,
                 cognome = :cognome,
                 email = :email,
+                telefono = :telefono,
                 password_hash = :password_hash,
                 ruolo = :ruolo,
                 no_show_consecutivi = :no_show_consecutivi,
@@ -198,6 +245,9 @@ class FUtente
             ':email' =>
             $utente->getEmail(),
 
+            ':telefono' =>
+            $utente->getTelefono(),
+
             ':password_hash' =>
             $utente->getPasswordHash(),
 
@@ -208,7 +258,7 @@ class FUtente
             $utente->getNoShowConsecutivi(),
 
             ':prenotazioni_online_abilitate' =>
-            $utente->isPrenotazioniOnlineAbilitate(),
+            (int) $utente->isPrenotazioniOnlineAbilitate(),
 
             ':id' =>
             $utente->getId()

@@ -3,7 +3,6 @@
 require_once __DIR__ . '/FConnectionDB.class.php';
 require_once __DIR__ . '/FUtente.class.php';
 require_once __DIR__ . '/FServizio.class.php';
-require_once __DIR__ . '/FCoupon.class.php';
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 
 class FPrenotazione
@@ -66,18 +65,6 @@ class FPrenotazione
             return null;
         }
 
-        $coupon = null;
-
-        if ($row['id_coupon'] !== null) {
-            $coupon = FCoupon::load(
-                (int) $row['id_coupon']
-            );
-
-            if ($coupon === null) {
-                return null;
-            }
-        }
-
         return new EPrenotazione(
             $cliente,
             $servizio,
@@ -87,13 +74,29 @@ class FPrenotazione
             $row['nome_servizio'],
             (int) $row['durata'],
             (float) $row['prezzo'],
-            $row['stato'],
-            $coupon,
-            (float) $row['sconto_coupon'],
-            (float) $row['importo_da_pagare']
+            $row['stato']
         );
     }
 
+
+    /** Da chiamare come prima lettura nella transazione del Control. */
+    public static function loadPerAggiornamento(int $id): ?EPrenotazione
+    {
+        $connection = FConnectionDB::connect();
+        if (!$connection->inTransaction()) {
+            throw new LogicException('Il blocco richiede una transazione attiva.');
+        }
+
+        // Il JOIN blocca anche il cliente: serializza contatori e premi fedeltà
+        // quando vengono chiusi contemporaneamente appuntamenti diversi.
+        $statement = $connection->prepare('
+            SELECT pr.id FROM prenotazioni pr
+            JOIN utenti u ON u.id = pr.id_cliente
+            WHERE pr.id = :id FOR UPDATE
+        ');
+        $statement->execute([':id' => $id]);
+        return $statement->fetchColumn() === false ? null : self::load($id);
+    }
 
     public static function store(
         EPrenotazione $prenotazione
@@ -104,22 +107,6 @@ class FPrenotazione
 
         if ($prenotazione->getServizio()->getId() === null) {
             return false;
-        }
-
-        $idCoupon = null;
-
-        if ($prenotazione->getCouponApplicato() !== null) {
-            if (
-                $prenotazione
-                ->getCouponApplicato()
-                ->getId() === null
-            ) {
-                return false;
-            }
-
-            $idCoupon = $prenotazione
-                ->getCouponApplicato()
-                ->getId();
         }
 
         $connection = FConnectionDB::connect();
@@ -133,10 +120,7 @@ class FPrenotazione
                 ora,
                 durata,
                 prezzo,
-                stato,
-                id_coupon,
-                sconto_coupon,
-                importo_da_pagare
+                stato
             )
             VALUES (
                 :id_cliente,
@@ -146,10 +130,7 @@ class FPrenotazione
                 :ora,
                 :durata,
                 :prezzo,
-                :stato,
-                :id_coupon,
-                :sconto_coupon,
-                :importo_da_pagare
+                :stato
             )
         ";
 
@@ -178,16 +159,7 @@ class FPrenotazione
             $prenotazione->getPrezzo(),
 
             ':stato' =>
-            $prenotazione->getStato(),
-
-            ':id_coupon' =>
-            $idCoupon,
-
-            ':sconto_coupon' =>
-            $prenotazione->getScontoCoupon(),
-
-            ':importo_da_pagare' =>
-            $prenotazione->getImportoDaPagare()
+            $prenotazione->getStato()
         ]);
 
         if ($result) {
@@ -215,22 +187,6 @@ class FPrenotazione
             return false;
         }
 
-        $idCoupon = null;
-
-        if ($prenotazione->getCouponApplicato() !== null) {
-            if (
-                $prenotazione
-                ->getCouponApplicato()
-                ->getId() === null
-            ) {
-                return false;
-            }
-
-            $idCoupon = $prenotazione
-                ->getCouponApplicato()
-                ->getId();
-        }
-
         $connection = FConnectionDB::connect();
 
         $query = "
@@ -243,10 +199,7 @@ class FPrenotazione
                 ora = :ora,
                 durata = :durata,
                 prezzo = :prezzo,
-                stato = :stato,
-                id_coupon = :id_coupon,
-                sconto_coupon = :sconto_coupon,
-                importo_da_pagare = :importo_da_pagare
+                stato = :stato
             WHERE id = :id
         ";
 
@@ -276,15 +229,6 @@ class FPrenotazione
 
             ':stato' =>
             $prenotazione->getStato(),
-
-            ':id_coupon' =>
-            $idCoupon,
-
-            ':sconto_coupon' =>
-            $prenotazione->getScontoCoupon(),
-
-            ':importo_da_pagare' =>
-            $prenotazione->getImportoDaPagare(),
 
             ':id' =>
             $prenotazione->getId()

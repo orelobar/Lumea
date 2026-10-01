@@ -390,18 +390,6 @@ class CGestioneListaAttesa
             return false;
         }
 
-        /*
-         * QUI dovrà partire la notifica:
-         *
-         * "La tua richiesta di lista
-         * d'attesa non è stata soddisfatta."
-         *
-         * Non implementiamo ancora il
-         * trasporto della notifica perché
-         * la relativa classe non è stata
-         * ancora progettata.
-         */
-
         return true;
     }
 

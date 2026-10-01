@@ -21,14 +21,22 @@ class ECoupon
         ?float $creditoResiduo = null,
         string $stato = "disponibile"
     ) {
+        $creditoResiduo = $creditoResiduo ?? $valoreIniziale;
+        if (!is_finite($valoreIniziale) || !is_finite($creditoResiduo)
+            || $valoreIniziale <= 0 || round($valoreIniziale, 2) <= 0
+            || $creditoResiduo < 0 || $creditoResiduo > $valoreIniziale
+            || !in_array($stato, ['disponibile', 'esaurito'], true)
+            || ($stato === 'esaurito' && round($creditoResiduo, 2) !== 0.0)
+            || ($stato === 'disponibile' && round($creditoResiduo, 2) <= 0)
+        ) {
+            throw new InvalidArgumentException('Credito o stato coupon non valido.');
+        }
         $this->id = $id;
         $this->codice = $codice;
         $this->cliente = $cliente;
-        $this->valoreIniziale = $valoreIniziale;
+        $this->valoreIniziale = round($valoreIniziale, 2);
 
-        $this->creditoResiduo = $creditoResiduo === null
-            ? $valoreIniziale
-            : $creditoResiduo;
+        $this->creditoResiduo = round($creditoResiduo, 2);
 
         $this->dataOraGenerazione = $dataOraGenerazione;
         $this->stato = $stato;
@@ -85,11 +93,6 @@ class ECoupon
         return $this->stato === "disponibile";
     }
 
-    public function isRiservato(): bool
-    {
-        return $this->stato === "riservato";
-    }
-
     public function isEsaurito(): bool
     {
         return $this->stato === "esaurito";
@@ -107,41 +110,15 @@ class ECoupon
         return $this->cliente === $cliente;
     }
 
-    public function riserva(): void
+    public function utilizza(float $importo): void
     {
         if (!$this->isDisponibile()) {
             throw new LogicException(
-                "Il coupon non è disponibile."
+                "Il coupon non è disponibile per essere utilizzato."
             );
         }
 
-        $this->stato = "riservato";
-    }
-
-    public function libera(): void
-    {
-        if (!$this->isRiservato()) {
-            throw new LogicException(
-                "Il coupon non è riservato."
-            );
-        }
-
-        if ($this->creditoResiduo <= 0) {
-            $this->stato = "esaurito";
-        } else {
-            $this->stato = "disponibile";
-        }
-    }
-
-    public function utilizza(float $importo): void
-    {
-        if (!$this->isRiservato()) {
-            throw new LogicException(
-                "Il coupon deve essere riservato prima di essere utilizzato."
-            );
-        }
-
-        if ($importo <= 0) {
+        if (!is_finite($importo) || $importo <= 0 || round($importo, 2) <= 0) {
             throw new InvalidArgumentException(
                 "L'importo utilizzato deve essere maggiore di zero."
             );
@@ -153,13 +130,11 @@ class ECoupon
             );
         }
 
-        $this->creditoResiduo -= $importo;
+        $this->creditoResiduo = round($this->creditoResiduo - round($importo, 2), 2);
 
         if ($this->creditoResiduo <= 0) {
             $this->creditoResiduo = 0;
             $this->stato = "esaurito";
-        } else {
-            $this->stato = "disponibile";
         }
     }
 
