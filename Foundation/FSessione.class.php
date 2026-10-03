@@ -2,6 +2,15 @@
 
 class FSessione
 {
+    private const DURATA_CLIENTE =
+    2 * 60 * 60;
+
+    private const DURATA_PROPRIETARIO =
+    12 * 60 * 60;
+
+    private const DURATA_MASSIMA =
+    self::DURATA_PROPRIETARIO;
+
     public static function avvia(): void
     {
         if (
@@ -11,6 +20,15 @@ class FSessione
             return;
         }
 
+        ini_set(
+            'session.gc_maxlifetime',
+            (string) self::DURATA_MASSIMA
+        );
+
+        session_set_cookie_params(
+            self::DURATA_MASSIMA
+        );
+
         if (!session_start()) {
             throw new RuntimeException(
                 'Impossibile avviare la sessione.'
@@ -19,7 +37,8 @@ class FSessione
     }
 
     public static function impostaUtenteAutenticato(
-        int $idUtente
+        int $idUtente,
+        string $ruolo = 'cliente'
     ): void {
         self::avvia();
 
@@ -29,13 +48,38 @@ class FSessione
             );
         }
 
+        if (
+            $ruolo !== 'cliente'
+            &&
+            $ruolo !== 'proprietario'
+        ) {
+            throw new InvalidArgumentException(
+                'Ruolo utente non valido.'
+            );
+        }
+
         if (self::isAutenticato()) {
             throw new LogicException(
                 'È già presente un utente autenticato.'
             );
         }
 
-        $_SESSION['id_utente'] = $idUtente;
+        self::avvia();
+
+        $durata =
+            $ruolo === 'proprietario'
+            ? self::DURATA_PROPRIETARIO
+            : self::DURATA_CLIENTE;
+
+        $_SESSION['id_utente'] =
+            $idUtente;
+
+        $_SESSION['scadenza_autenticazione'] =
+            time() + $durata;
+
+        self::aggiornaCookieSessione(
+            $durata
+        );
     }
 
     public static function getIdUtenteAutenticato(): ?int
@@ -43,13 +87,32 @@ class FSessione
         self::avvia();
 
         $idUtente =
-            $_SESSION['id_utente'] ?? null;
+            $_SESSION['id_utente']
+            ?? null;
+
+        $scadenza =
+            $_SESSION['scadenza_autenticazione']
+            ?? null;
+
+        if (
+            $idUtente === null
+            &&
+            $scadenza === null
+        ) {
+            return null;
+        }
 
         if (
             !is_int($idUtente)
             ||
             $idUtente <= 0
+            ||
+            !is_int($scadenza)
+            ||
+            $scadenza <= time()
         ) {
+            self::logout();
+
             return null;
         }
 
@@ -67,7 +130,9 @@ class FSessione
     {
         self::avvia();
 
-        $nomeSessione = session_name();
+        $nomeSessione =
+            session_name();
+
         $parametriCookie =
             session_get_cookie_params();
 
@@ -79,6 +144,23 @@ class FSessione
             $nomeSessione,
             '',
             time() - 3600,
+            $parametriCookie['path'],
+            $parametriCookie['domain'],
+            $parametriCookie['secure'],
+            $parametriCookie['httponly']
+        );
+    }
+
+    private static function aggiornaCookieSessione(
+        int $durata
+    ): void {
+        $parametriCookie =
+            session_get_cookie_params();
+
+        setcookie(
+            session_name(),
+            session_id(),
+            time() + $durata,
             $parametriCookie['path'],
             $parametriCookie['domain'],
             $parametriCookie['secure'],

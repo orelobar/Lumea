@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../Foundation/FUtente.class.php';
+require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Foundation/FServizio.class.php';
 require_once __DIR__ . '/../Entity/EServizio.class.php';
 
@@ -7,6 +9,10 @@ class CGestioneServizi
 {
     public function elencoServizi(): array
     {
+        if (!$this->isProprietarioAutenticato()) {
+            return [];
+        }
+
         /*
          * Nell'area del proprietario
          * mostriamo sia i servizi attivi
@@ -21,6 +27,10 @@ class CGestioneServizi
         float $prezzo,
         int $durata
     ): ?EServizio {
+        if (!$this->isProprietarioAutenticato()) {
+            return null;
+        }
+
         /*
          * HairBooking prevede attualmente
          * solamente le categorie:
@@ -78,6 +88,10 @@ class CGestioneServizi
         float $prezzo,
         int $durata
     ): bool {
+        if (!$this->isProprietarioAutenticato()) {
+            return false;
+        }
+
         $servizio =
             FServizio::load(
                 $idServizio
@@ -131,6 +145,10 @@ class CGestioneServizi
     public function disattivaServizio(
         int $idServizio
     ): bool {
+        if (!$this->isProprietarioAutenticato()) {
+            return false;
+        }
+
         $servizio =
             FServizio::load(
                 $idServizio
@@ -157,6 +175,10 @@ class CGestioneServizi
     public function riattivaServizio(
         int $idServizio
     ): bool {
+        if (!$this->isProprietarioAutenticato()) {
+            return false;
+        }
+
         $servizio =
             FServizio::load(
                 $idServizio
@@ -171,6 +193,19 @@ class CGestioneServizi
         return FServizio::update(
             $servizio
         );
+    }
+
+    private function isProprietarioAutenticato(): bool
+    {
+        $idUtente = FSessione::getIdUtenteAutenticato();
+
+        if ($idUtente === null) {
+            return false;
+        }
+
+        $utente = FUtente::load($idUtente);
+
+        return $utente !== null && $utente->isProprietario();
     }
 
     private function categoriaValida(

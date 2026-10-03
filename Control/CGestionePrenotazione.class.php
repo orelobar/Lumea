@@ -1,10 +1,12 @@
 <?php
 
+require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Foundation/FConnectionDB.class.php';
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FServizio.class.php';
 require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
 require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
+require_once __DIR__ . '/../Foundation/FEmail.class.php';
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 
 class CGestionePrenotazione
@@ -208,6 +210,10 @@ class CGestionePrenotazione
         string $data,
         string $oraInizio
     ): ?EPrenotazione {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return null;
+        }
+
         $cliente =
             FUtente::load(
                 $idCliente
@@ -322,14 +328,33 @@ class CGestionePrenotazione
             }
 
             $connection->commit();
-
-            // TODO email di conferma prenotazione, soltanto dopo commit.
-            return $prenotazione;
         } catch (Throwable $e) {
             $connection->rollBack();
 
             return null;
         }
+
+        // Il commit è concluso: un errore email non modifica l'esito della prenotazione.
+        try {
+            FEmail::confermaPrenotazione($prenotazione);
+        } catch (Throwable $e) {
+            error_log('HairBooking: errore email conferma prenotazione: ' . $e->getMessage());
+        }
+
+        return $prenotazione;
+    }
+
+    private function isClienteAutenticato(int $idCliente): bool
+    {
+        $idUtente = FSessione::getIdUtenteAutenticato();
+
+        if ($idUtente === null || $idUtente !== $idCliente) {
+            return false;
+        }
+
+        $utente = FUtente::load($idUtente);
+
+        return $utente !== null && $utente->isCliente();
     }
 
     private function calcolaBlocchiLiberi(

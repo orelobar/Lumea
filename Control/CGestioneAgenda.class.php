@@ -1,10 +1,12 @@
 <?php
 
+require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Foundation/FConnectionDB.class.php';
 require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
 require_once __DIR__ . '/../Foundation/FPagamento.class.php';
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FCoupon.class.php';
+require_once __DIR__ . '/../Foundation/FEmail.class.php';
 
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 require_once __DIR__ . '/../Entity/EPagamento.class.php';
@@ -16,6 +18,10 @@ class CGestioneAgenda
     public function agendaPerData(
         string $data
     ): array {
+        if (!$this->isProprietarioAutenticato()) {
+            return [];
+        }
+
         $prenotazioni =
             FPrenotazione::loadByData(
                 $data
@@ -42,6 +48,10 @@ class CGestioneAgenda
     public function dettaglioAppuntamento(
         int $idPrenotazione
     ): ?EPrenotazione {
+        if (!$this->isProprietarioAutenticato()) {
+            return null;
+        }
+
         return FPrenotazione::load(
             $idPrenotazione
         );
@@ -49,12 +59,20 @@ class CGestioneAgenda
 
     public function storicoPagamenti(string $dataInizio, string $dataFine): array
     {
+        if (!$this->isProprietarioAutenticato()) {
+            return [];
+        }
+
         return FPagamento::loadByPeriodo($dataInizio, $dataFine);
     }
 
     // Verifica pura: mostra anche coupon esauriti, senza modificare il credito.
     public function verificaCoupon(string $codice): ?ECoupon
     {
+        if (!$this->isProprietarioAutenticato()) {
+            return null;
+        }
+
         return FCoupon::loadByCodice($codice);
     }
 
@@ -63,6 +81,10 @@ class CGestioneAgenda
         int $idPrenotazione,
         ?string $codiceCoupon = null
     ): ?array {
+        if (!$this->isProprietarioAutenticato()) {
+            return null;
+        }
+
         $prenotazione = FPrenotazione::load($idPrenotazione);
         if (!$this->appuntamentoChiudibile($prenotazione)) {
             return null;
@@ -75,6 +97,10 @@ class CGestioneAgenda
         int $idPrenotazione,
         ?string $codiceCoupon = null
     ): bool {
+        if (!$this->isProprietarioAutenticato()) {
+            return false;
+        }
+
         $connection = FConnectionDB::connect();
         $connection->beginTransaction();
 
@@ -131,13 +157,22 @@ class CGestioneAgenda
             return false;
         }
 
-        // TODO email, soltanto dopo commit, se $nuovoCoupon !== null:
-        // premio/traguardo, valore, codice, visibile nell'account e usabile in salone.
+        if ($nuovoCoupon !== null) {
+            try {
+                FEmail::nuovoCouponFedelta($nuovoCoupon);
+            } catch (Throwable $e) {
+                error_log('HairBooking: errore email nuovo coupon fedelta: ' . $e->getMessage());
+            }
+        }
         return true;
     }
 
     public function segnaNoShow(int $idPrenotazione): bool
     {
+        if (!$this->isProprietarioAutenticato()) {
+            return false;
+        }
+
         $connection = FConnectionDB::connect();
         $connection->beginTransaction();
 
@@ -174,8 +209,27 @@ class CGestioneAgenda
             return false;
         }
 
-        // TODO email dopo commit solo se $terzoNoShow: sospensione e penalità credito.
+        if ($terzoNoShow) {
+            try {
+                FEmail::sospensioneTerzoNoShow($cliente);
+            } catch (Throwable $e) {
+                error_log('HairBooking: errore email sospensione terzo no-show: ' . $e->getMessage());
+            }
+        }
         return true;
+    }
+
+    private function isProprietarioAutenticato(): bool
+    {
+        $idUtente = FSessione::getIdUtenteAutenticato();
+
+        if ($idUtente === null) {
+            return false;
+        }
+
+        $utente = FUtente::load($idUtente);
+
+        return $utente !== null && $utente->isProprietario();
     }
 
     private function appuntamentoChiudibile(?EPrenotazione $prenotazione): bool
@@ -215,6 +269,10 @@ class CGestioneAgenda
     public function annullaAppuntamentoPerChiusura(
         int $idPrenotazione
     ): bool {
+        if (!$this->isProprietarioAutenticato()) {
+            return false;
+        }
+
         $prenotazione =
             FPrenotazione::load(
                 $idPrenotazione
@@ -279,22 +337,19 @@ class CGestioneAgenda
              * sta chiudendo quella fascia.
              */
             $connection->commit();
-
-            /*
-             * TODO email dopo commit
-             * al cliente:
-             *
-             * "Il salone ha annullato il tuo
-             * appuntamento. Sei già stato
-             * contattato dal parrucchiere."
-             */
-
-            return true;
         } catch (Throwable $e) {
             $connection->rollBack();
 
             return false;
         }
+
+        try {
+            FEmail::cancellazioneProprietario($prenotazione);
+        } catch (Throwable $e) {
+            error_log('HairBooking: errore email cancellazione proprietario: ' . $e->getMessage());
+        }
+
+        return true;
     }
 
     private function generaCouponFedeltaSeSpetta(

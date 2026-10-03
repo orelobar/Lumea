@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FServizio.class.php';
 require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
@@ -12,6 +13,10 @@ class CGestioneListaAttesa
     public function richiestaAttivaPerCliente(
         int $idCliente
     ): ?EListaAttesa {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return null;
+        }
+
         $cliente = FUtente::load($idCliente);
 
         if ($cliente === null) {
@@ -51,6 +56,10 @@ class CGestioneListaAttesa
         int $idCliente,
         int $idRichiesta
     ): ?string {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return null;
+        }
+
         $richiesta =
             FListaAttesa::load(
                 $idRichiesta
@@ -87,6 +96,10 @@ class CGestioneListaAttesa
         string $dataDesiderata,
         string $oraDesiderata
     ): ?EListaAttesa {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return null;
+        }
+
         $cliente =
             FUtente::load(
                 $idCliente
@@ -286,6 +299,10 @@ class CGestioneListaAttesa
         int $idCliente,
         int $idRichiesta
     ): bool {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return false;
+        }
+
         $richiesta =
             FListaAttesa::load(
                 $idRichiesta
@@ -322,6 +339,19 @@ class CGestioneListaAttesa
         return FListaAttesa::update(
             $richiesta
         );
+    }
+
+    private function isClienteAutenticato(int $idCliente): bool
+    {
+        $idUtente = FSessione::getIdUtenteAutenticato();
+
+        if ($idUtente === null || $idUtente !== $idCliente) {
+            return false;
+        }
+
+        $utente = FUtente::load($idUtente);
+
+        return $utente !== null && $utente->isCliente();
     }
 
     private function prenotazioniAttiveCliente(

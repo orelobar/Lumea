@@ -1,11 +1,11 @@
 <?php
 
+require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Foundation/FConnectionDB.class.php';
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
 require_once __DIR__ . '/../Foundation/FListaAttesa.class.php';
 require_once __DIR__ . '/../Foundation/FPagamento.class.php';
-
 
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 require_once __DIR__ . '/../Entity/EListaAttesa.class.php';
@@ -16,6 +16,10 @@ class CGestioneAppuntamenti
     public function appuntamentoAttivoPerCliente(
         int $idCliente
     ): ?EPrenotazione {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return null;
+        }
+
         $cliente =
             FUtente::load(
                 $idCliente
@@ -52,6 +56,10 @@ class CGestioneAppuntamenti
     public function storicoPrenotazioniCliente(
         int $idCliente
     ): array {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return [];
+        }
+
         $cliente =
             FUtente::load(
                 $idCliente
@@ -90,18 +98,21 @@ class CGestioneAppuntamenti
 
     public function storicoPagamentiCliente(int $idCliente): array
     {
-        return FPagamento::loadByCliente($idCliente);
-    }
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return [];
+        }
 
-    public function couponCliente(int $idCliente): array
-    {
-        return FCoupon::loadByCliente($idCliente);
+        return FPagamento::loadByCliente($idCliente);
     }
 
     public function puoAnnullareOnline(
         int $idCliente,
         int $idPrenotazione
     ): bool {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return false;
+        }
+
         $prenotazione =
             FPrenotazione::load(
                 $idPrenotazione
@@ -138,6 +149,10 @@ class CGestioneAppuntamenti
         int $idCliente,
         int $idPrenotazione
     ): ?EPrenotazione {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return null;
+        }
+
         $cliente =
             FUtente::load(
                 $idCliente
@@ -246,6 +261,10 @@ class CGestioneAppuntamenti
         int $idCliente,
         int $idPrenotazione
     ): ?EServizio {
+        if (!$this->isClienteAutenticato($idCliente)) {
+            return null;
+        }
+
         $cliente =
             FUtente::load(
                 $idCliente
@@ -338,6 +357,19 @@ class CGestioneAppuntamenti
         }
 
         return $servizio;
+    }
+
+    private function isClienteAutenticato(int $idCliente): bool
+    {
+        $idUtente = FSessione::getIdUtenteAutenticato();
+
+        if ($idUtente === null || $idUtente !== $idCliente) {
+            return false;
+        }
+
+        $utente = FUtente::load($idUtente);
+
+        return $utente !== null && $utente->isCliente();
     }
 
     private function assegnaPrimaRichiestaValida(

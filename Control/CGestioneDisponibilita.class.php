@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../Foundation/FUtente.class.php';
+require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
 require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
 
@@ -11,6 +13,10 @@ class CGestioneDisponibilita
     public function fascePerData(
         string $data
     ): array {
+        if (!$this->isProprietarioAutenticato()) {
+            return [];
+        }
+
         return FDisponibilita::loadByData(
             $data
         );
@@ -21,6 +27,10 @@ class CGestioneDisponibilita
         string $oraInizio,
         string $oraFine
     ): ?EDisponibilita {
+        if (!$this->isProprietarioAutenticato()) {
+            return null;
+        }
+
         $oraInizioNormalizzata =
             $this->normalizzaOra(
                 $oraInizio
@@ -95,6 +105,10 @@ class CGestioneDisponibilita
         string $nuovaOraInizio,
         string $nuovaOraFine
     ): array {
+        if (!$this->isProprietarioAutenticato()) {
+            return [];
+        }
+
         $fascia =
             FDisponibilita::load(
                 $idDisponibilita
@@ -230,6 +244,10 @@ class CGestioneDisponibilita
         string $oraInizio,
         string $oraFine
     ): bool {
+        if (!$this->isProprietarioAutenticato()) {
+            return false;
+        }
+
         $fascia =
             FDisponibilita::load(
                 $idDisponibilita
@@ -323,6 +341,10 @@ class CGestioneDisponibilita
     public function prenotazioniCoinvolteEliminazione(
         int $idDisponibilita
     ): array {
+        if (!$this->isProprietarioAutenticato()) {
+            return [];
+        }
+
         $fascia =
             FDisponibilita::load(
                 $idDisponibilita
@@ -400,6 +422,10 @@ class CGestioneDisponibilita
     public function eliminaFascia(
         int $idDisponibilita
     ): bool {
+        if (!$this->isProprietarioAutenticato()) {
+            return false;
+        }
+
         $fascia =
             FDisponibilita::load(
                 $idDisponibilita
@@ -430,6 +456,19 @@ class CGestioneDisponibilita
         return FDisponibilita::delete(
             $idDisponibilita
         );
+    }
+
+    private function isProprietarioAutenticato(): bool
+    {
+        $idUtente = FSessione::getIdUtenteAutenticato();
+
+        if ($idUtente === null) {
+            return false;
+        }
+
+        $utente = FUtente::load($idUtente);
+
+        return $utente !== null && $utente->isProprietario();
     }
 
     private function esisteSovrapposizioneFasce(
