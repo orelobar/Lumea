@@ -90,6 +90,18 @@ class EPrenotazione
         return $this->stato;
     }
 
+    /** Intervalli adiacenti sono consentiti; una sovrapposizione anche parziale no. */
+    public function siSovrapponeA(string $data, string $ora, int $durata): bool
+    {
+        if ($this->stato !== 'prenotata' || $this->data !== $data) {
+            return false;
+        }
+        $inizio = (int) substr($this->ora, 0, 2) * 60 + (int) substr($this->ora, 3, 2);
+        $inizioRichiesta = (int) substr($ora, 0, 2) * 60 + (int) substr($ora, 3, 2);
+        return $inizioRichiesta < $inizio + $this->durata
+            && $inizioRichiesta + $durata > $inizio;
+    }
+
     public function completa(): void
     {
         if ($this->stato === "prenotata") {

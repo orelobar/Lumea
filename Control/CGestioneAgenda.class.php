@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../View/VAgendaProprietario.class.php';
+require_once __DIR__ . '/../View/VAgendaSetteGiorniProprietario.class.php';
+require_once __DIR__ . '/CGestioneAppuntamenti.class.php';
 
 require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Foundation/FConnectionDB.class.php';
@@ -7,6 +10,7 @@ require_once __DIR__ . '/../Foundation/FPagamento.class.php';
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FCoupon.class.php';
 require_once __DIR__ . '/../Foundation/FEmail.class.php';
+require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
 
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 require_once __DIR__ . '/../Entity/EPagamento.class.php';
@@ -15,6 +19,143 @@ require_once __DIR__ . '/../Entity/EUtente.class.php';
 
 class CGestioneAgenda
 {
+private function richiediProprietario(): void
+    {
+        if (!$this->isProprietarioAutenticato()) {
+            header('Location: index.php');
+            exit;
+        }
+    }
+
+    public function mostraAgenda(array $request = []): void
+    {
+        $this->richiediProprietario();
+        $get = $request['get'] ?? [];
+        $data = is_string($get['data'] ?? null) ? $get['data'] : date('Y-m-d');
+        if (isset($get['giorno'], $get['mese'], $get['anno'])
+            && ctype_digit((string) $get['giorno'])
+            && strlen((string) $get['giorno']) <= 2
+            && ctype_digit((string) $get['mese'])
+            && ctype_digit((string) $get['anno'])
+            && strlen((string) $get['anno']) === 4
+            && checkdate((int) $get['mese'], (int) $get['giorno'], (int) $get['anno'])) {
+            $data = sprintf('%04d-%02d-%02d',
+                (int) $get['anno'], (int) $get['mese'], (int) $get['giorno']);
+        }
+        $giorno = DateTimeImmutable::createFromFormat('!Y-m-d', $data);
+        if ($giorno === false || $giorno->format('Y-m-d') !== $data) {
+            $data = date('Y-m-d');
+        }
+        $righe = [];
+        foreach ($this->agendaPerData($data) as $prenotazione) {
+            $righe[] = [
+                'prenotazione' => $prenotazione,
+                'puo_chiudere' => $this->appuntamentoChiudibile($prenotazione),
+                'puo_annullare' => $this->appuntamentoAnnullabileDalProprietario($prenotazione),
+                'pagamento' => FPagamento::loadByPrenotazione($prenotazione->getId())
+            ];
+        }
+        (new VAgendaProprietario())->mostraAgenda([
+            'data' => $data, 'righe' => $righe,
+            'fasce' => FDisponibilita::loadByData($data),
+            'messaggio' => ($get['esito'] ?? '') === 'salvato' ? 'Appuntamento aggiornato.' : null,
+            'errore' => isset($get['errore']) ? 'Operazione non riuscita. Controlla lo stato e l’orario dell’appuntamento e, se usato, il coupon del cliente.' : null
+        ]);
+    }
+
+    public function mostraAgendaSetteGiorni(array $request = []): void
+    {
+        $this->richiediProprietario();
+
+        $get = $request['get'] ?? [];
+        $dataInizio = is_string($get['data'] ?? null)
+            ? $get['data']
+            : date('Y-m-d');
+
+        $inizio = DateTimeImmutable::createFromFormat('!Y-m-d', $dataInizio);
+
+        if ($inizio === false || $inizio->format('Y-m-d') !== $dataInizio) {
+            $inizio = new DateTimeImmutable('today');
+            $dataInizio = $inizio->format('Y-m-d');
+        }
+
+        $giorni = [];
+        $totale = 0;
+
+        $dateAperte = FDisponibilita::loadDateAperte($dataInizio);
+        foreach ($dateAperte as $data) {
+            $giorno = new DateTimeImmutable($data);
+            $righe = [];
+
+            foreach ($this->agendaPerData($data) as $prenotazione) {
+                $righe[] = [
+                    'prenotazione' => $prenotazione
+                ];
+            }
+
+            $totale += count($righe);
+            $giorni[] = [
+                'data' => $data,
+                'etichetta' => $this->etichettaDataAgenda($giorno),
+                'oggi' => $data === date('Y-m-d'),
+                'righe' => $righe
+            ];
+        }
+
+        (new VAgendaSetteGiorniProprietario())->mostraAgenda([
+            'data_inizio' => $dataInizio,
+            'data_fine' => $dateAperte ? $dateAperte[count($dateAperte) - 1] : $dataInizio,
+            'giorni' => $giorni,
+            'totale_appuntamenti' => $totale
+        ]);
+    }
+
+    public function gestisciChiusuraAppuntamento(array $request): void
+    {
+        $this->richiediProprietario();
+        $post = $request['post'] ?? [];
+        $coupon = is_string($post['coupon'] ?? null) ? trim($post['coupon']) : '';
+        $this->esitoAgenda($request, $this->chiudiAppuntamento(
+            (int) ($post['id_prenotazione'] ?? 0), $coupon === '' ? null : $coupon
+        ));
+    }
+
+    public function gestisciAssenza(array $request): void
+    {
+        $this->richiediProprietario();
+        $this->esitoAgenda($request, $this->segnaNoShow((int) ($request['post']['id_prenotazione'] ?? 0)));
+    }
+
+    public function gestisciAnnullamentoProprietario(array $request): void
+    {
+        $this->richiediProprietario();
+        $this->esitoAgenda($request, $this->annullaAppuntamentoPerChiusura((int) ($request['post']['id_prenotazione'] ?? 0)));
+    }
+
+    private function esitoAgenda(array $request, bool $ok): void
+    {
+        $data = $request['post']['data'] ?? date('Y-m-d');
+        $data = is_string($data) ? $data : date('Y-m-d');
+        $ritornoAppuntamentiOggi = ($request['post']['ritorno'] ?? '') === 'appuntamenti_oggi';
+
+        if ($ritornoAppuntamentiOggi) {
+            $pagina = 'appuntamenti_oggi';
+            $filtro = is_string($request['post']['filtro_ritorno'] ?? null)
+                ? $request['post']['filtro_ritorno']
+                : '';
+
+            if (in_array($filtro, ['da_svolgere', 'completati', 'assenze'], true)) {
+                $pagina .= '&filtro=' . rawurlencode($filtro);
+            }
+        } else {
+            $pagina = 'agenda&data=' . rawurlencode($data);
+        }
+
+        header('Location: index.php?pagina=' . $pagina . ($ok ? '&esito=salvato' : '&errore=operazione'));
+        exit;
+    }
+
+
     public function agendaPerData(
         string $data
     ): array {
@@ -105,6 +246,7 @@ class CGestioneAgenda
         $connection->beginTransaction();
 
         try {
+            FConnectionDB::bloccaCalendario();
             // Blocca appuntamento e cliente prima di leggere stato e contatori.
             $prenotazione = FPrenotazione::loadPerAggiornamento($idPrenotazione);
             if (!$this->appuntamentoChiudibile($prenotazione)) {
@@ -161,7 +303,7 @@ class CGestioneAgenda
             try {
                 FEmail::nuovoCouponFedelta($nuovoCoupon);
             } catch (Throwable $e) {
-                error_log('HairBooking: errore email nuovo coupon fedelta: ' . $e->getMessage());
+                error_log('Lumèa: errore email nuovo coupon fedelta: ' . $e->getMessage());
             }
         }
         return true;
@@ -177,6 +319,7 @@ class CGestioneAgenda
         $connection->beginTransaction();
 
         try {
+            FConnectionDB::bloccaCalendario();
             $prenotazione = FPrenotazione::loadPerAggiornamento($idPrenotazione);
             if (!$this->appuntamentoChiudibile($prenotazione)) {
                 $connection->rollBack();
@@ -213,7 +356,7 @@ class CGestioneAgenda
             try {
                 FEmail::sospensioneTerzoNoShow($cliente);
             } catch (Throwable $e) {
-                error_log('HairBooking: errore email sospensione terzo no-show: ' . $e->getMessage());
+                error_log('Lumèa: errore email sospensione terzo no-show: ' . $e->getMessage());
             }
         }
         return true;
@@ -237,6 +380,13 @@ class CGestioneAgenda
         return $prenotazione !== null
             && $prenotazione->getStato() === 'prenotata'
             && $this->orarioAppuntamentoRaggiunto($prenotazione);
+    }
+
+    private function appuntamentoAnnullabileDalProprietario(?EPrenotazione $prenotazione): bool
+    {
+        return $prenotazione !== null
+            && $prenotazione->getStato() === 'prenotata'
+            && !$this->orarioAppuntamentoRaggiunto($prenotazione);
     }
 
     private function calcolaPagamento(
@@ -278,33 +428,28 @@ class CGestioneAgenda
                 $idPrenotazione
             );
 
-        if ($prenotazione === null) {
-            return false;
-        }
-
-        if (
-            $prenotazione->getStato()
-            !== 'prenotata'
-        ) {
+        if (!$this->appuntamentoAnnullabileDalProprietario($prenotazione)) {
             return false;
         }
 
         /*
          * Nessuna regola delle 48 ore.
          *
-         * Questa è una cancellazione
-         * effettuata dal proprietario
-         * per necessità del salone.
+         * L'annullamento libera l'appuntamento;
+         * non modifica le fasce di apertura del salone.
          */
         $connection =
             FConnectionDB::connect();
 
         $connection->beginTransaction();
 
+        $assegnazione = null;
+
         try {
+            FConnectionDB::bloccaCalendario();
             // Una cancellazione del proprietario può concorrere con la chiusura.
             $prenotazione = FPrenotazione::loadPerAggiornamento($idPrenotazione);
-            if ($prenotazione === null || $prenotazione->getStato() !== 'prenotata') {
+            if (!$this->appuntamentoAnnullabileDalProprietario($prenotazione)) {
                 $connection->rollBack();
                 return false;
             }
@@ -326,19 +471,19 @@ class CGestioneAgenda
                 );
             }
 
-            /*
-             * IMPORTANTE:
-             *
-             * non richiamiamo nessuna
-             * gestione FIFO.
-             *
-             * Il posto non è diventato
-             * disponibile: il salone
-             * sta chiudendo quella fascia.
-             */
-            $connection->commit();
+            // La stessa coda FIFO vale per gli annullamenti di entrambi i ruoli.
+            // La procedura verifica anche che il salone sia ancora aperto.
+            $assegnazione = (new CGestioneAppuntamenti())
+                ->assegnaPrimaRichiestaValida($prenotazione);
+
+            if (!$connection->commit()) {
+                throw new RuntimeException('Annullamento non confermato.');
+            }
         } catch (Throwable $e) {
-            $connection->rollBack();
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
+            error_log('Lumèa, annullamento proprietario: ' . $e->getMessage());
 
             return false;
         }
@@ -346,7 +491,18 @@ class CGestioneAgenda
         try {
             FEmail::cancellazioneProprietario($prenotazione);
         } catch (Throwable $e) {
-            error_log('HairBooking: errore email cancellazione proprietario: ' . $e->getMessage());
+            error_log('Lumèa: errore email cancellazione proprietario: ' . $e->getMessage());
+        }
+
+        if ($assegnazione !== null) {
+            try {
+                FEmail::assegnazioneListaAttesa(
+                    $assegnazione['prenotazione'],
+                    $assegnazione['alternativa']
+                );
+            } catch (Throwable $e) {
+                error_log('Lumèa: errore email lista attesa: ' . $e->getMessage());
+            }
         }
 
         return true;
@@ -392,7 +548,7 @@ class CGestioneAgenda
         }
 
         $codice =
-            'HB-'
+            'LM-'
             . $cliente->getId()
             . '-'
             . $numeroCompletamenti;
@@ -419,24 +575,54 @@ class CGestioneAgenda
         return $coupon;
     }
 
+    private function etichettaDataAgenda(DateTimeImmutable $data): string
+    {
+        $giorni = [
+            1 => 'Lunedì',
+            2 => 'Martedì',
+            3 => 'Mercoledì',
+            4 => 'Giovedì',
+            5 => 'Venerdì',
+            6 => 'Sabato',
+            7 => 'Domenica'
+        ];
+        $mesi = [
+            1 => 'gennaio',
+            2 => 'febbraio',
+            3 => 'marzo',
+            4 => 'aprile',
+            5 => 'maggio',
+            6 => 'giugno',
+            7 => 'luglio',
+            8 => 'agosto',
+            9 => 'settembre',
+            10 => 'ottobre',
+            11 => 'novembre',
+            12 => 'dicembre'
+        ];
+
+        return sprintf(
+            '%s %d %s',
+            $giorni[(int) $data->format('N')],
+            (int) $data->format('j'),
+            $mesi[(int) $data->format('n')]
+        );
+    }
+
     private function orarioAppuntamentoRaggiunto(
         EPrenotazione $prenotazione
     ): bool {
-        $dataOraAppuntamento =
-            strtotime(
-                $prenotazione->getData()
-                    . ' '
-                    . $prenotazione->getOra()
-            );
+        $fusoOrario = new DateTimeZone('Europe/Rome');
+        $dataOraAppuntamento = DateTimeImmutable::createFromFormat(
+            '!Y-m-d H:i:s',
+            $prenotazione->getData() . ' ' . $prenotazione->getOra(),
+            $fusoOrario
+        );
 
-        if (
-            $dataOraAppuntamento === false
-        ) {
+        if ($dataOraAppuntamento === false) {
             return false;
         }
 
-        return
-            $dataOraAppuntamento
-            <= time();
+        return $dataOraAppuntamento <= new DateTimeImmutable('now', $fusoOrario);
     }
 }

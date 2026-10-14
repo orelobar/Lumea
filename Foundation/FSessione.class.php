@@ -24,10 +24,20 @@ class FSessione
             'session.gc_maxlifetime',
             (string) self::DURATA_MASSIMA
         );
+        ini_set('session.use_strict_mode', '1');
 
-        session_set_cookie_params(
-            self::DURATA_MASSIMA
-        );
+        // Il cookie non e' accessibile da JavaScript e usa SameSite=Lax.
+        $parametri = session_get_cookie_params();
+        session_set_cookie_params([
+            'lifetime' => self::DURATA_MASSIMA,
+            'path' => $parametri['path'],
+            'domain' => $parametri['domain'],
+            'secure' => $parametri['secure'] || (
+                !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'
+            ),
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
 
         if (!session_start()) {
             throw new RuntimeException(
@@ -65,6 +75,11 @@ class FSessione
         }
 
         self::avvia();
+
+        // Nuovo ID dopo il login: impedisce di riutilizzare il vecchio ID.
+        if (!session_regenerate_id(true)) {
+            throw new RuntimeException('Impossibile aggiornare la sessione.');
+        }
 
         $durata =
             $ruolo === 'proprietario'
@@ -140,15 +155,14 @@ class FSessione
 
         session_destroy();
 
-        setcookie(
-            $nomeSessione,
-            '',
-            time() - 3600,
-            $parametriCookie['path'],
-            $parametriCookie['domain'],
-            $parametriCookie['secure'],
-            $parametriCookie['httponly']
-        );
+        setcookie($nomeSessione, '', [
+            'expires' => time() - 3600,
+            'path' => $parametriCookie['path'],
+            'domain' => $parametriCookie['domain'],
+            'secure' => $parametriCookie['secure'],
+            'httponly' => $parametriCookie['httponly'],
+            'samesite' => $parametriCookie['samesite'] ?: 'Lax'
+        ]);
     }
 
     private static function aggiornaCookieSessione(
@@ -157,14 +171,13 @@ class FSessione
         $parametriCookie =
             session_get_cookie_params();
 
-        setcookie(
-            session_name(),
-            session_id(),
-            time() + $durata,
-            $parametriCookie['path'],
-            $parametriCookie['domain'],
-            $parametriCookie['secure'],
-            $parametriCookie['httponly']
-        );
+        setcookie(session_name(), session_id(), [
+            'expires' => time() + $durata,
+            'path' => $parametriCookie['path'],
+            'domain' => $parametriCookie['domain'],
+            'secure' => $parametriCookie['secure'],
+            'httponly' => $parametriCookie['httponly'],
+            'samesite' => $parametriCookie['samesite'] ?: 'Lax'
+        ]);
     }
 }

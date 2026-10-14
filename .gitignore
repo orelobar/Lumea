@@ -1,1 +1,30 @@
+# macOS e file temporanei
 .DS_Store
+**/.DS_Store
+._*
+__MACOSX/
+.AppleDouble/
+
+# Backup, esportazioni locali, log e configurazioni riservate
+_backup_codex/
+_backup*/
+backup*/
+backups/
+*.bak
+*.log
+*.zip
+*.tar
+*.tar.gz
+*.sql.gz
+.env
+.env.*
+!.env.example
+/database/*backup*.sql
+/database/*dump*.sql
+/database/*export*.sql
+
+# File di compilazione/cache Smarty; conservare le cartelle necessarie
+/View/smarty/templates_c/*
+/View/smarty/cache/*
+!/View/smarty/templates_c/.gitkeep
+!/View/smarty/cache/.gitkeep

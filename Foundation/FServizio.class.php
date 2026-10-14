@@ -157,8 +157,55 @@ class FServizio
     }
 
 
+    public static function isEliminabile(int $id): bool
+    {
+        if (!self::exist($id)) {
+            return false;
+        }
+
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT
+                NOT EXISTS (
+                    SELECT 1
+                    FROM prenotazioni
+                    WHERE id_servizio = :id_prenotazioni
+                )
+                AND
+                NOT EXISTS (
+                    SELECT 1
+                    FROM lista_attesa
+                    WHERE id_servizio = :id_lista_attesa
+                )
+                AS eliminabile
+        ";
+
+        $statement = $connection->prepare($query);
+
+        $statement->execute([
+            ':id_prenotazioni' => $id,
+            ':id_lista_attesa' => $id
+        ]);
+
+        $result = $statement->fetch(
+            PDO::FETCH_ASSOC
+        );
+
+        if ($result === false) {
+            return false;
+        }
+
+        return (bool) $result['eliminabile'];
+    }
+
+
     public static function delete(int $id): bool
     {
+        if (!self::isEliminabile($id)) {
+            return false;
+        }
+
         $connection = FConnectionDB::connect();
 
         $query = "
@@ -168,9 +215,13 @@ class FServizio
 
         $statement = $connection->prepare($query);
 
-        return $statement->execute([
-            ':id' => $id
-        ]);
+        try {
+            return $statement->execute([
+                ':id' => $id
+            ]);
+        } catch (PDOException $e) {
+            return false;
+        }
     }
 
 

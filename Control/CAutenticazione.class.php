@@ -2,9 +2,81 @@
 
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FSessione.class.php';
+require_once __DIR__ . '/../View/VAutenticazione.class.php';
 
 class CAutenticazione
 {
+    /**
+     * Prima del dispatch, invalida le sessioni di account eliminati.
+     * Non si occupa direttamente della persistenza e non accede
+     * a $_SESSION: usa soltanto FUtente e FSessione.
+     */
+    public static function verificaSessioneCorrente(): void
+    {
+        $idUtente = FSessione::getIdUtenteAutenticato();
+
+        if ($idUtente !== null && !FUtente::exist($idUtente)) {
+            FSessione::logout();
+        }
+    }
+
+    public function mostraLogin(array $request = []): void
+    {
+        if (FSessione::isAutenticato()) {
+            $this->redirect('index.php');
+        }
+
+        $view = new VAutenticazione();
+
+        $view->mostraLogin();
+    }
+
+
+    public function gestisciLogin(array $request): void
+    {
+        if (FSessione::isAutenticato()) {
+            $this->redirect('index.php');
+        }
+
+        $post =
+            $request['post']
+            ?? [];
+
+        $risultato =
+            $this->login(
+                $post['email'] ?? '',
+                $post['password'] ?? ''
+            );
+
+        if (!$risultato['successo']) {
+            $view =
+                new VAutenticazione();
+
+            $view->mostraLogin(
+                $risultato['errori'],
+                $risultato['valori']
+            );
+
+            return;
+        }
+
+        $this->redirect(
+            'index.php?pagina=dashboard'
+        );
+    }
+
+
+    public function gestisciLogout(
+        array $request = []
+    ): void {
+        $this->logout();
+
+        $this->redirect(
+            'index.php'
+        );
+    }
+
+
     public function login(
         string $email,
         string $password
@@ -21,9 +93,12 @@ class CAutenticazione
             ];
         }
 
-        $email = strtolower(
-            trim($email)
-        );
+        $email =
+            strtolower(
+                trim(
+                    $email
+                )
+            );
 
         $valori = [
             'email' => $email
@@ -104,8 +179,20 @@ class CAutenticazione
         ];
     }
 
+
     public function logout(): void
     {
         FSessione::logout();
+    }
+
+
+    private function redirect(
+        string $url
+    ): void {
+        header(
+            'Location: ' . $url
+        );
+
+        exit;
     }
 }

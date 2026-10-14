@@ -20,7 +20,14 @@ class EServizio
         $this->id = $id;
         $this->nome = $nome;
         $this->categoria = $categoria;
-        $this->prezzo = $prezzo;
+
+        if (!is_finite($prezzo) || $prezzo < 0 || $prezzo > 999.99) {
+            throw new InvalidArgumentException(
+                "Il prezzo del servizio deve essere compreso tra 0 e 999,99 euro."
+            );
+        }
+
+        $this->prezzo = round($prezzo, 2);
 
         if ($durata <= 0 || $durata % 15 !== 0) {
             throw new InvalidArgumentException(
@@ -69,7 +76,13 @@ class EServizio
 
     public function setPrezzo(float $prezzo): void
     {
-        $this->prezzo = $prezzo;
+        if (!is_finite($prezzo) || $prezzo < 0 || $prezzo > 999.99) {
+            throw new InvalidArgumentException(
+                "Il prezzo del servizio deve essere compreso tra 0 e 999,99 euro."
+            );
+        }
+
+        $this->prezzo = round($prezzo, 2);
     }
 
     public function getDurata(): int

@@ -6,17 +6,206 @@ require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
 require_once __DIR__ . '/../Foundation/FListaAttesa.class.php';
 require_once __DIR__ . '/../Foundation/FPagamento.class.php';
+require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
+require_once __DIR__ . '/../Foundation/FEmail.class.php';
 
+require_once __DIR__ . '/../Entity/EUtente.class.php';
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 require_once __DIR__ . '/../Entity/EListaAttesa.class.php';
 require_once __DIR__ . '/../Entity/EServizio.class.php';
 
+require_once __DIR__ . '/CGestioneListaAttesa.class.php';
+require_once __DIR__ . '/CGestionePrenotazione.class.php';
+
+require_once __DIR__ . '/../View/VAppuntamentiCliente.class.php';
+
+
 class CGestioneAppuntamenti
 {
+    public function mostraPrenotazioniCliente(
+        array $request = []
+    ): void {
+        $cliente = $this->getClienteAutenticato();
+
+        if (
+            $cliente === null
+            ||
+            $cliente->getId() === null
+        ) {
+            $this->redirect('index.php');
+        }
+
+        $idCliente = $cliente->getId();
+
+        $appuntamentoAttivo =
+            $this->appuntamentoAttivoPerCliente(
+                $idCliente
+            );
+
+        $storico =
+            $this->storicoPrenotazioniCliente(
+                $idCliente
+            );
+
+        $puoAnnullare = false;
+
+        if (
+            $appuntamentoAttivo !== null
+            &&
+            $appuntamentoAttivo->getId() !== null
+        ) {
+            $puoAnnullare =
+                $this->puoAnnullareOnline(
+                    $idCliente,
+                    $appuntamentoAttivo->getId()
+                );
+        }
+
+        $gestioneListaAttesa =
+            new CGestioneListaAttesa();
+
+        $richiestaAttesa =
+            $gestioneListaAttesa
+            ->richiestaAttivaPerCliente(
+                $idCliente
+            );
+
+        $get = $request['get'] ?? [];
+
+        $ripetibili = [];
+
+        foreach (
+            $storico
+            as $prenotazioneStorica
+        ) {
+            if (
+                $this->servizioDaRiprenotare(
+                    $idCliente,
+                    $prenotazioneStorica->getId()
+                ) !== null
+            ) {
+                $ripetibili[$prenotazioneStorica->getId()] = true;
+            }
+        }
+
+        $appuntamentoAttivoDettaglio = $appuntamentoAttivo === null
+            ? null
+            : $this->creaRigaPrenotazioneCliente($appuntamentoAttivo);
+        $storicoDettagli = [];
+
+        foreach ($storico as $prenotazioneStorica) {
+            $storicoDettagli[] = $this->creaRigaPrenotazioneCliente($prenotazioneStorica);
+        }
+
+        $view = new VAppuntamentiCliente();
+        $view->mostraAppuntamenti(
+            $appuntamentoAttivo,
+            $storico,
+            $puoAnnullare,
+            $richiestaAttesa,
+            $this->getMessaggioPrenotazioni($get['esito'] ?? ''),
+            $this->getErrorePrenotazioni($get['errore'] ?? ''),
+            $ripetibili,
+            $appuntamentoAttivoDettaglio,
+            $storicoDettagli,
+            $cliente->isPrenotazioniOnlineAbilitate()
+        );
+    }
+
+
+    public function gestisciAnnullamentoPrenotazione(
+        array $request
+    ): void {
+        $cliente =
+            $this->getClienteAutenticato();
+
+        if (
+            $cliente === null
+            ||
+            $cliente->getId() === null
+        ) {
+            $this->redirect('index.php');
+        }
+
+        $post = $request['post'] ?? [];
+
+        $prenotazione =
+            $this->annullaPrenotazione(
+                $cliente->getId(),
+                (int) (
+                    $post['id_prenotazione']
+                    ?? 0
+                )
+            );
+
+        if ($prenotazione !== null) {
+            $this->redirect(
+                'index.php?pagina=prenotazioni&esito=annullata'
+            );
+        }
+
+        $this->redirect(
+            'index.php?pagina=prenotazioni&errore=annullamento'
+        );
+    }
+
+
+    public function gestisciRipetiServizio(
+        array $request
+    ): void {
+        $cliente =
+            $this->getClienteAutenticato();
+
+        if (
+            $cliente === null
+            ||
+            $cliente->getId() === null
+        ) {
+            $this->redirect('index.php');
+        }
+
+        $get = $request['get'] ?? [];
+
+        $servizio =
+            $this->servizioDaRiprenotare(
+                $cliente->getId(),
+                (int) (
+                    $get['idPrenotazione']
+                    ?? 0
+                )
+            );
+
+        if (
+            $servizio === null
+            ||
+            $servizio->getId() === null
+        ) {
+            $this->redirect(
+                'index.php?pagina=prenotazioni&errore=ripeti'
+            );
+        }
+
+        $url =
+            'index.php?pagina=prenota'
+            . '&categoria='
+            . rawurlencode(
+                $servizio->getCategoria()
+            )
+            . '&servizio='
+            . $servizio->getId();
+
+        $this->redirect($url);
+    }
+
+
     public function appuntamentoAttivoPerCliente(
         int $idCliente
     ): ?EPrenotazione {
-        if (!$this->isClienteAutenticato($idCliente)) {
+        if (
+            !$this->isClienteAutenticato(
+                $idCliente
+            )
+        ) {
             return null;
         }
 
@@ -25,21 +214,18 @@ class CGestioneAppuntamenti
                 $idCliente
             );
 
-        if ($cliente === null) {
+        if (
+            $cliente === null
+            ||
+            !$cliente->isCliente()
+        ) {
             return null;
         }
-
-        if (!$cliente->isCliente()) {
-            return null;
-        }
-
-        $prenotazioni =
-            FPrenotazione::loadByCliente(
-                $idCliente
-            );
 
         foreach (
-            $prenotazioni
+            FPrenotazione::loadByCliente(
+                $idCliente
+            )
             as $prenotazione
         ) {
             if (
@@ -53,10 +239,15 @@ class CGestioneAppuntamenti
         return null;
     }
 
+
     public function storicoPrenotazioniCliente(
         int $idCliente
     ): array {
-        if (!$this->isClienteAutenticato($idCliente)) {
+        if (
+            !$this->isClienteAutenticato(
+                $idCliente
+            )
+        ) {
             return [];
         }
 
@@ -65,23 +256,20 @@ class CGestioneAppuntamenti
                 $idCliente
             );
 
-        if ($cliente === null) {
+        if (
+            $cliente === null
+            ||
+            !$cliente->isCliente()
+        ) {
             return [];
         }
-
-        if (!$cliente->isCliente()) {
-            return [];
-        }
-
-        $prenotazioni =
-            FPrenotazione::loadByCliente(
-                $idCliente
-            );
 
         $storico = [];
 
         foreach (
-            $prenotazioni
+            FPrenotazione::loadByCliente(
+                $idCliente
+            )
             as $prenotazione
         ) {
             if (
@@ -96,20 +284,34 @@ class CGestioneAppuntamenti
         return $storico;
     }
 
-    public function storicoPagamentiCliente(int $idCliente): array
-    {
-        if (!$this->isClienteAutenticato($idCliente)) {
+
+    public function storicoPagamentiCliente(
+        int $idCliente
+    ): array {
+        if (
+            !$this->isClienteAutenticato(
+                $idCliente
+            )
+        ) {
             return [];
         }
 
-        return FPagamento::loadByCliente($idCliente);
+        return
+            FPagamento::loadByCliente(
+                $idCliente
+            );
     }
+
 
     public function puoAnnullareOnline(
         int $idCliente,
         int $idPrenotazione
     ): bool {
-        if (!$this->isClienteAutenticato($idCliente)) {
+        if (
+            !$this->isClienteAutenticato(
+                $idCliente
+            )
+        ) {
             return false;
         }
 
@@ -145,60 +347,14 @@ class CGestioneAppuntamenti
             );
     }
 
+
     public function annullaPrenotazione(
         int $idCliente,
         int $idPrenotazione
     ): ?EPrenotazione {
-        if (!$this->isClienteAutenticato($idCliente)) {
-            return null;
-        }
-
-        $cliente =
-            FUtente::load(
+        if (
+            !$this->isClienteAutenticato(
                 $idCliente
-            );
-
-        if ($cliente === null) {
-            return null;
-        }
-
-        if (!$cliente->isCliente()) {
-            return null;
-        }
-
-        $prenotazione =
-            FPrenotazione::load(
-                $idPrenotazione
-            );
-
-        if ($prenotazione === null) {
-            return null;
-        }
-
-        if (
-            $prenotazione
-            ->getCliente()
-            ->getId()
-            !== $idCliente
-        ) {
-            return null;
-        }
-
-        if (
-            $prenotazione->getStato()
-            !== 'prenotata'
-        ) {
-            return null;
-        }
-
-        /*
-         * Cancellazione online consentita
-         * anche a ESATTAMENTE 48 ore.
-         */
-        if (
-            !$this->mancanoAlmeno48Ore(
-                $prenotazione->getData(),
-                $prenotazione->getOra()
             )
         ) {
             return null;
@@ -209,59 +365,109 @@ class CGestioneAppuntamenti
 
         $connection->beginTransaction();
 
-        try {
-            /*
-             * 1. Cancellazione della
-             * prenotazione del cliente.
-             */
-            $prenotazione->cancella();
+        $assegnazione = null;
 
-            $prenotazioneAggiornata =
-                FPrenotazione::update(
-                    $prenotazione
+        try {
+            FConnectionDB::bloccaCalendario();
+
+            $prenotazione =
+                FPrenotazione::loadPerAggiornamento(
+                    $idPrenotazione
                 );
 
-            if (!$prenotazioneAggiornata) {
-                throw new Exception(
-                    'Errore nella cancellazione della prenotazione.'
+            if (
+                $prenotazione === null
+                ||
+                $prenotazione
+                ->getCliente()
+                ->getId()
+                !== $idCliente
+                ||
+                $prenotazione->getStato()
+                !== 'prenotata'
+                ||
+                !$this->mancanoAlmeno48Ore(
+                    $prenotazione->getData(),
+                    $prenotazione->getOra()
+                )
+            ) {
+                $connection->rollBack();
+
+                return null;
+            }
+
+            $prenotazione->cancella();
+
+            if (
+                !FPrenotazione::update(
+                    $prenotazione
+                )
+            ) {
+                throw new RuntimeException(
+                    'Cancellazione non salvata.'
                 );
             }
 
             /*
-             * 2. Il posto è libero:
-             * controlliamo la lista d'attesa
-             * FIFO per servizio/data/ora.
+             * La cancellazione modifica il
+             * calendario. Prima del commit
+             * ricalcoliamo quindi la coda
+             * della giornata e assegniamo
+             * la prima richiesta FIFO che
+             * risulta davvero prenotabile.
              */
-            $this
-                ->assegnaPrimaRichiestaValida(
+            $assegnazione =
+                $this->assegnaPrimaRichiestaValida(
                     $prenotazione
                 );
 
             $connection->commit();
-
-            /*
-             * Restituiamo la prenotazione
-             * ormai cancellata.
-             *
-             * La View potrà usarla anche
-             * per mostrare subito:
-             *
-             * "Vuoi prenotare lo stesso
-             * servizio in un altro giorno?"
-             */
-            return $prenotazione;
         } catch (Throwable $e) {
-            $connection->rollBack();
+            if (
+                $connection->inTransaction()
+            ) {
+                $connection->rollBack();
+            }
+
+            error_log(
+                'Lumèa, annullamento: '
+                    . $e->getMessage()
+            );
 
             return null;
         }
+
+        /*
+         * L'email viene inviata soltanto
+         * dopo il commit della transazione.
+         */
+        if ($assegnazione !== null) {
+            try {
+                FEmail::assegnazioneListaAttesa(
+                    $assegnazione['prenotazione'],
+                    $assegnazione['alternativa']
+                );
+            } catch (Throwable $e) {
+                error_log(
+                    'Lumèa, email lista attesa: '
+                        . $e->getMessage()
+                );
+            }
+        }
+
+        return $prenotazione;
     }
+
 
     public function servizioDaRiprenotare(
         int $idCliente,
         int $idPrenotazione
     ): ?EServizio {
-        if (!$this->isClienteAutenticato($idCliente)) {
+        if (
+            !$this->isClienteAutenticato(
+                $idCliente
+            )
+        ) {
             return null;
         }
 
@@ -270,19 +476,14 @@ class CGestioneAppuntamenti
                 $idCliente
             );
 
-        if ($cliente === null) {
+        if (
+            $cliente === null
+            ||
+            !$cliente->isCliente()
+        ) {
             return null;
         }
 
-        if (!$cliente->isCliente()) {
-            return null;
-        }
-
-        /*
-         * Se è bloccato per no-show,
-         * non può avviare una nuova
-         * prenotazione online.
-         */
         if (
             !$cliente
                 ->isPrenotazioniOnlineAbilitate()
@@ -290,10 +491,6 @@ class CGestioneAppuntamenti
             return null;
         }
 
-        /*
-         * Non può riprenotare se possiede
-         * già un altro appuntamento attivo.
-         */
         if (
             $this->appuntamentoAttivoPerCliente(
                 $idCliente
@@ -320,15 +517,6 @@ class CGestioneAppuntamenti
             return null;
         }
 
-        /*
-         * Il tasto "Riprenota" nello
-         * storico compare solamente per:
-         *
-         * - completata
-         * - no-show
-         *
-         * NON per cancellata.
-         */
         if (
             !in_array(
                 $prenotazione->getStato(),
@@ -346,12 +534,6 @@ class CGestioneAppuntamenti
             $prenotazione
             ->getServizio();
 
-        /*
-         * Non possiamo riprenotare
-         * automaticamente un servizio
-         * che il proprietario ha
-         * disattivato.
-         */
         if (!$servizio->isAttivo()) {
             return null;
         }
@@ -359,41 +541,119 @@ class CGestioneAppuntamenti
         return $servizio;
     }
 
-    private function isClienteAutenticato(int $idCliente): bool
-    {
-        $idUtente = FSessione::getIdUtenteAutenticato();
 
-        if ($idUtente === null || $idUtente !== $idCliente) {
+    private function getClienteAutenticato(): ?EUtente
+    {
+        $idUtente =
+            FSessione
+            ::getIdUtenteAutenticato();
+
+        if ($idUtente === null) {
+            return null;
+        }
+
+        $utente =
+            FUtente::load(
+                $idUtente
+            );
+
+        if (
+            $utente === null
+            ||
+            !$utente->isCliente()
+        ) {
+            return null;
+        }
+
+        return $utente;
+    }
+
+
+    private function isClienteAutenticato(
+        int $idCliente
+    ): bool {
+        $idUtente =
+            FSessione
+            ::getIdUtenteAutenticato();
+
+        if (
+            $idUtente === null
+            ||
+            $idUtente !== $idCliente
+        ) {
             return false;
         }
 
-        $utente = FUtente::load($idUtente);
+        $utente =
+            FUtente::load(
+                $idUtente
+            );
 
-        return $utente !== null && $utente->isCliente();
+        return
+            $utente !== null
+            &&
+            $utente->isCliente();
     }
 
-    private function assegnaPrimaRichiestaValida(
+
+    /**
+     * Operazione condivisa dagli annullamenti cliente e proprietario.
+     * Il chiamante mantiene aperta la transazione e il blocco del calendario;
+     * invia l'eventuale notifica soltanto dopo il commit.
+     */
+    public function assegnaPrimaRichiestaValida(
         EPrenotazione $prenotazioneLiberata
-    ): ?EListaAttesa {
-        $servizio =
-            $prenotazioneLiberata
-            ->getServizio();
+    ): ?array {
+        if (!FConnectionDB::connect()->inTransaction()) {
+            throw new LogicException('L’assegnazione richiede una transazione attiva.');
+        }
+        FConnectionDB::bloccaCalendario();
+
+        $salvata = $prenotazioneLiberata->getId() === null
+            ? null
+            : FPrenotazione::loadPerAggiornamento($prenotazioneLiberata->getId());
+        if ($salvata === null || $salvata->getStato() !== 'cancellata') {
+            throw new LogicException('La prenotazione deve essere già cancellata.');
+        }
 
         $data =
-            $prenotazioneLiberata
-            ->getData();
+            $salvata->getData();
 
-        $ora =
-            $prenotazioneLiberata
-            ->getOra();
-
+        /*
+         * Prima il sistema cercava soltanto
+         * richieste con la stessa identica
+         * ora iniziale dell'appuntamento
+         * cancellato.
+         *
+         * Non è sufficiente quando i servizi
+         * hanno durate differenti.
+         *
+         * Ora carichiamo tutte le richieste
+         * attive di quella giornata in vero
+         * ordine FIFO e verifichiamo quale
+         * sia diventata realmente assegnabile.
+         */
         $coda =
-            FListaAttesa
-            ::loadAttiveByServizioDataOra(
-                $servizio->getId(),
-                $data,
-                $ora
+            FListaAttesa::loadAttiveByData(
+                $data
             );
+
+        /*
+         * Per la verifica finale riutilizziamo
+         * lo stesso algoritmo della prenotazione
+         * normale.
+         *
+         * Quindi valgono anche qui:
+         *
+         * - griglia iniziale ogni 30 minuti;
+         * - durata del servizio multipla di 15;
+         * - ricalcolo sui nuovi estremi dei
+         *   blocchi liberi;
+         * - nessun buco creato da orari
+         *   arbitrari.
+         */
+        $gestionePrenotazione =
+            new CGestionePrenotazione();
 
         foreach (
             $coda
@@ -404,10 +664,9 @@ class CGestioneAppuntamenti
             }
 
             /*
-             * La lista d'attesa non
-             * può più produrre una
-             * prenotazione quando
-             * siamo arrivati a 48 ore.
+             * Una richiesta resta assegnabile
+             * soltanto finché mancano più
+             * di 48 ore all'orario desiderato.
              */
             if (
                 !$this->mancanoPiuDi48Ore(
@@ -419,14 +678,13 @@ class CGestioneAppuntamenti
             ) {
                 $richiesta->scadi();
 
-                $aggiornata =
-                    FListaAttesa::update(
+                if (
+                    !FListaAttesa::update(
                         $richiesta
-                    );
-
-                if (!$aggiornata) {
-                    throw new Exception(
-                        'Errore nella scadenza della lista d\'attesa.'
+                    )
+                ) {
+                    throw new RuntimeException(
+                        "Errore nella scadenza della lista d'attesa."
                     );
                 }
 
@@ -436,13 +694,6 @@ class CGestioneAppuntamenti
             $cliente =
                 $richiesta->getCliente();
 
-            /*
-             * Se nel frattempo il cliente
-             * è stato bloccato dalle
-             * prenotazioni online,
-             * non gli assegniamo
-             * automaticamente il posto.
-             */
             if (
                 !$cliente
                     ->isPrenotazioniOnlineAbilitate()
@@ -450,92 +701,122 @@ class CGestioneAppuntamenti
                 continue;
             }
 
-            /*
-             * Controlliamo quante
-             * prenotazioni attive possiede
-             * in questo momento.
-             */
             $prenotazioniAttive =
                 $this->prenotazioniAttiveCliente(
                     $cliente->getId()
                 );
 
             /*
-             * Questa situazione viola
-             * la regola HairBooking.
+             * Protezione contro eventuali
+             * dati incoerenti.
              */
             if (
-                count($prenotazioniAttive)
+                count(
+                    $prenotazioniAttive
+                )
                 > 1
             ) {
                 continue;
             }
 
             $prenotazioneAlternativa =
-                null;
+                $prenotazioniAttive[0]
+                ?? null;
 
-            if (
-                count($prenotazioniAttive)
-                === 1
-            ) {
-                $prenotazioneAlternativa =
-                    $prenotazioniAttive[0];
-
-                /*
-                 * Deve essere realmente
-                 * un'alternativa:
-                 * stesso servizio.
-                 */
-                if (
-                    $prenotazioneAlternativa
-                    ->getServizio()
-                    ->getId()
-                    !==
-                    $richiesta
-                    ->getServizio()
-                    ->getId()
-                ) {
-                    continue;
-                }
-
-                $dataOraAlternativa =
-                    $prenotazioneAlternativa
-                    ->getData()
-                    . ' '
-                    . $prenotazioneAlternativa
-                    ->getOra();
-
-                $dataOraDesiderata =
-                    $richiesta
-                    ->getDataDesiderata()
-                    . ' '
-                    . $richiesta
-                    ->getOraDesiderata();
-
-                /*
-                 * L'alternativa deve essere
-                 * successiva all'orario
-                 * desiderato.
-                 */
-                if (
-                    strtotime(
-                        $dataOraAlternativa
-                    )
-                    <=
-                    strtotime(
-                        $dataOraDesiderata
-                    )
-                ) {
-                    continue;
-                }
+            // Ricontrolla gli intervalli dopo eventuali cambiamenti successivi alla richiesta.
+            if ($prenotazioneAlternativa !== null && $prenotazioneAlternativa->siSovrapponeA(
+                $richiesta->getDataDesiderata(), $richiesta->getOraDesiderata(),
+                $richiesta->getServizio()->getDurata()
+            )) {
+                continue;
             }
 
             /*
-             * Il posto dovrebbe essere
-             * libero dopo la cancellazione,
-             * ma lo ricontrolliamo prima
-             * di creare la nuova
-             * prenotazione.
+             * Se il cliente possiede già
+             * una prenotazione attiva,
+             * l'orario in lista d'attesa
+             * deve riguardare lo stesso
+             * servizio.
+             */
+            if (
+                $prenotazioneAlternativa
+                !== null
+                &&
+                $prenotazioneAlternativa
+                ->getServizio()
+                ->getId()
+                !==
+                $richiesta
+                ->getServizio()
+                ->getId()
+            ) {
+                continue;
+            }
+
+            $servizioRichiesto =
+                $richiesta->getServizio();
+
+            if (
+                $servizioRichiesto->getId()
+                === null
+                ||
+                !$servizioRichiesto->isAttivo()
+            ) {
+                continue;
+            }
+
+            /*
+             * Il servizio deve stare
+             * interamente dentro una fascia
+             * di apertura.
+             */
+            if (
+                !$this->intervalloDentroDisponibilita(
+                    $richiesta
+                        ->getDataDesiderata(),
+                    $richiesta
+                        ->getOraDesiderata(),
+                    $servizioRichiesto
+                        ->getDurata()
+                )
+            ) {
+                continue;
+            }
+
+            /*
+             * Ricalcolo vero del calendario.
+             *
+             * Non basta che l'intervallo
+             * sia diventato genericamente
+             * libero: deve corrispondere a
+             * uno slot che il sistema
+             * mostrerebbe in questo momento
+             * a un cliente che sceglie
+             * questo stesso servizio.
+             */
+            if (
+                !$gestionePrenotazione
+                    ->orarioDisponibile(
+                        $servizioRichiesto
+                            ->getId(),
+                        $richiesta
+                            ->getDataDesiderata(),
+                        substr(
+                            $richiesta
+                                ->getOraDesiderata(),
+                            0,
+                            5
+                        )
+                    )
+            ) {
+                continue;
+            }
+
+            /*
+             * Controllo ulteriore contro
+             * sovrapposizioni, eseguito
+             * nella stessa transazione
+             * che ha liberato il calendario.
              */
             if (
                 FPrenotazione
@@ -544,8 +825,7 @@ class CGestioneAppuntamenti
                         ->getDataDesiderata(),
                     $richiesta
                         ->getOraDesiderata(),
-                    $richiesta
-                        ->getServizio()
+                    $servizioRichiesto
                         ->getDurata()
                 )
             ) {
@@ -553,8 +833,11 @@ class CGestioneAppuntamenti
             }
 
             /*
-             * Se esiste un'alternativa,
-             * la cancelliamo.
+             * Se il cliente aveva un
+             * appuntamento alternativo,
+             * lo cancelliamo solo dopo
+             * avere verificato il nuovo
+             * orario.
              */
             if (
                 $prenotazioneAlternativa
@@ -563,85 +846,74 @@ class CGestioneAppuntamenti
                 $prenotazioneAlternativa
                     ->cancella();
 
-                $alternativaAggiornata =
-                    FPrenotazione::update(
+                if (
+                    !FPrenotazione::update(
                         $prenotazioneAlternativa
-                    );
-
-                if (!$alternativaAggiornata) {
-                    throw new Exception(
+                    )
+                ) {
+                    throw new RuntimeException(
                         'Errore nella cancellazione della prenotazione alternativa.'
                     );
                 }
             }
 
-            /*
-             * Creiamo la nuova prenotazione
-             * nell'orario desiderato.
-             */
             $nuovaPrenotazione =
                 new EPrenotazione(
                     $cliente,
-                    $richiesta->getServizio(),
+                    $servizioRichiesto,
                     $richiesta
                         ->getDataDesiderata(),
                     $richiesta
                         ->getOraDesiderata()
                 );
 
-            $prenotazioneSalvata =
-                FPrenotazione::store(
+            if (
+                !FPrenotazione::store(
                     $nuovaPrenotazione
-                );
-
-            if (!$prenotazioneSalvata) {
-                throw new Exception(
-                    'Errore nella creazione della prenotazione da lista d\'attesa.'
+                )
+            ) {
+                throw new RuntimeException(
+                    "Errore nella creazione della prenotazione da lista d'attesa."
                 );
             }
 
-            /*
-             * La richiesta FIFO scelta
-             * diventa soddisfatta.
-             */
             $richiesta->soddisfa();
 
-            $richiestaAggiornata =
-                FListaAttesa::update(
+            if (
+                !FListaAttesa::update(
                     $richiesta
-                );
-
-            if (!$richiestaAggiornata) {
-                throw new Exception(
-                    'Errore nell\'aggiornamento della lista d\'attesa.'
+                )
+            ) {
+                throw new RuntimeException(
+                    "Errore nell'aggiornamento della lista d'attesa."
                 );
             }
 
-            /*
-             * Abbiamo soddisfatto il
-             * PRIMO cliente valido.
-             *
-             * Gli altri rimangono
-             * attivi nella coda.
-             */
-            return $richiesta;
+            return [
+                'richiesta' =>
+                $richiesta,
+
+                'prenotazione' =>
+                $nuovaPrenotazione,
+
+                'alternativa' =>
+                $prenotazioneAlternativa
+            ];
         }
 
         return null;
     }
 
+
     private function prenotazioniAttiveCliente(
         int $idCliente
     ): array {
-        $prenotazioni =
-            FPrenotazione::loadByCliente(
-                $idCliente
-            );
-
         $attive = [];
 
         foreach (
-            $prenotazioni
+            FPrenotazione::loadByCliente(
+                $idCliente
+            )
             as $prenotazione
         ) {
             if (
@@ -655,6 +927,74 @@ class CGestioneAppuntamenti
 
         return $attive;
     }
+
+
+    private function intervalloDentroDisponibilita(
+        string $data,
+        string $oraInizio,
+        int $durata
+    ): bool {
+        $inizioRichiesto =
+            $this->oraInMinuti(
+                $oraInizio
+            );
+
+        $fineRichiesta =
+            $inizioRichiesto
+            +
+            $durata;
+
+        foreach (
+            FDisponibilita::loadByData(
+                $data
+            )
+            as $fascia
+        ) {
+            $inizioFascia =
+                $this->oraInMinuti(
+                    $fascia->getOraInizio()
+                );
+
+            $fineFascia =
+                $this->oraInMinuti(
+                    $fascia->getOraFine()
+                );
+
+            if (
+                $inizioRichiesto
+                >= $inizioFascia
+                &&
+                $fineRichiesta
+                <= $fineFascia
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    private function oraInMinuti(
+        string $ora
+    ): int {
+        $parti =
+            explode(
+                ':',
+                $ora
+            );
+
+        return ((int) (
+                $parti[0]
+                ?? 0
+            ) * 60)
+            +
+            (int) (
+                $parti[1]
+                ?? 0
+            );
+    }
+
 
     private function mancanoAlmeno48Ore(
         string $data,
@@ -671,16 +1011,19 @@ class CGestioneAppuntamenti
             return false;
         }
 
-        $secondiRimanenti =
-            $dataOra - time();
-
-        $quarantottoOre =
-            48 * 60 * 60;
-
-        return
-            $secondiRimanenti
-            >= $quarantottoOre;
+        return (
+                $dataOra
+                -
+                time()
+            )
+            >=
+            (
+                48
+                * 60
+                * 60
+            );
     }
+
 
     private function mancanoPiuDi48Ore(
         string $data,
@@ -697,14 +1040,101 @@ class CGestioneAppuntamenti
             return false;
         }
 
-        $secondiRimanenti =
-            $dataOra - time();
+        return (
+                $dataOra
+                -
+                time()
+            )
+            >
+            (
+                48
+                * 60
+                * 60
+            );
+    }
 
-        $quarantottoOre =
-            48 * 60 * 60;
 
-        return
-            $secondiRimanenti
-            > $quarantottoOre;
+    private function creaRigaPrenotazioneCliente(EPrenotazione $prenotazione): array
+    {
+        $etichette = [
+            'prenotata' => 'Confermata',
+            'completata' => 'Completata',
+            'cancellata' => 'Cancellata',
+            'no-show' => 'Non presentato'
+        ];
+        $data = DateTimeImmutable::createFromFormat('!Y-m-d', $prenotazione->getData());
+        $oraInizio = substr($prenotazione->getOra(), 0, 5);
+        $ora = DateTimeImmutable::createFromFormat('!H:i', $oraInizio);
+
+        return [
+            'id' => $prenotazione->getId(),
+            'data' => $data === false ? $prenotazione->getData() : $data->format('d/m/Y'),
+            'ora_inizio' => $oraInizio,
+            'ora_fine' => $ora === false
+                ? ''
+                : $ora->modify('+' . $prenotazione->getDurata() . ' minutes')->format('H:i'),
+            'servizio' => $prenotazione->getNomeServizio(),
+            'durata' => $prenotazione->getDurata(),
+            'stato' => $etichette[$prenotazione->getStato()] ?? $prenotazione->getStato()
+        ];
+    }
+
+    private function getMessaggioPrenotazioni(
+        string $esito
+    ): ?string {
+        switch ($esito) {
+            case 'prenotata':
+                return
+                    'Prenotazione confermata correttamente.';
+
+            case 'annullata':
+                return
+                    'Prenotazione annullata correttamente.';
+
+            case 'attesa':
+                return
+                    'Richiesta inserita correttamente in lista d\'attesa.';
+
+            case 'attesa_annullata':
+                return
+                    'Richiesta in lista d\'attesa annullata.';
+
+            default:
+                return null;
+        }
+    }
+
+
+    private function getErrorePrenotazioni(
+        string $errore
+    ): ?string {
+        switch ($errore) {
+            case 'annullamento':
+                return
+                    'Non è stato possibile annullare la prenotazione.';
+
+            case 'attesa':
+                return
+                    'Non è stato possibile modificare la lista d\'attesa.';
+
+            case 'ripeti':
+                return
+                    'Il servizio non può essere riprenotato.';
+
+            default:
+                return null;
+        }
+    }
+
+
+    private function redirect(
+        string $url
+    ): void {
+        header(
+            'Location: '
+                . $url
+        );
+
+        exit;
     }
 }

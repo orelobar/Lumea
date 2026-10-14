@@ -1,0 +1,5023 @@
+/* Impaginazione funzionale condivisa; il design definitivo verrà sviluppato in seguito. */
+body { font-family: system-ui, sans-serif; line-height: 1.5; margin: 0 auto; padding: 1rem; max-width: 72rem; color: #202020; }
+nav { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; padding: .75rem 0; border-bottom: 1px solid #ccc; }
+section, article { margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd; border-radius: .4rem; }
+label { display: inline-block; margin: .4rem .8rem .4rem 0; }
+input, select, button { font: inherit; padding: .4rem; max-width: 100%; }
+button, summary { cursor: pointer; }
+button { margin: .4rem .4rem .4rem 0; }
+fieldset { margin: .8rem 0; border: 1px solid #ccc; }
+[role=alert] { color: #8b1a1a; border-left: .25rem solid; padding: .7rem; }
+[role=status] { border-left: .25rem solid #246c3a; padding: .7rem; }
+.orari { display: flex; flex-wrap: wrap; gap: 1rem; }
+
+
+/* Migliorie funzionali dell'interfaccia proprietario. */
+.titolo-pagina,
+.intestazione-sezione,
+.intestazione-giorno {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.azione-principale,
+.azioni-rapide a {
+    display: inline-block;
+    padding: .55rem .8rem;
+    border: 1px solid #777;
+    border-radius: .35rem;
+    text-decoration: none;
+}
+
+.griglia-riepilogo,
+.calendario-mese {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+}
+
+.dato-riepilogo {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    margin: 0;
+}
+
+.dato-riepilogo strong {
+    font-size: 1.45rem;
+}
+
+.riga-appuntamento {
+    display: grid;
+    grid-template-columns: minmax(7rem, auto) 1fr;
+    gap: 1rem;
+    align-items: start;
+    margin: .75rem 0;
+}
+
+.riga-appuntamento p,
+.appuntamento-cliente p {
+    margin: .2rem 0;
+}
+
+.fascia-oraria-testo {
+    font-weight: 700;
+}
+
+.azioni-rapide {
+    border: 0;
+    padding: 0;
+}
+
+.giorno-standard-chiuso .fasce-standard {
+    opacity: .45;
+}
+
+.giorno-standard-chiuso .fasce-standard input {
+    cursor: not-allowed;
+}
+
+.fascia-oraria {
+    padding: .75rem;
+    border: 1px solid #ddd;
+    border-radius: .35rem;
+}
+
+.titolo-fascia {
+    display: block;
+    margin-bottom: .35rem;
+}
+
+.campi-orario {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+
+.nota-campo,
+.stato-secondario {
+    color: #5b5b5b;
+    font-size: .92rem;
+}
+
+.giorno-calendario {
+    margin: 0;
+}
+
+.storico-orari,
+.dati-cliente {
+    margin: .75rem 0;
+}
+
+.storico-orari div,
+.dati-cliente div {
+    display: grid;
+    grid-template-columns: minmax(5rem, auto) 1fr;
+    gap: .75rem;
+}
+
+.storico-orari dd,
+.dati-cliente dd {
+    margin: 0;
+}
+
+.calendario-completo {
+    margin-top: 1rem;
+}
+
+.calendario-completo > summary {
+    font-weight: 700;
+    padding: .75rem 0;
+}
+
+.elenco-appuntamenti-cliente {
+    display: grid;
+    gap: .75rem;
+}
+
+.appuntamento-cliente {
+    margin: 0;
+}
+
+.appuntamento-cliente > div,
+.elenco-clienti li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.grafico-statistiche {
+    display: grid;
+    gap: .9rem;
+}
+
+.riga-grafico {
+    display: grid;
+    grid-template-columns: minmax(7rem, 9rem) 1fr 1fr;
+    gap: .75rem;
+    align-items: center;
+}
+
+.riga-grafico label {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .4rem;
+    margin: 0;
+}
+
+.riga-grafico progress {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.servizio-richiesto {
+    grid-template-columns: minmax(10rem, 14rem) 1fr auto;
+}
+
+@media (max-width: 42rem) {
+    .riga-grafico,
+    .servizio-richiesto {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Migliorie funzionali dell'interfaccia cliente. */
+.griglia-dashboard-cliente {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1rem;
+}
+
+.griglia-dashboard-cliente section {
+    margin: 0;
+}
+
+.azioni-cliente,
+.scelte-prenotazione,
+.scelte-date,
+.scelte-orari {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    align-items: center;
+}
+
+.scelte-date a,
+.scelte-orari a,
+.scelte-prenotazione a {
+    display: inline-block;
+    padding: .55rem .8rem;
+    border: 1px solid #777;
+    border-radius: .35rem;
+    text-decoration: none;
+}
+
+.appuntamento-evidenza {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 1.08rem;
+}
+
+progress {
+    width: 100%;
+    min-height: 1rem;
+}
+
+.griglia-riepilogo.compatta {
+    grid-template-columns: repeat(3, minmax(7rem, 1fr));
+}
+
+.passaggi-prenotazione {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: .75rem;
+    padding-left: 1.4rem;
+}
+
+.elenco-servizi-prenotazione,
+.elenco-lista-attesa,
+.elenco-coupon {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+}
+
+.elenco-servizi-prenotazione article,
+.elenco-lista-attesa article,
+.elenco-coupon article {
+    margin: 0;
+}
+
+.riepilogo-prenotazione div {
+    display: grid;
+    grid-template-columns: minmax(7rem, 10rem) 1fr;
+    gap: 1rem;
+    padding: .35rem 0;
+}
+
+.riepilogo-prenotazione dd {
+    margin: 0;
+}
+
+.coupon-esaurito,
+.stato-annullata,
+.stato-scaduta {
+    opacity: .7;
+}
+
+@media (max-width: 42rem) {
+    .griglia-riepilogo.compatta {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.avvio-prenotazione {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    border: 2px solid #333;
+}
+
+.avvio-prenotazione h3,
+.avvio-prenotazione p {
+    margin-top: 0;
+}
+
+.azione-prenotazione-evidenza {
+    padding: .8rem 1.2rem;
+    font-weight: 700;
+}
+
+#slot-attesa {
+    min-width: min(100%, 22rem);
+}
+
+
+/* Struttura funzionale area proprietario. */
+.area-proprietario { max-width: none; padding: 0; background: #f5f6f8; }
+.area-proprietario main { max-width: 72rem; margin: 0 auto; padding: 1.25rem; }
+.header-proprietario { display: flex; align-items: center; gap: 1rem; padding: .85rem 1.25rem; background: #fff; border-bottom: 1px solid #dfe1e6; }
+.header-proprietario h1 { margin: 0; font-size: 1.25rem; }
+.pulsante-menu-proprietario, .chiudi-sidebar { border: 0; background: transparent; font-weight: 700; }
+.sidebar-proprietario { position: fixed; z-index: 30; inset: 0 auto 0 0; width: min(20rem, 86vw); padding: 1rem; background: #fff; box-shadow: 0 0 2rem rgba(0,0,0,.2); transform: translateX(-105%); transition: transform .2s ease; }
+.sidebar-aperta .sidebar-proprietario { transform: translateX(0); }
+.sidebar-intestazione { display: flex; justify-content: space-between; align-items: center; padding: .4rem .2rem 1rem; }
+.sidebar-proprietario nav { display: grid; gap: .35rem; border: 0; }
+.sidebar-proprietario nav a { padding: .75rem .85rem; border-radius: .45rem; color: inherit; text-decoration: none; }
+.sidebar-proprietario nav a:hover, .sidebar-proprietario nav a:focus-visible, .sidebar-proprietario nav a[aria-current="page"] { background: #e8edf6; outline: none; }
+.sidebar-proprietario .voce-logout { margin-top: 1rem; color: #8b1a1a; }
+.sfondo-sidebar { display: none; position: fixed; z-index: 20; inset: 0; width: 100%; margin: 0; border: 0; background: rgba(20,24,31,.38); }
+.sidebar-aperta .sfondo-sidebar { display: block; }
+.card-collegamento { color: inherit; text-decoration: none; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.card-collegamento:hover, .card-collegamento:focus-visible { transform: translateY(-2px); border-color: #365f9d; box-shadow: 0 .45rem 1.2rem rgba(34,51,78,.12); outline: 2px solid transparent; }
+.card-selezionata { border-color: #365f9d; box-shadow: inset 0 0 0 1px #365f9d; }
+.riepilogo-principale { grid-template-columns: repeat(2, minmax(14rem, 1fr)); }
+.sezione-azioni-rapide { margin-top: 1rem; }
+.azioni-rapide { display: flex; flex-wrap: wrap; gap: .65rem; }
+.empty-state { padding: 1rem; border: 1px dashed #b7bbc4; border-radius: .4rem; color: #555; }
+.conteggi-secondari { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+.conteggi-secondari span { padding: .55rem .8rem; background: #fff; border: 1px solid #d8dbe2; border-radius: 2rem; }
+.scheda-appuntamento-proprietario, .scheda-servizio { background: #fff; }
+.testata-appuntamento { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.testata-appuntamento > strong { font-size: 1.2rem; }
+.stato-appuntamento { padding: .25rem .55rem; border-radius: 2rem; background: #eef0f4; }
+.dati-appuntamento { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: .8rem; }
+.dati-appuntamento div { display: grid; gap: .15rem; }
+.dati-appuntamento dt { color: #626771; font-size: .88rem; }
+.dati-appuntamento dd { margin: 0; }
+.azioni-appuntamento { padding-top: .8rem; border-top: 1px solid #e0e2e7; }
+.tabella-responsive { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { padding: .7rem; text-align: left; border-bottom: 1px solid #e0e2e7; white-space: nowrap; }
+.griglia-servizi-proprietario, .elenco-clienti-proprietario { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1rem; }
+.griglia-servizi-proprietario article { margin: 0; }
+.scheda-servizio form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+.scheda-servizio form label { display: grid; }
+.azioni-modifica { grid-column: 1 / -1; }
+.scheda-cliente { display: grid; gap: .3rem; padding: 1rem; border: 1px solid #ddd; border-radius: .4rem; background: #fff; }
+.grafico-canvas-contenitore { overflow-x: auto; }
+.grafico-canvas { display: block; max-width: none; background: #fff; border: 1px solid #e0e2e7; border-radius: .4rem; }
+.grafico-dati { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .35rem; padding: 0; list-style: none; }
+.grafico-dati li { display: grid; padding: .4rem; font-size: .86rem; border-left: .2rem solid #365f9d; }
+.grafico-servizi { display: grid; gap: .6rem; }
+.grafico-servizi > div { display: grid; grid-template-columns: minmax(10rem, 1fr) 3fr; align-items: center; gap: .8rem; }
+.grafico-servizi span { display: block; width: min(100%, calc(var(--valore) * 3rem)); min-width: 2rem; padding: .35rem; color: #fff; background: #365f9d; border-radius: .25rem; }
+@media (max-width: 42rem) {
+    .riepilogo-principale, .scheda-servizio form { grid-template-columns: 1fr; }
+    .grafico-servizi > div { grid-template-columns: 1fr; }
+    .area-proprietario main { padding: .8rem; }
+}
+
+
+
+/* Struttura funzionale area cliente con sidebar. */
+.area-cliente { max-width: none; padding: 0; background: #f7f8fa; }
+.area-cliente main { max-width: 72rem; margin: 0 auto; padding: 1.25rem; }
+.header-cliente { display: flex; align-items: center; gap: 1rem; padding: .85rem 1.25rem; background: #fff; border-bottom: 1px solid #dfe1e6; }
+.header-cliente h1 { margin: 0; font-size: 1.25rem; }
+.pulsante-menu-cliente, .chiudi-sidebar-cliente { border: 0; background: transparent; font-weight: 700; }
+.sidebar-cliente { position: fixed; z-index: 30; inset: 0 auto 0 0; width: min(20rem, 86vw); padding: 1rem; background: #fff; box-shadow: 0 0 2rem rgba(0,0,0,.2); transform: translateX(-105%); transition: transform .2s ease; }
+.sidebar-cliente-aperta .sidebar-cliente { transform: translateX(0); }
+.sidebar-cliente nav { display: grid; gap: .35rem; border: 0; }
+.sidebar-cliente nav a { padding: .75rem .85rem; border-radius: .45rem; color: inherit; text-decoration: none; }
+.sidebar-cliente nav a:hover, .sidebar-cliente nav a:focus-visible, .sidebar-cliente nav a[aria-current="page"] { background: #e8edf6; outline: none; }
+.sfondo-sidebar-cliente { display: none; position: fixed; z-index: 20; inset: 0; width: 100%; margin: 0; border: 0; background: rgba(20,24,31,.38); }
+.sidebar-cliente-aperta .sfondo-sidebar-cliente { display: block; }
+.card-prossimo-appuntamento, .card-accesso-prenotazioni, .card-interna { display: grid; gap: .65rem; margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd; border-radius: .4rem; background: #fff; }
+.titolo-card { font-size: 1.15rem; font-weight: 700; }
+.card-interna { margin: 0; }
+.griglia-riepilogo .card-collegamento { padding: 1rem; background: #fff; }
+.modalita-attesa-invito { border-left: .3rem solid #365f9d; }
+.appuntamento-attuale-attesa, .spiegazione-attesa { background: #fff; }
+.spiegazione-attesa { border-left: .3rem solid #365f9d; }
+.form-lista-attesa { display: grid; gap: 1rem; }
+.scelte-slot-attesa { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .7rem; }
+.scelte-slot-attesa legend { font-weight: 700; padding: 0 .35rem; }
+.slot-attesa-card { display: flex; gap: .65rem; align-items: center; margin: 0; padding: .8rem; border: 1px solid #cfd3da; border-radius: .4rem; background: #fff; cursor: pointer; }
+.slot-attesa-card:has(input:checked) { border-color: #365f9d; box-shadow: inset 0 0 0 1px #365f9d; }
+.dettagli-attesa { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .7rem; }
+.dettagli-attesa div { display: grid; gap: .15rem; }
+.dettagli-attesa dt { color: #5b5b5b; font-size: .9rem; }
+.dettagli-attesa dd { margin: 0; font-weight: 700; }
+.appuntamento-mantenuto { padding: .75rem; background: #eef4ff; border-radius: .35rem; }
+.griglia-periodi-spesa { margin: 1.5rem 0; }
+.appuntamento-attivo-cliente { background: #fff; }
+@media (max-width: 42rem) {
+    .area-cliente main { padding: .8rem; }
+    .appuntamento-evidenza { display: grid; }
+}
+
+/* Navigazione dei periodi nelle statistiche proprietario. */
+.navigazione-statistiche {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.navigazione-periodo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+}
+
+.navigazione-periodo a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.4rem;
+    padding: .55rem .8rem;
+    border: 1px solid #d8dbe2;
+    border-radius: .4rem;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+}
+
+.navigazione-periodo a:hover,
+.navigazione-periodo a:focus-visible {
+    border-color: #365f9d;
+    outline: none;
+}
+
+.selettore-periodo-statistiche {
+    display: flex;
+    align-items: end;
+    gap: .55rem;
+    flex-wrap: wrap;
+}
+
+.selettore-periodo-statistiche label {
+    display: grid;
+    gap: .25rem;
+}
+
+@media (max-width: 42rem) {
+    .navigazione-statistiche,
+    .selettore-periodo-statistiche {
+        align-items: stretch;
+    }
+}
+
+/* =========================================================
+   Layout Lumèa: sidebar desktop ispirata all'interfaccia originale
+   ========================================================= */
+:root {
+    --lm-verde: #123f37;
+    --lm-verde-scuro: #0d332d;
+    --lm-verde-chiaro: #e9f1ee;
+    --lm-sabbia: #f4efe7;
+    --lm-testo: #19312c;
+    --lm-bordo: #dfe6e2;
+    --lm-sfondo: #f7f9f7;
+    --lm-sidebar: 15.5rem;
+}
+
+.area-proprietario,
+.area-cliente {
+    min-height: 100vh;
+    color: var(--lm-testo);
+    background: var(--lm-sfondo);
+}
+
+/* Su desktop la barra superiore non è un menu: la navigazione resta fissa a sinistra. */
+.header-proprietario,
+.header-cliente {
+    min-height: 3.25rem;
+    margin-left: var(--lm-sidebar);
+    padding: .8rem 2rem;
+    justify-content: flex-end;
+    background: #fff;
+    border-bottom: 1px solid var(--lm-bordo);
+}
+
+.header-proprietario h1,
+.header-cliente h1,
+.pulsante-menu-proprietario,
+.pulsante-menu-cliente,
+.chiudi-sidebar,
+.chiudi-sidebar-cliente {
+    display: none;
+}
+
+.header-proprietario::after,
+.header-cliente::after {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.9rem;
+    padding: .15rem .65rem;
+    border-radius: 999px;
+    background: var(--lm-verde-chiaro);
+    color: var(--lm-verde);
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .06em;
+}
+
+.header-proprietario::after { content: "AREA PROPRIETARIO"; }
+.header-cliente::after { content: "AREA CLIENTE"; }
+
+.sidebar-proprietario,
+.sidebar-cliente {
+    position: fixed;
+    z-index: 30;
+    inset: 0 auto 0 0;
+    width: var(--lm-sidebar);
+    box-sizing: border-box;
+    padding: 1.25rem 1rem 1rem;
+    background: var(--lm-verde);
+    color: #fff;
+    box-shadow: none;
+    transform: none;
+    transition: transform .2s ease;
+}
+
+.sidebar-intestazione {
+    display: block;
+    padding: .35rem .45rem 1.6rem;
+    border-bottom: 1px solid rgba(255,255,255,.13);
+}
+
+.sidebar-brand {
+    display: grid;
+    gap: .1rem;
+}
+
+.sidebar-brand strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.22rem;
+    font-weight: 500;
+    letter-spacing: -.02em;
+}
+
+.sidebar-brand span {
+    color: rgba(255,255,255,.62);
+    font-size: .72rem;
+}
+
+.sidebar-proprietario nav,
+.sidebar-cliente nav {
+    min-height: calc(100vh - 6.7rem);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: .22rem;
+    padding: 1rem 0 0;
+    border: 0;
+}
+
+.sidebar-proprietario nav a,
+.sidebar-cliente nav a {
+    display: flex;
+    align-items: center;
+    min-height: 2.55rem;
+    padding: .58rem .7rem;
+    box-sizing: border-box;
+    border-radius: .35rem;
+    color: rgba(255,255,255,.82);
+    text-decoration: none;
+    font-size: .91rem;
+    font-weight: 600;
+}
+
+.sidebar-proprietario nav a:hover,
+.sidebar-proprietario nav a:focus-visible,
+.sidebar-proprietario nav a[aria-current="page"],
+.sidebar-cliente nav a:hover,
+.sidebar-cliente nav a:focus-visible,
+.sidebar-cliente nav a[aria-current="page"] {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    outline: none;
+}
+
+.sidebar-proprietario nav a[aria-current="page"],
+.sidebar-cliente nav a[aria-current="page"] {
+    box-shadow: inset 3px 0 0 #d3b786;
+}
+
+.sidebar-proprietario .voce-logout,
+.sidebar-cliente .voce-logout {
+    margin-top: auto;
+    color: rgba(255,255,255,.86);
+    border-top: 1px solid rgba(255,255,255,.13);
+    border-radius: 0;
+}
+
+.sfondo-sidebar,
+.sfondo-sidebar-cliente,
+.sidebar-aperta .sfondo-sidebar,
+.sidebar-cliente-aperta .sfondo-sidebar-cliente {
+    display: none;
+}
+
+.area-proprietario main,
+.area-cliente main {
+    width: auto;
+    max-width: 88rem;
+    margin: 0 0 0 var(--lm-sidebar);
+    padding: 2rem 2.4rem 3rem;
+    box-sizing: border-box;
+}
+
+.area-proprietario .titolo-pagina,
+.area-cliente .titolo-pagina {
+    margin-bottom: 1.25rem;
+}
+
+.area-proprietario .titolo-pagina h2,
+.area-cliente .titolo-pagina h2 {
+    margin: 0;
+    color: var(--lm-verde);
+    font-size: clamp(1.55rem, 2.6vw, 2.15rem);
+    letter-spacing: -.035em;
+}
+
+.area-proprietario .titolo-pagina p,
+.area-cliente .titolo-pagina p {
+    margin: .28rem 0 0;
+    color: #6b7773;
+}
+
+.area-proprietario section,
+.area-cliente section,
+.area-proprietario article,
+.area-cliente article {
+    border-color: var(--lm-bordo);
+}
+
+.area-proprietario section,
+.area-cliente section {
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(18,63,55,.02);
+}
+
+.area-proprietario a,
+.area-cliente a {
+    color: var(--lm-verde);
+}
+
+.area-proprietario button,
+.area-cliente button,
+.area-proprietario .azione-principale,
+.area-cliente .azione-principale,
+.area-proprietario .azioni-rapide a,
+.area-cliente .azioni-rapide a {
+    border: 1px solid var(--lm-verde);
+    border-radius: .35rem;
+    background: var(--lm-verde);
+    color: #fff;
+    text-decoration: none;
+}
+
+.area-proprietario button:hover,
+.area-cliente button:hover,
+.area-proprietario .azione-principale:hover,
+.area-cliente .azione-principale:hover,
+.area-proprietario .azioni-rapide a:hover,
+.area-cliente .azioni-rapide a:hover {
+    background: var(--lm-verde-scuro);
+}
+
+.area-proprietario .azioni-rapide,
+.area-cliente .azioni-rapide {
+    padding: 0;
+    border: 0;
+}
+
+.area-proprietario .azioni-rapide a,
+.area-cliente .azioni-rapide a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.35rem;
+    padding: .45rem .75rem;
+}
+
+.dato-riepilogo {
+    border-color: var(--lm-bordo);
+    background: #fff;
+}
+
+.card-collegamento:hover,
+.card-collegamento:focus-visible {
+    transform: translateY(-1px);
+    border-color: #8aa79f;
+    box-shadow: 0 .4rem 1rem rgba(18,63,55,.08);
+}
+
+.card-selezionata {
+    border-color: var(--lm-verde);
+    box-shadow: inset 0 0 0 1px var(--lm-verde);
+}
+
+.card-prossimo-appuntamento,
+.card-accesso-prenotazioni,
+.card-interna,
+.scheda-cliente,
+.scheda-appuntamento-proprietario,
+.scheda-servizio,
+.appuntamento-attivo-cliente,
+.appuntamento-attuale-attesa,
+.spiegazione-attesa {
+    border-color: var(--lm-bordo);
+    background: #fff;
+}
+
+.invito-lista-attesa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border-left: .28rem solid #d3b786;
+}
+
+.invito-lista-attesa h3,
+.invito-lista-attesa p {
+    margin: 0;
+}
+
+.invito-lista-attesa p {
+    margin-top: .2rem;
+    color: #65716d;
+}
+
+.testo-lista-attesa-breve {
+    display: grid;
+    gap: .15rem;
+    max-width: 34rem;
+}
+
+.testo-lista-attesa-breve span {
+    color: #65716d;
+    font-size: .92rem;
+}
+
+.link-dettaglio-cliente {
+    justify-self: start;
+    margin-top: .35rem;
+    font-weight: 700;
+}
+
+.modalita-attesa-invito,
+.spiegazione-attesa {
+    border-left-color: #d3b786;
+}
+
+.grafico-canvas,
+.grafico-dati li,
+.grafico-servizi span {
+    border-color: var(--lm-bordo);
+}
+
+.grafico-servizi span {
+    background: var(--lm-verde);
+}
+
+/* Mobile: sidebar a scomparsa; il pulsante Menu compare solo qui. */
+@media (max-width: 52rem) {
+    .header-proprietario,
+    .header-cliente {
+        position: sticky;
+        z-index: 18;
+        top: 0;
+        min-height: auto;
+        margin-left: 0;
+        padding: .75rem .9rem;
+        justify-content: space-between;
+    }
+
+    .header-proprietario h1,
+    .header-cliente h1 {
+        display: block;
+        margin: 0;
+        color: var(--lm-verde);
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .header-proprietario::after,
+    .header-cliente::after {
+        display: none;
+    }
+
+    .pulsante-menu-proprietario,
+    .pulsante-menu-cliente {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        margin: 0;
+        padding: .4rem .55rem;
+        border: 0;
+        background: transparent;
+        color: var(--lm-verde);
+        font-weight: 800;
+    }
+
+    .sidebar-proprietario,
+    .sidebar-cliente {
+        width: min(18.5rem, 86vw);
+        transform: translateX(-105%);
+        box-shadow: 0 0 2rem rgba(0,0,0,.2);
+    }
+
+    .sidebar-aperta .sidebar-proprietario,
+    .sidebar-cliente-aperta .sidebar-cliente {
+        transform: translateX(0);
+    }
+
+    .chiudi-sidebar,
+    .chiudi-sidebar-cliente {
+        position: absolute;
+        top: .75rem;
+        right: .65rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #fff;
+        font-size: 1.45rem;
+    }
+
+    .sidebar-intestazione {
+        padding-right: 2.4rem;
+    }
+
+    .sfondo-sidebar,
+    .sfondo-sidebar-cliente {
+        position: fixed;
+        z-index: 20;
+        inset: 0;
+        width: 100%;
+        margin: 0;
+        border: 0;
+        background: rgba(20,24,31,.38);
+    }
+
+    .sidebar-aperta .sfondo-sidebar,
+    .sidebar-cliente-aperta .sfondo-sidebar-cliente {
+        display: block;
+    }
+
+    .area-proprietario main,
+    .area-cliente main {
+        margin-left: 0;
+        padding: 1rem .85rem 2rem;
+    }
+
+    .invito-lista-attesa {
+        align-items: stretch;
+    }
+}
+
+/* =========================================================
+   Restyling definitivo area proprietario
+   ========================================================= */
+.area-proprietario {
+    --proprietario-verde: #173f37;
+    --proprietario-verde-profondo: #0f302a;
+    --proprietario-verde-tenue: #eaf1ee;
+    --proprietario-bronzo: #b08a52;
+    --proprietario-bronzo-tenue: #f2e9dc;
+    --proprietario-crema: #f6f2eb;
+    --proprietario-carta: #fffdf9;
+    --proprietario-testo: #1d2d29;
+    --proprietario-testo-tenue: #65716d;
+    --proprietario-bordo: #dfe5e1;
+    --proprietario-ombra: 0 14px 36px rgba(24, 48, 42, .07);
+    --proprietario-raggio: 1rem;
+    background:
+        radial-gradient(circle at 92% 4%, rgba(176, 138, 82, .09), transparent 24rem),
+        #f5f7f5;
+    color: var(--proprietario-testo);
+}
+
+.area-proprietario main {
+    max-width: 96rem;
+    padding: 2.1rem clamp(1.25rem, 3vw, 3.25rem) 4rem;
+}
+
+.area-proprietario .header-proprietario {
+    height: 3.85rem;
+    box-sizing: border-box;
+    background: rgba(255, 253, 249, .94);
+    border-color: var(--proprietario-bordo);
+}
+
+.area-proprietario .header-proprietario::after {
+    padding: .32rem .72rem;
+    background: var(--proprietario-bronzo-tenue);
+    color: #785c32;
+    border: 1px solid #e3d3b9;
+}
+
+.area-proprietario .sidebar-proprietario {
+    display: flex;
+    flex-direction: column;
+    padding: 1.35rem 1rem 1rem;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.035), transparent 30%),
+        var(--proprietario-verde-profondo);
+    box-shadow: 8px 0 32px rgba(10, 31, 27, .1);
+}
+
+.area-proprietario .sidebar-intestazione {
+    padding: .25rem .35rem 1.35rem;
+}
+
+.area-proprietario .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: .72rem;
+    color: #fff;
+    text-decoration: none;
+    border-radius: .65rem;
+}
+
+.area-proprietario .sidebar-brand:focus-visible {
+    outline: 2px solid #e5c995;
+    outline-offset: 4px;
+}
+
+.area-proprietario .sidebar-monogramma {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex: 0 0 2.4rem;
+    border: 1px solid rgba(229, 201, 149, .58);
+    border-radius: 50%;
+    color: #e5c995;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: .74rem;
+    letter-spacing: .08em;
+}
+
+.area-proprietario .sidebar-brand-testo {
+    display: grid;
+    gap: .06rem;
+}
+
+.area-proprietario .sidebar-brand strong {
+    color: #fff;
+    font-size: 1.23rem;
+}
+
+.area-proprietario .sidebar-brand small {
+    color: rgba(255,255,255,.56);
+    font-size: .69rem;
+    letter-spacing: .075em;
+    text-transform: uppercase;
+}
+
+.area-proprietario .navigazione-proprietario {
+    min-height: 0;
+    height: 100%;
+    padding-top: 1rem;
+}
+
+.area-proprietario .gruppo-dashboard {
+    padding-bottom: .9rem;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.area-proprietario .gruppo-gestione {
+    display: grid;
+    gap: .22rem;
+    padding-top: .95rem;
+}
+
+.area-proprietario .etichetta-gruppo {
+    padding: 0 .75rem .38rem;
+    color: rgba(255,255,255,.42);
+    font-size: .64rem;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.area-proprietario .sidebar-proprietario nav a {
+    gap: .72rem;
+    min-height: 2.72rem;
+    padding: .62rem .74rem;
+    border: 1px solid transparent;
+    border-radius: .58rem;
+    color: rgba(255,255,255,.76);
+}
+
+.area-proprietario .sidebar-proprietario nav a:hover,
+.area-proprietario .sidebar-proprietario nav a:focus-visible {
+    background: rgba(255,255,255,.075);
+    border-color: rgba(255,255,255,.1);
+}
+
+.area-proprietario .sidebar-proprietario nav a[aria-current="page"] {
+    background: rgba(255,255,255,.11);
+    border-color: rgba(229, 201, 149, .16);
+    box-shadow: inset 3px 0 0 #d6b775;
+}
+
+.area-proprietario .nav-icon {
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    color: #d7bf91;
+    font-size: 1rem;
+}
+
+.area-proprietario .sidebar-proprietario .voce-logout {
+    margin-top: auto;
+    padding-top: .86rem;
+    border-top: 1px solid rgba(255,255,255,.12);
+    color: rgba(255,255,255,.76);
+}
+
+.area-proprietario .titolo-pagina {
+    align-items: end;
+    margin: 0 0 1.65rem;
+}
+
+.area-proprietario .titolo-pagina h2 {
+    margin-top: .12rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 3.1vw, 3rem);
+    font-weight: 500;
+    line-height: 1.04;
+}
+
+.area-proprietario .titolo-pagina p {
+    max-width: 42rem;
+    margin-top: .52rem;
+    font-size: .98rem;
+}
+
+.area-proprietario .sovratitolo {
+    display: block;
+    color: #8b6a3d;
+    font-size: .67rem;
+    font-weight: 850;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.area-proprietario .pill-giornata,
+.area-proprietario .contatore-righe {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.85rem;
+    padding: .22rem .65rem;
+    border: 1px solid #d9e1dd;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--proprietario-testo-tenue);
+    font-size: .76rem;
+    font-weight: 750;
+}
+
+.area-proprietario section,
+.area-proprietario article {
+    margin: 0;
+    border: 0;
+}
+
+.area-proprietario .pannello-proprietario {
+    margin-bottom: 1.25rem;
+    padding: clamp(1.05rem, 2vw, 1.55rem);
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: var(--proprietario-raggio);
+    background: rgba(255, 253, 249, .96);
+    box-shadow: var(--proprietario-ombra);
+}
+
+.area-proprietario a.pannello-proprietario {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.area-proprietario .intestazione-pannello {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.12rem;
+}
+
+.area-proprietario .intestazione-pannello h3 {
+    margin: .12rem 0 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.25rem, 2vw, 1.62rem);
+    font-weight: 500;
+    line-height: 1.16;
+}
+
+.area-proprietario .intestazione-pannello p,
+.area-proprietario .nota-pannello {
+    margin: .28rem 0 0;
+    color: var(--proprietario-testo-tenue);
+    font-size: .9rem;
+}
+
+.area-proprietario .collegamento-pannello,
+.area-proprietario .link-secondario {
+    color: var(--proprietario-verde);
+    font-size: .86rem;
+    font-weight: 780;
+    text-decoration: none;
+}
+
+.area-proprietario .link-secondario:hover {
+    text-decoration: underline;
+    text-underline-offset: .22rem;
+}
+
+.area-proprietario input,
+.area-proprietario select {
+    min-height: 2.75rem;
+    box-sizing: border-box;
+    padding: .58rem .7rem;
+    border: 1px solid #ccd7d2;
+    border-radius: .55rem;
+    background: #fff;
+    color: var(--proprietario-testo);
+    transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.area-proprietario input:focus,
+.area-proprietario select:focus {
+    border-color: #6f958b;
+    box-shadow: 0 0 0 3px rgba(31, 90, 77, .12);
+    outline: none;
+}
+
+.area-proprietario label {
+    color: #4f5d59;
+    font-size: .82rem;
+    font-weight: 720;
+}
+
+.area-proprietario label > span {
+    display: block;
+    margin-bottom: .3rem;
+}
+
+.area-proprietario button,
+.area-proprietario .pulsante-primario,
+.area-proprietario .pulsante-secondario,
+.area-proprietario .pulsante-pericolo {
+    min-height: 2.72rem;
+    box-sizing: border-box;
+    padding: .58rem .9rem;
+    border-radius: .55rem;
+    font-size: .86rem;
+    font-weight: 780;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.area-proprietario button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.area-proprietario .pulsante-secondario {
+    border-color: #cbd6d1;
+    background: #fff;
+    color: var(--proprietario-verde);
+}
+
+.area-proprietario .pulsante-secondario:hover:not(:disabled) {
+    border-color: #8da79f;
+    background: var(--proprietario-verde-tenue);
+}
+
+.area-proprietario .pulsante-pericolo {
+    border-color: #d9b8b1;
+    background: #fff7f5;
+    color: #8e3a2e;
+}
+
+.area-proprietario .pulsante-pericolo:hover:not(:disabled) {
+    border-color: #bb8176;
+    background: #fbecea;
+}
+
+.area-proprietario button:focus-visible,
+.area-proprietario a:focus-visible,
+.area-proprietario summary:focus-visible {
+    outline: 3px solid rgba(176, 138, 82, .34);
+    outline-offset: 3px;
+}
+
+.area-proprietario button:disabled {
+    cursor: not-allowed;
+    opacity: .48;
+}
+
+.area-proprietario .messaggio-esito,
+.area-proprietario .messaggio-errore {
+    margin: 0 0 1rem;
+    border-radius: .65rem;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(22, 49, 42, .05);
+}
+
+.area-proprietario .messaggio-esito {
+    color: #245c48;
+}
+
+.area-proprietario .messaggio-errore {
+    color: #8a3429;
+}
+
+.area-proprietario .empty-state-proprietario {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem;
+    border: 1px dashed #cad6d1;
+    border-radius: .75rem;
+    background: #f8faf8;
+    color: var(--proprietario-testo-tenue);
+}
+
+.area-proprietario .empty-state-proprietario > span {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: 0 0 2.25rem;
+    border-radius: 50%;
+    background: var(--proprietario-verde-tenue);
+    color: var(--proprietario-verde);
+}
+
+.area-proprietario .empty-state-proprietario strong {
+    display: block;
+    color: var(--proprietario-testo);
+}
+
+.area-proprietario .empty-state-proprietario p {
+    margin: .12rem 0 0;
+    font-size: .88rem;
+}
+
+.area-proprietario .empty-state-grande {
+    min-height: 10rem;
+    justify-content: center;
+}
+
+.area-proprietario .empty-state-icona {
+    width: 3.2rem !important;
+    height: 3.2rem !important;
+    font-size: 1.35rem;
+}
+
+.area-proprietario .solo-lettori-schermo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Dashboard */
+.area-proprietario .pannello-riepilogo {
+    background:
+        linear-gradient(135deg, rgba(176,138,82,.07), transparent 35%),
+        var(--proprietario-carta);
+}
+
+.area-proprietario .griglia-metriche-proprietario {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .85rem;
+}
+
+.area-proprietario .metrica-proprietario,
+.area-proprietario .metrica-statistica {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: .36rem;
+    min-height: 9rem;
+    box-sizing: border-box;
+    padding: 1rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .82rem;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+}
+
+.area-proprietario .metrica-principale {
+    background: var(--proprietario-verde);
+    color: #fff;
+    border-color: var(--proprietario-verde);
+}
+
+.area-proprietario .metrica-icona {
+    display: grid;
+    place-items: center;
+    width: 1.82rem;
+    height: 1.82rem;
+    border-radius: .52rem;
+    background: var(--proprietario-verde-tenue);
+    color: var(--proprietario-verde);
+    font-weight: 850;
+}
+
+.area-proprietario .metrica-principale .metrica-icona {
+    background: rgba(255,255,255,.13);
+    color: #e5c995;
+}
+
+.area-proprietario .metrica-etichetta,
+.area-proprietario .metrica-statistica > span:not(.metrica-icona) {
+    color: var(--proprietario-testo-tenue);
+    font-size: .76rem;
+    font-weight: 760;
+    letter-spacing: .02em;
+}
+
+.area-proprietario .metrica-principale .metrica-etichetta,
+.area-proprietario .metrica-principale .metrica-nota {
+    color: rgba(255,255,255,.7);
+}
+
+.area-proprietario .metrica-proprietario > strong,
+.area-proprietario .metrica-statistica > strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.65rem, 2.4vw, 2.25rem);
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+.area-proprietario .metrica-nota,
+.area-proprietario .metrica-statistica small {
+    margin-top: auto;
+    color: #7a8682;
+    font-size: .72rem;
+}
+
+.area-proprietario .metrica-link {
+    margin-top: auto;
+    color: rgba(255,255,255,.88);
+    font-size: .76rem;
+    font-weight: 760;
+}
+
+.area-proprietario .prossimi-oggi-card {
+    border-left: 4px solid var(--proprietario-bronzo);
+}
+
+.area-proprietario .prossimi-oggi-card:hover {
+    border-color: var(--proprietario-bronzo);
+}
+
+.area-proprietario .lista-prossimi-oggi {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .8rem;
+}
+
+.area-proprietario .riga-prossimo-oggi {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .28rem .72rem;
+    padding: .88rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .7rem;
+    background: #fff;
+}
+
+.area-proprietario .riga-prossimo-oggi time {
+    grid-row: 1 / 3;
+    color: var(--proprietario-verde);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.42rem;
+}
+
+.area-proprietario .riga-prossimo-oggi div {
+    display: grid;
+}
+
+.area-proprietario .riga-prossimo-oggi div span,
+.area-proprietario .durata-appuntamento {
+    color: var(--proprietario-testo-tenue);
+    font-size: .78rem;
+}
+
+.area-proprietario .durata-appuntamento {
+    grid-column: 2;
+}
+
+.area-proprietario .timeline-sette-giorni {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(14rem, 1fr);
+    gap: .8rem;
+    overflow-x: auto;
+    padding: .12rem .08rem .55rem;
+    scroll-snap-type: x proximity;
+}
+
+.area-proprietario .card-appuntamento-settimana {
+    display: grid;
+    gap: 1rem;
+    min-height: 8.4rem;
+    padding: .95rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-top: 3px solid #b9c9c3;
+    border-radius: .72rem;
+    background: #fff;
+    scroll-snap-align: start;
+}
+
+.area-proprietario .data-appuntamento-settimana {
+    display: grid;
+    gap: .12rem;
+}
+
+.area-proprietario .data-appuntamento-settimana strong {
+    font-size: .79rem;
+    text-transform: capitalize;
+}
+
+.area-proprietario .data-appuntamento-settimana span,
+.area-proprietario .card-appuntamento-settimana p {
+    margin: 0;
+    color: var(--proprietario-testo-tenue);
+    font-size: .78rem;
+}
+
+/* Agenda */
+.area-proprietario .barra-filtri {
+    padding-top: .9rem;
+    padding-bottom: .9rem;
+}
+
+.area-proprietario .selettore-giornata,
+.area-proprietario .form-mese {
+    display: flex;
+    align-items: end;
+    gap: .72rem;
+    flex-wrap: wrap;
+}
+
+.area-proprietario .selettore-giornata label,
+.area-proprietario .form-mese label {
+    display: grid;
+    margin: 0;
+}
+
+.area-proprietario .selettore-giornata .giorno-agenda { width: 5.2rem; }
+.area-proprietario .selettore-giornata .anno-agenda { width: 7rem; }
+.area-proprietario .selettore-giornata select { min-width: 9.5rem; }
+
+.area-proprietario .lista-agenda-proprietario {
+    display: grid;
+    gap: .8rem;
+}
+
+.area-proprietario .scheda-appuntamento-proprietario {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .8rem;
+    background: #fff;
+}
+
+.area-proprietario .ora-agenda {
+    display: grid;
+    align-content: start;
+    gap: .2rem;
+    padding-right: 1rem;
+    border-right: 1px solid var(--proprietario-bordo);
+}
+
+.area-proprietario .ora-agenda strong {
+    color: var(--proprietario-verde);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.55rem;
+    font-weight: 500;
+}
+
+.area-proprietario .ora-agenda span {
+    color: var(--proprietario-testo-tenue);
+    font-size: .72rem;
+}
+
+.area-proprietario .contenuto-appuntamento-agenda {
+    min-width: 0;
+}
+
+.area-proprietario .testata-appuntamento h4 {
+    margin: 0;
+    font-size: 1.02rem;
+}
+
+.area-proprietario .testata-appuntamento p {
+    margin: .16rem 0 0;
+    color: var(--proprietario-testo-tenue);
+}
+
+.area-proprietario .badge-stato {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 1.55rem;
+    padding: .12rem .48rem;
+    border: 1px solid #d8dfdc;
+    border-radius: 999px;
+    background: #f4f6f5;
+    color: #56635f;
+    font-size: .69rem;
+    font-weight: 780;
+}
+
+.area-proprietario .stato-prenotata,
+.area-proprietario .stato-attivo {
+    border-color: #b9d3c6;
+    background: #edf7f1;
+    color: #286047;
+}
+
+.area-proprietario .stato-completata {
+    border-color: #bed0dc;
+    background: #eef5f8;
+    color: #315e75;
+}
+
+.area-proprietario .stato-no_show,
+.area-proprietario .stato-inattivo {
+    border-color: #dfc8ac;
+    background: #faf2e7;
+    color: #80603b;
+}
+
+.area-proprietario .dati-appuntamento {
+    margin: .8rem 0;
+    padding: .75rem 0;
+    border-top: 1px solid #edf0ee;
+    border-bottom: 1px solid #edf0ee;
+}
+
+.area-proprietario .azioni-appuntamento {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: .8rem;
+    flex-wrap: wrap;
+    padding: .15rem 0 .5rem;
+    border: 0;
+}
+
+.area-proprietario .azioni-appuntamento label {
+    display: grid;
+    margin: 0;
+}
+
+.area-proprietario .gruppo-pulsanti,
+.area-proprietario .azioni-modifica {
+    display: flex;
+    gap: .55rem;
+    flex-wrap: wrap;
+}
+
+.area-proprietario .azione-pericolosa {
+    margin-top: .6rem;
+    border-top: 1px solid #edf0ee;
+}
+
+.area-proprietario .azione-pericolosa summary {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    margin-top: .7rem;
+    padding: .55rem .8rem;
+    border: 1px solid #d9b8b1;
+    border-radius: .55rem;
+    background: #fff7f5;
+    color: #8e3a2e;
+    font-size: .8rem;
+    font-weight: 740;
+    list-style: none;
+}
+.area-proprietario .azione-pericolosa summary::-webkit-details-marker { display: none; }
+.area-proprietario .azione-pericolosa summary::before { content: "⌄"; font-size: 1rem; line-height: 1; }
+.area-proprietario .azione-pericolosa[open] summary::before { transform: rotate(180deg); }
+.area-proprietario .azione-pericolosa summary:hover { background: #fbecea; border-color: #bb8176; }
+.area-proprietario .azione-pericolosa form { margin-top: .6rem; }
+
+/* Servizi */
+.area-proprietario .form-servizio {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .72rem;
+}
+
+.area-proprietario .form-servizio label {
+    display: grid;
+    margin: 0;
+}
+
+.area-proprietario .form-servizio-nuovo {
+    grid-template-columns: minmax(14rem, 2fr) repeat(3, minmax(8rem, 1fr)) auto;
+    align-items: end;
+}
+
+.area-proprietario .griglia-servizi-proprietario {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+.area-proprietario .scheda-servizio {
+    padding: 1rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .82rem;
+    box-shadow: 0 8px 22px rgba(22, 49, 42, .04);
+}
+
+.area-proprietario .scheda-servizio .testata-appuntamento {
+    margin-bottom: .9rem;
+    padding-bottom: .7rem;
+    border-bottom: 1px solid #edf0ee;
+}
+
+.area-proprietario .scheda-servizio .testata-appuntamento > div {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+}
+
+.area-proprietario .scheda-servizio h4 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.area-proprietario .numero-servizio {
+    color: #9c7a49;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: .78rem;
+}
+
+.area-proprietario .servizio-disattivato {
+    background: #fafafa;
+}
+
+.area-proprietario .azioni-modifica {
+    grid-column: 1 / -1;
+    margin-top: .25rem;
+    padding-top: .72rem;
+    border-top: 1px solid #edf0ee;
+}
+
+/* Disponibilità */
+.area-proprietario .griglia-orario-standard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: .8rem;
+}
+
+.area-proprietario .giorno-standard {
+    margin: 0;
+    padding: .85rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .78rem;
+    background: #fff;
+}
+
+.area-proprietario .giorno-standard legend {
+    padding: 0 .32rem;
+    color: var(--proprietario-verde);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+}
+
+.area-proprietario .controllo-stato-giorno {
+    display: grid;
+    margin: 0 0 .6rem;
+}
+
+.area-proprietario .giorno-standard .orari {
+    display: grid;
+    gap: .58rem;
+}
+
+.area-proprietario .giorno-standard .fascia-oraria,
+.area-proprietario .modifica-giornata .fascia-oraria {
+    margin: 0;
+    padding: .68rem;
+    border-color: #e2e7e4;
+    background: #fafbf9;
+}
+
+.area-proprietario .giorno-standard-chiuso {
+    background: #f6f6f4;
+}
+
+.area-proprietario .giorno-standard-chiuso .fasce-standard {
+    opacity: .35;
+    filter: grayscale(.35);
+}
+
+.area-proprietario .campi-orario label {
+    display: grid;
+    flex: 1 1 7rem;
+    margin: 0;
+}
+
+.area-proprietario .barra-azione-modulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--proprietario-bordo);
+}
+
+.area-proprietario .barra-azione-modulo p {
+    max-width: 44rem;
+    margin: 0;
+}
+
+.area-proprietario .calendario-mese {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    align-items: start;
+}
+
+.area-proprietario .giorno-calendario {
+    padding: .9rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .78rem;
+    background: #fff;
+}
+
+.area-proprietario .giorno-calendario .intestazione-giorno {
+    align-items: flex-start;
+    padding-bottom: .65rem;
+    border-bottom: 1px solid #edf0ee;
+}
+
+.area-proprietario .giorno-calendario h4 {
+    margin: 0 0 .28rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.area-proprietario .giorno-trascorso {
+    background: #f4f5f3;
+    color: #707a76;
+}
+
+.area-proprietario .giorno-chiuso {
+    background:
+        repeating-linear-gradient(-45deg, transparent, transparent 7px, rgba(32,62,54,.025) 7px, rgba(32,62,54,.025) 14px),
+        #fafaf8;
+}
+
+.area-proprietario .stato-personalizzato {
+    border-color: #dfc8ac;
+    background: #faf2e7;
+    color: #80603b;
+}
+
+.area-proprietario .stato-trascorso {
+    background: #ecefed;
+}
+
+.area-proprietario .riepilogo-orari-giorno {
+    min-height: 3.8rem;
+    padding: .65rem 0;
+}
+
+.area-proprietario .storico-orari {
+    margin: 0;
+}
+
+.area-proprietario .storico-orari div {
+    grid-template-columns: 4rem 1fr;
+    padding: .12rem 0;
+}
+
+.area-proprietario .storico-orari dt {
+    color: var(--proprietario-testo-tenue);
+    font-size: .72rem;
+}
+
+.area-proprietario .storico-orari dd {
+    font-weight: 760;
+}
+
+.area-proprietario .indicatore-chiuso {
+    margin: .55rem 0;
+    color: #7f5d39;
+    font-weight: 780;
+}
+
+.area-proprietario .modifica-giornata {
+    padding-top: .55rem;
+    border-top: 1px solid #edf0ee;
+}
+
+.area-proprietario .modifica-giornata summary,
+.area-proprietario .calendario-completo > summary {
+    padding: .52rem 0;
+    color: var(--proprietario-verde);
+    font-size: .82rem;
+    font-weight: 780;
+}
+
+.area-proprietario .chiusura-giornata {
+    display: grid;
+    gap: .3rem;
+    margin-top: .55rem;
+}
+
+.area-proprietario .chiusura-giornata button {
+    justify-self: start;
+}
+
+.area-proprietario .chiusura-giornata small {
+    color: var(--proprietario-testo-tenue);
+    font-size: .68rem;
+}
+
+.area-proprietario .calendario-completo > summary {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0 .7rem;
+    padding: .8rem 1rem;
+    border: 1px solid #cbd6d1;
+    border-radius: .65rem;
+    background: #fff;
+}
+
+.area-proprietario .calendario-completo > summary span {
+    color: var(--proprietario-bronzo);
+}
+
+/* Clienti */
+.area-proprietario .dati-cliente {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .8rem;
+}
+
+.area-proprietario .dati-cliente div {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .18rem;
+    padding: .8rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .68rem;
+    background: #fff;
+}
+
+.area-proprietario .dati-cliente dt {
+    color: var(--proprietario-testo-tenue);
+    font-size: .72rem;
+}
+
+.area-proprietario .dati-cliente dd {
+    overflow-wrap: anywhere;
+    font-weight: 720;
+}
+
+.area-proprietario .azione-riabilitazione {
+    margin: .8rem 0 1.2rem;
+}
+
+.area-proprietario .sottosezione-cliente {
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--proprietario-bordo);
+}
+
+.area-proprietario .sottosezione-cliente h4 {
+    margin: 0 0 .8rem;
+}
+
+.area-proprietario .elenco-appuntamenti-cliente {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.area-proprietario .appuntamento-cliente {
+    padding: .8rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .68rem;
+    background: #fff;
+}
+
+.area-proprietario .appuntamento-cliente time {
+    font-weight: 780;
+}
+
+.area-proprietario .appuntamento-cliente > p {
+    display: flex;
+    justify-content: space-between;
+    gap: .55rem;
+    margin-top: .55rem;
+    color: var(--proprietario-testo-tenue);
+}
+
+.area-proprietario .elenco-clienti-proprietario {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+.area-proprietario .scheda-cliente {
+    grid-template-columns: auto 1fr;
+    gap: .55rem .75rem;
+    align-items: start;
+    padding: .95rem;
+    border-radius: .78rem;
+    box-shadow: 0 8px 20px rgba(22, 49, 42, .035);
+}
+
+.area-proprietario .avatar-cliente {
+    display: grid;
+    place-items: center;
+    width: 2.65rem;
+    height: 2.65rem;
+    grid-row: 1 / 3;
+    border-radius: 50%;
+    background: var(--proprietario-verde-tenue);
+    color: var(--proprietario-verde);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: .86rem;
+    font-weight: 700;
+}
+
+.area-proprietario .identita-cliente {
+    display: grid;
+    min-width: 0;
+}
+
+.area-proprietario .identita-cliente span {
+    overflow: hidden;
+    color: var(--proprietario-testo-tenue);
+    font-size: .79rem;
+    text-overflow: ellipsis;
+}
+
+.area-proprietario .scheda-cliente > .badge-stato,
+.area-proprietario .scheda-cliente > .link-dettaglio-cliente {
+    grid-column: 2;
+    margin: 0;
+}
+
+/* Statistiche */
+.area-proprietario .selettore-viste-statistiche {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .85rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.area-proprietario .card-periodo-statistiche {
+    display: grid;
+    gap: .38rem;
+    padding: 1rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .82rem;
+    background: var(--proprietario-carta);
+    color: inherit;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(22, 49, 42, .04);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.area-proprietario .card-periodo-statistiche:hover,
+.area-proprietario .card-periodo-statistiche:focus-visible {
+    transform: translateY(-2px);
+    border-color: #9cafaa;
+    box-shadow: var(--proprietario-ombra);
+}
+
+.area-proprietario .card-periodo-statistiche > strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.12rem;
+    font-weight: 500;
+}
+
+.area-proprietario .card-periodo-statistiche > span:last-child {
+    color: var(--proprietario-testo-tenue);
+    font-size: .78rem;
+}
+
+.area-proprietario .card-periodo-statistiche.periodo-selezionato {
+    border-color: var(--proprietario-verde);
+    background: var(--proprietario-verde);
+    color: #fff;
+}
+
+.area-proprietario .periodo-selezionato .sovratitolo {
+    color: #e5c995;
+}
+
+.area-proprietario .periodo-selezionato > span:last-child {
+    color: rgba(255,255,255,.7);
+}
+
+.area-proprietario .giorno-selezionato-statistiche {
+    display: flex;
+    align-items: baseline;
+    gap: .75rem;
+    margin-bottom: 1rem;
+    padding: .78rem 1rem;
+    border-left: 4px solid var(--proprietario-bronzo);
+    border-radius: .55rem;
+    background: var(--proprietario-bronzo-tenue);
+}
+
+.area-proprietario .giorno-selezionato-statistiche strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.08rem;
+    font-weight: 500;
+}
+
+.area-proprietario .navigazione-statistiche {
+    align-items: center;
+    padding-top: .9rem;
+    padding-bottom: .9rem;
+}
+
+.area-proprietario .navigazione-periodo a {
+    gap: .28rem;
+    border-radius: .55rem;
+    font-size: .78rem;
+    font-weight: 750;
+}
+
+.area-proprietario .navigazione-periodo .periodo-corrente {
+    border-color: #b9c9c3;
+    background: var(--proprietario-verde-tenue);
+}
+
+.area-proprietario .selettore-periodo-statistiche label {
+    margin: 0;
+}
+
+.area-proprietario .griglia-metriche-statistiche {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .85rem;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.area-proprietario .metrica-statistica {
+    min-height: 8.5rem;
+}
+
+.area-proprietario .legenda-grafico {
+    display: flex;
+    gap: .8rem;
+    color: var(--proprietario-testo-tenue);
+    font-size: .74rem;
+}
+
+.area-proprietario .legenda-grafico span::before {
+    content: "";
+    display: inline-block;
+    width: .62rem;
+    height: .62rem;
+    margin-right: .32rem;
+    border-radius: .16rem;
+}
+
+.area-proprietario .legenda-incassi::before {
+    background: var(--proprietario-bronzo);
+}
+
+.area-proprietario .legenda-appuntamenti::before {
+    background: #1f5a4d;
+}
+
+.area-proprietario .grafico-canvas-contenitore {
+    position: relative;
+    min-height: 12rem;
+    overflow: visible;
+}
+
+.area-proprietario .grafico-canvas {
+    width: 100%;
+    max-width: 100%;
+    border: 0;
+    border-radius: .7rem;
+    background: linear-gradient(180deg, #fbfcfb, #fff);
+}
+
+.area-proprietario .grafico-canvas[hidden] {
+    display: none;
+}
+
+.area-proprietario .grafico-dati {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
+.area-proprietario .tooltip-grafico {
+    position: absolute;
+    z-index: 4;
+    display: none;
+    max-width: 13rem;
+    padding: .48rem .62rem;
+    border-radius: .48rem;
+    background: var(--proprietario-verde-profondo);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(10, 31, 27, .2);
+    font-size: .72rem;
+    pointer-events: none;
+}
+
+.area-proprietario .tooltip-visibile {
+    display: block;
+}
+
+.area-proprietario .classifica-servizi {
+    display: grid;
+    gap: .62rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.area-proprietario .classifica-servizi > li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .75rem;
+    padding: .68rem .76rem;
+    border: 1px solid var(--proprietario-bordo);
+    border-radius: .65rem;
+    background: #fff;
+}
+
+.area-proprietario .posizione-classifica {
+    display: grid;
+    place-items: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: var(--proprietario-bronzo-tenue);
+    color: #765a32;
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.area-proprietario .nome-servizio-classifica {
+    display: grid;
+    gap: .34rem;
+}
+
+.area-proprietario .nome-servizio-classifica progress {
+    width: 100%;
+    height: .38rem;
+    border: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #e8ece9;
+}
+
+.area-proprietario .nome-servizio-classifica progress::-webkit-progress-bar {
+    background: #e8ece9;
+}
+
+.area-proprietario .nome-servizio-classifica progress::-webkit-progress-value {
+    background: var(--proprietario-verde);
+}
+
+.area-proprietario .nome-servizio-classifica progress::-moz-progress-bar {
+    background: var(--proprietario-verde);
+}
+
+.area-proprietario .quantita-servizio {
+    color: var(--proprietario-testo-tenue);
+    font-size: .8rem;
+    font-weight: 720;
+}
+
+/* Responsive area proprietario */
+@media (max-width: 72rem) {
+    .area-proprietario .griglia-metriche-proprietario {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .area-proprietario .lista-prossimi-oggi {
+        grid-template-columns: 1fr;
+    }
+
+    .area-proprietario .form-servizio-nuovo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .area-proprietario .form-servizio-nuovo button {
+        justify-self: start;
+    }
+}
+
+@media (max-width: 52rem) {
+    .area-proprietario .header-proprietario {
+        height: auto;
+    }
+
+    .area-proprietario .sidebar-proprietario {
+        box-shadow: 12px 0 40px rgba(10, 31, 27, .28);
+    }
+
+    .area-proprietario.sidebar-aperta .sidebar-proprietario {
+        transform: translateX(0);
+    }
+
+    .area-proprietario main {
+        padding: 1.35rem .9rem 2.5rem;
+    }
+
+    .area-proprietario .chiudi-sidebar {
+        color: #fff;
+    }
+
+    .area-proprietario .navigazione-proprietario {
+        height: calc(100vh - 6rem);
+    }
+
+    .area-proprietario .selettore-viste-statistiche,
+    .area-proprietario .griglia-metriche-statistiche {
+        grid-template-columns: 1fr;
+    }
+
+    .area-proprietario .navigazione-statistiche {
+        align-items: stretch;
+    }
+
+    .area-proprietario .selettore-periodo-statistiche {
+        width: 100%;
+    }
+}
+
+@media (max-width: 40rem) {
+    .area-proprietario .titolo-pagina {
+        align-items: flex-start;
+    }
+
+    .area-proprietario .griglia-metriche-proprietario,
+    .area-proprietario .form-servizio,
+    .area-proprietario .form-servizio-nuovo,
+    .area-proprietario .dati-cliente {
+        grid-template-columns: 1fr;
+    }
+
+    .area-proprietario .metrica-proprietario {
+        min-height: 7.8rem;
+    }
+
+    .area-proprietario .intestazione-pannello,
+    .area-proprietario .barra-azione-modulo {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .area-proprietario .scheda-appuntamento-proprietario {
+        grid-template-columns: 1fr;
+    }
+
+    .area-proprietario .ora-agenda {
+        display: flex;
+        align-items: baseline;
+        gap: .55rem;
+        padding: 0 0 .65rem;
+        border-right: 0;
+        border-bottom: 1px solid var(--proprietario-bordo);
+    }
+
+    .area-proprietario .azioni-appuntamento,
+    .area-proprietario .gruppo-pulsanti {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .area-proprietario .azioni-appuntamento label,
+    .area-proprietario .azioni-appuntamento input,
+    .area-proprietario .gruppo-pulsanti button {
+        width: 100%;
+    }
+
+    .area-proprietario .classifica-servizi > li {
+        grid-template-columns: 2rem minmax(0, 1fr);
+    }
+
+    .area-proprietario .quantita-servizio {
+        grid-column: 2;
+    }
+
+    .area-proprietario .giorno-selezionato-statistiche {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: .25rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .area-proprietario *,
+    .area-proprietario *::before,
+    .area-proprietario *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
+}
+
+/* =========================================================
+   Secondo passaggio area proprietario: contrasto, dettaglio,
+   disponibilità, agenda a 7 giorni e statistiche.
+   ========================================================= */
+.area-proprietario {
+    --proprietario-sfondo: #eef2ef;
+    --proprietario-superficie: #fffdf8;
+    --proprietario-superficie-verde: #edf4f0;
+    --proprietario-superficie-salvia: #e4eee9;
+    --proprietario-superficie-bronzo: #f3eadc;
+    --proprietario-superficie-antracite: #22332f;
+    --proprietario-antracite: #25332f;
+    --proprietario-salvia: #789689;
+    background:
+        radial-gradient(circle at 88% 3%, rgba(171, 143, 98, .12), transparent 27rem),
+        linear-gradient(180deg, #f2f5f2 0%, var(--proprietario-sfondo) 100%);
+}
+
+.area-proprietario .pannello-proprietario {
+    background: var(--proprietario-superficie);
+    border-color: #d6dfda;
+    box-shadow: 0 12px 30px rgba(28, 53, 46, .065);
+}
+
+.area-proprietario .pannello-riepilogo,
+.area-proprietario .pannello-andamento-statistiche,
+.area-proprietario .calendario-disponibilita {
+    background:
+        linear-gradient(135deg, rgba(126, 153, 142, .10), transparent 38%),
+        var(--proprietario-superficie);
+}
+
+.area-proprietario .card-collegamento {
+    position: relative;
+}
+
+.area-proprietario .card-collegamento::after {
+    content: "";
+    position: absolute;
+    inset: auto .9rem .75rem auto;
+    width: .42rem;
+    height: .42rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+    opacity: .28;
+}
+
+.area-proprietario .metrica-completati {
+    background: #eef5f2;
+    border-color: #cadbd3;
+}
+
+.area-proprietario .metrica-completati .metrica-icona {
+    background: #dbeae3;
+    color: #295c4d;
+}
+
+.area-proprietario .metrica-da-svolgere {
+    background: #f5eee3;
+    border-color: #e3d3ba;
+}
+
+.area-proprietario .metrica-da-svolgere .metrica-icona {
+    background: #e9ddca;
+    color: #795d36;
+}
+
+.area-proprietario .metrica-link-scuro {
+    color: var(--proprietario-verde);
+}
+
+.area-proprietario .metrica-da-svolgere .metrica-link-scuro {
+    color: #765a33;
+}
+
+.area-proprietario .prossimi-oggi-card {
+    background: linear-gradient(100deg, #fffaf2 0%, #fffdf8 55%, #f2f7f4 100%);
+}
+
+.area-proprietario .prossimi-sette-giorni {
+    background: #f0f5f2;
+}
+
+.area-proprietario .riga-prossimo-oggi,
+.area-proprietario .card-appuntamento-settimana {
+    background: rgba(255,255,255,.78);
+}
+
+.area-proprietario .collegamento-come-pulsante {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.6rem;
+    padding: .52rem .82rem;
+    border: 1px solid #c7d2cd;
+    border-radius: .55rem;
+    background: rgba(255,255,255,.78);
+    color: var(--proprietario-verde);
+    font-size: .82rem;
+    font-weight: 760;
+    text-decoration: none;
+}
+
+.area-proprietario .collegamento-come-pulsante:hover,
+.area-proprietario .collegamento-come-pulsante:focus-visible {
+    background: var(--proprietario-verde-tenue);
+    border-color: #9eb3ab;
+}
+
+/* Appuntamenti di oggi */
+.area-proprietario .testata-operativa-giornata {
+    display: grid;
+    grid-template-columns: minmax(12rem, .72fr) minmax(0, 2fr);
+    gap: .9rem;
+    margin: 0 0 1.2rem;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.area-proprietario .totale-giornata-operativa {
+    display: grid;
+    align-content: center;
+    min-height: 8.5rem;
+    padding: 1.2rem 1.3rem;
+    border-radius: .92rem;
+    background:
+        linear-gradient(145deg, rgba(213,189,142,.12), transparent 55%),
+        var(--proprietario-verde-profondo);
+    color: #fff;
+    box-shadow: 0 14px 28px rgba(15,48,42,.13);
+}
+
+.area-proprietario .totale-giornata-operativa .sovratitolo {
+    color: #ddc79d;
+}
+
+.area-proprietario .totale-giornata-operativa strong {
+    margin-top: .2rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2.7rem;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.area-proprietario .totale-giornata-operativa > span:last-child {
+    color: rgba(255,255,255,.65);
+    font-size: .78rem;
+}
+
+.area-proprietario .filtri-stato-giornata {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .72rem;
+    padding: 0;
+    border: 0;
+}
+
+.area-proprietario .filtro-giornata {
+    position: relative;
+    display: grid;
+    align-content: center;
+    gap: .25rem;
+    min-height: 8.5rem;
+    box-sizing: border-box;
+    padding: 1rem;
+    overflow: hidden;
+    border: 1px solid #d3ddd8;
+    border-radius: .86rem;
+    background: var(--proprietario-superficie);
+    color: var(--proprietario-testo);
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgba(25,52,44,.045);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.area-proprietario .filtro-giornata::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--accento-filtro, var(--proprietario-salvia));
+}
+
+.area-proprietario .filtro-giornata:hover,
+.area-proprietario .filtro-giornata:focus-visible,
+.area-proprietario .filtro-giornata-attivo {
+    transform: translateY(-2px);
+    border-color: #a9bcb4;
+    box-shadow: 0 14px 26px rgba(25,52,44,.075);
+}
+
+.area-proprietario .filtro-da-svolgere { --accento-filtro: #ad8753; background: #f7f0e7; }
+.area-proprietario .filtro-completati { --accento-filtro: #3d7563; background: #edf5f1; }
+.area-proprietario .filtro-assenze { --accento-filtro: #8a594e; background: #f6eeeb; }
+
+.area-proprietario .filtro-giornata span {
+    color: #65736e;
+    font-size: .78rem;
+    font-weight: 760;
+}
+
+.area-proprietario .filtro-giornata strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.area-proprietario .azioni-intestazione-giornata {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+}
+
+.area-proprietario .elenco-operativo-giornata {
+    background: #f8fbf9;
+}
+
+.area-proprietario .lista-appuntamenti-oggi {
+    display: grid;
+    gap: .75rem;
+}
+
+.area-proprietario .scheda-appuntamento-oggi {
+    display: grid;
+    grid-template-columns: 6.4rem minmax(0, 1fr);
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #d6dfda;
+    border-radius: .82rem;
+    background: #fffdf9;
+    box-shadow: 0 7px 16px rgba(25,52,44,.035);
+}
+
+.area-proprietario .ora-appuntamento-oggi {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: .2rem;
+    padding: 1rem .65rem;
+    background: #e8f0ec;
+    border-right: 1px solid #d4dfda;
+}
+
+.area-proprietario .ora-appuntamento-oggi time {
+    color: var(--proprietario-verde-profondo);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.55rem;
+}
+
+.area-proprietario .ora-appuntamento-oggi span {
+    color: #71807a;
+    font-size: .69rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.area-proprietario .stato-card-completata .ora-appuntamento-oggi { background: #e5f0eb; }
+.area-proprietario .stato-card-no_show .ora-appuntamento-oggi { background: #f3e8e4; }
+
+.area-proprietario .corpo-appuntamento-oggi {
+    padding: .95rem 1rem;
+}
+
+.area-proprietario .testata-appuntamento-oggi {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .8rem;
+}
+
+.area-proprietario .testata-appuntamento-oggi h4 {
+    margin: 0;
+    font-size: 1.04rem;
+}
+
+.area-proprietario .testata-appuntamento-oggi a {
+    display: inline-block;
+    margin-top: .18rem;
+    color: #6a7873;
+    font-size: .79rem;
+    text-decoration: none;
+}
+
+.area-proprietario .testata-appuntamento-oggi a:hover { text-decoration: underline; }
+
+.area-proprietario .dati-appuntamento-oggi {
+    display: grid;
+    grid-template-columns: minmax(12rem, 2fr) minmax(7rem, 1fr);
+    gap: .7rem;
+    margin: .8rem 0 0;
+}
+
+.area-proprietario .dati-appuntamento-oggi div {
+    padding: .55rem .65rem;
+    border-radius: .55rem;
+    background: #f4f7f5;
+}
+
+.area-proprietario .dati-appuntamento-oggi dt {
+    color: #75817d;
+    font-size: .68rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.area-proprietario .dati-appuntamento-oggi dd {
+    margin: .1rem 0 0;
+    font-weight: 720;
+}
+
+.area-proprietario .azioni-appuntamento-oggi {
+    margin-top: .72rem;
+    padding-top: .72rem;
+    border-top: 1px solid #e7ece9;
+}
+
+/* Incassi di oggi */
+.area-proprietario .riepilogo-incassi-oggi {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .8rem;
+    margin: 0 0 1.2rem;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.area-proprietario .card-incasso {
+    display: grid;
+    gap: .32rem;
+    min-height: 9rem;
+    padding: 1rem 1.05rem;
+    border: 1px solid #d6dfda;
+    border-radius: .88rem;
+    background: var(--proprietario-superficie);
+    box-shadow: 0 10px 24px rgba(25,52,44,.05);
+}
+
+.area-proprietario .card-incasso > span:not(.sovratitolo) {
+    color: #66746f;
+    font-size: .78rem;
+    font-weight: 750;
+}
+
+.area-proprietario .card-incasso strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+    font-weight: 500;
+}
+
+.area-proprietario .card-incasso small {
+    margin-top: auto;
+    color: #77837f;
+}
+
+.area-proprietario .card-incasso-previsto {
+    background: linear-gradient(145deg, #fffaf1, #f7efe2);
+    border-color: #e1d0b4;
+}
+
+.area-proprietario .card-incasso-effettivo {
+    background: linear-gradient(145deg, #eef6f2, #e3efe9);
+    border-color: #c6dad1;
+}
+
+.area-proprietario .card-incasso-residuo {
+    background: linear-gradient(145deg, #f2f4f3, #e7ece9);
+    border-color: #d0d9d5;
+}
+
+.area-proprietario .dettaglio-incassi-oggi {
+    background: #f7faf8;
+}
+
+.area-proprietario .elenco-incassi-oggi {
+    display: grid;
+    gap: .45rem;
+}
+
+.area-proprietario .intestazione-incassi,
+.area-proprietario .riga-incasso-oggi {
+    display: grid;
+    grid-template-columns: minmax(15rem, 2fr) repeat(3, minmax(7rem, .8fr)) minmax(7rem, .8fr);
+    align-items: center;
+    gap: .8rem;
+}
+
+.area-proprietario .intestazione-incassi {
+    padding: .2rem .85rem .45rem;
+    color: #6f7c77;
+    font-size: .68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.area-proprietario .riga-incasso-oggi {
+    padding: .82rem .85rem;
+    border: 1px solid #dce3df;
+    border-radius: .68rem;
+    background: rgba(255,255,255,.78);
+}
+
+.area-proprietario .identita-incasso {
+    display: grid;
+    min-width: 0;
+}
+
+.area-proprietario .identita-incasso span {
+    color: #71807a;
+    font-size: .77rem;
+}
+
+.area-proprietario .dato-incasso {
+    display: grid;
+    gap: .12rem;
+}
+
+.area-proprietario .dato-incasso small {
+    display: none;
+    color: #73807b;
+    font-size: .67rem;
+}
+
+.area-proprietario .dato-incasso strong {
+    font-size: .88rem;
+}
+
+.area-proprietario .dato-incasso-effettivo strong { color: #285f4e; }
+
+/* Agenda giornaliera e agenda 7 giorni */
+.area-proprietario .agenda-proprietario .pannello-proprietario:last-child {
+    background: #f7faf8;
+}
+
+.area-proprietario .agenda-proprietario .scheda-appuntamento-proprietario:nth-child(even) {
+    background: #fbf7ef;
+    border-color: #e4d9c8;
+}
+
+.area-proprietario .settimana-operativa {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(15rem, 1fr));
+    gap: .75rem;
+    margin: 0;
+    padding: .15rem .1rem .8rem;
+    overflow-x: auto;
+    background: transparent;
+    box-shadow: none;
+    scroll-snap-type: x proximity;
+}
+
+.area-proprietario .giorno-settimana-operativa {
+    display: flex;
+    flex-direction: column;
+    min-height: 24rem;
+    padding: .9rem;
+    border: 1px solid #d5ded9;
+    border-radius: .86rem;
+    background: #fffdf8;
+    box-shadow: 0 9px 22px rgba(25,52,44,.045);
+    scroll-snap-align: start;
+}
+
+.area-proprietario .giorno-settimana-oggi {
+    border-color: #8fac9f;
+    background: linear-gradient(180deg, #edf5f1, #fffdf8 42%);
+    box-shadow: inset 0 4px 0 var(--proprietario-verde), 0 12px 26px rgba(25,52,44,.07);
+}
+
+.area-proprietario .testata-giorno-settimana {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .7rem;
+    padding-bottom: .7rem;
+    border-bottom: 1px solid #e2e8e5;
+}
+
+.area-proprietario .testata-giorno-settimana h3 {
+    margin: .08rem 0 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+}
+
+.area-proprietario .lista-settimana-operativa {
+    display: grid;
+    gap: .55rem;
+    margin-top: .7rem;
+}
+
+.area-proprietario .appuntamento-settimana-operativa {
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr);
+    gap: .2rem .55rem;
+    padding: .65rem;
+    border-radius: .6rem;
+    background: #f2f6f3;
+}
+
+.area-proprietario .appuntamento-settimana-operativa time {
+    grid-row: 1 / 3;
+    color: var(--proprietario-verde);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.08rem;
+}
+
+.area-proprietario .appuntamento-settimana-operativa div {
+    display: grid;
+    min-width: 0;
+}
+
+.area-proprietario .appuntamento-settimana-operativa div span {
+    color: #6d7a75;
+    font-size: .72rem;
+}
+
+.area-proprietario .appuntamento-settimana-operativa .badge-stato {
+    grid-column: 2;
+    margin-top: .22rem;
+}
+
+.area-proprietario .giorno-libero-settimana {
+    display: grid;
+    place-items: center;
+    gap: .25rem;
+    min-height: 8rem;
+    color: #81908a;
+    text-align: center;
+}
+
+.area-proprietario .giorno-libero-settimana p { margin: 0; font-size: .78rem; }
+.area-proprietario .apri-giornata-settimana { margin-top: auto; padding-top: .8rem; }
+
+/* Servizi: separazione visiva più netta */
+.area-proprietario .categoria-servizi {
+    position: relative;
+    overflow: hidden;
+}
+
+.area-proprietario .categoria-servizi::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: var(--categoria-accento, var(--proprietario-verde));
+}
+
+.area-proprietario .categoria-servizi-uomo {
+    --categoria-accento: #315f53;
+    background: linear-gradient(180deg, #edf4f0 0, #fffdf8 7rem);
+}
+
+.area-proprietario .categoria-servizi-donna {
+    --categoria-accento: #a48458;
+    background: linear-gradient(180deg, #f4eee4 0, #fffdf8 7rem);
+}
+
+.area-proprietario .categoria-servizi-uomo .scheda-servizio { border-top: 3px solid #8caa9d; }
+.area-proprietario .categoria-servizi-donna .scheda-servizio { border-top: 3px solid #c9ae83; }
+
+/* Disponibilità */
+.area-proprietario .selettore-mese-elegante {
+    background: linear-gradient(110deg, #eef5f1, #fffdf8 66%);
+}
+
+.area-proprietario .switch-stato-giorno {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .28rem;
+    margin: 0 0 .72rem;
+    padding: .24rem;
+    border: 1px solid #cfd9d4;
+    border-radius: .65rem;
+    background: #eef2ef;
+}
+
+.area-proprietario .switch-stato-giorno label {
+    position: relative;
+    margin: 0;
+    cursor: pointer;
+}
+
+.area-proprietario .switch-stato-giorno input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    min-height: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.area-proprietario .switch-stato-giorno span {
+    display: grid;
+    place-items: center;
+    min-height: 2.3rem;
+    margin: 0;
+    border-radius: .48rem;
+    color: #68756f;
+    font-size: .76rem;
+    font-weight: 800;
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+.area-proprietario .switch-stato-giorno input[value="aperto"]:checked + span {
+    background: var(--proprietario-verde);
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(23,63,55,.16);
+}
+
+.area-proprietario .switch-stato-giorno input[value="chiuso"]:checked + span {
+    background: #e9ddd0;
+    color: #6d5131;
+    box-shadow: 0 3px 8px rgba(92,65,34,.08);
+}
+
+.area-proprietario .switch-stato-giorno input:focus-visible + span {
+    outline: 3px solid rgba(176, 138, 82, .34);
+    outline-offset: 2px;
+}
+
+.area-proprietario .griglia-orario-standard {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+}
+
+.area-proprietario .giorno-standard {
+    border-top: 3px solid #77978a;
+    background: #fbfdfb;
+}
+
+.area-proprietario .giorno-standard-chiuso {
+    border-top-color: #b9a083;
+    background: #f4f1ec;
+}
+
+.area-proprietario .giorno-standard .fascia-oraria,
+.area-proprietario .modifica-giornata .fascia-oraria {
+    border-radius: .62rem;
+    background: #f2f6f3;
+}
+
+.area-proprietario .calendario-mese {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    align-items: stretch;
+}
+
+.area-proprietario .giorno-calendario {
+    display: flex;
+    flex-direction: column;
+    min-height: 15.5rem;
+    box-sizing: border-box;
+    border-top: 4px solid #77978a;
+    background: #fffdf8;
+}
+
+.area-proprietario .giorno-calendario.giorno-chiuso {
+    border-top-color: #b39a7a;
+    background:
+        repeating-linear-gradient(-45deg, transparent, transparent 9px, rgba(92,68,39,.025) 9px, rgba(92,68,39,.025) 18px),
+        #f8f5f0;
+}
+
+.area-proprietario .giorno-calendario.giorno-trascorso {
+    border-top-color: #9da9a4;
+    background: #eef1ef;
+    color: #6c7874;
+}
+
+.area-proprietario .badge-giorno-riga {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .32rem;
+}
+
+.area-proprietario .stato-aperto {
+    border-color: #bad5c8;
+    background: #e9f5ef;
+    color: #2a624c;
+}
+
+.area-proprietario .stato-chiuso {
+    border-color: #ddcbb3;
+    background: #f4eade;
+    color: #745737;
+}
+
+.area-proprietario .stato-trascorso {
+    border-color: #cbd2ce;
+    background: #dfe4e1;
+    color: #5f6965;
+}
+
+.area-proprietario .riepilogo-orari-giorno {
+    min-height: 4.6rem;
+}
+
+.area-proprietario .stato-secondario-calendario {
+    color: #707b77;
+    font-size: .78rem;
+    font-weight: 650;
+}
+
+.area-proprietario .modifica-giornata {
+    margin-top: auto;
+}
+
+.area-proprietario .chiusura-giornata {
+    margin-top: .55rem;
+}
+
+/* Statistiche */
+.area-proprietario .metrica-statistica-incasso { background: #f5efe5; border-color: #e1d2bc; }
+.area-proprietario .metrica-statistica-appuntamenti { background: #edf4f1; border-color: #cadbd3; }
+.area-proprietario .metrica-statistica-completati { background: #e7efeb; border-color: #c1d2ca; }
+
+
+.area-proprietario .classifica-servizi-editoriale > li {
+    grid-template-columns: 2.35rem minmax(0, 1fr) auto;
+    min-height: 4rem;
+    border-left: 4px solid #79998b;
+    background: linear-gradient(90deg, #f0f6f3 0, #fffdf8 40%);
+}
+
+.area-proprietario .classifica-servizi-editoriale > li:nth-child(1) {
+    border-left-color: #9c7b4f;
+    background: linear-gradient(90deg, #f5eee2 0, #fffdf8 42%);
+}
+
+.area-proprietario .classifica-servizi-editoriale > li:nth-child(2) { border-left-color: #557c70; }
+.area-proprietario .classifica-servizi-editoriale > li:nth-child(3) { border-left-color: #8ca69b; }
+
+.area-proprietario .classifica-servizi-editoriale .nome-servizio-classifica span {
+    color: #72807b;
+    font-size: .74rem;
+}
+
+.area-proprietario .classifica-servizi-editoriale .quantita-servizio {
+    display: grid;
+    justify-items: end;
+    gap: .1rem;
+}
+
+.area-proprietario .classifica-servizi-editoriale .quantita-servizio strong {
+    color: var(--proprietario-verde);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.35rem;
+    font-weight: 500;
+}
+
+@media (max-width: 68rem) {
+    .area-proprietario .testata-operativa-giornata {
+        grid-template-columns: 1fr;
+    }
+
+    .area-proprietario .totale-giornata-operativa {
+        min-height: 6.5rem;
+    }
+
+    .area-proprietario .riepilogo-incassi-oggi {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .area-proprietario .card-incasso-residuo {
+        grid-column: 1 / -1;
+    }
+
+    .area-proprietario .intestazione-incassi { display: none; }
+
+    .area-proprietario .riga-incasso-oggi {
+        grid-template-columns: minmax(12rem, 2fr) repeat(2, minmax(7rem, 1fr));
+    }
+
+    .area-proprietario .riga-incasso-oggi .dato-incasso small { display: block; }
+    .area-proprietario .riga-incasso-oggi .badge-stato { justify-self: start; }
+}
+
+@media (max-width: 46rem) {
+    .area-proprietario .filtri-stato-giornata,
+    .area-proprietario .riepilogo-incassi-oggi {
+        grid-template-columns: 1fr;
+    }
+
+    .area-proprietario .filtro-giornata {
+        min-height: 6.5rem;
+    }
+
+    .area-proprietario .card-incasso-residuo { grid-column: auto; }
+
+    .area-proprietario .scheda-appuntamento-oggi {
+        grid-template-columns: 1fr;
+    }
+
+    .area-proprietario .ora-appuntamento-oggi {
+        grid-template-columns: auto auto;
+        justify-content: space-between;
+        justify-items: start;
+        border-right: 0;
+        border-bottom: 1px solid #d4dfda;
+    }
+
+    .area-proprietario .dati-appuntamento-oggi {
+        grid-template-columns: 1fr;
+    }
+
+    .area-proprietario .testata-appuntamento-oggi {
+        flex-direction: column;
+    }
+
+    .area-proprietario .riga-incasso-oggi {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .area-proprietario .identita-incasso {
+        grid-column: 1 / -1;
+    }
+
+    .area-proprietario .riga-incasso-oggi .badge-stato {
+        grid-column: 1 / -1;
+    }
+
+    .area-proprietario .classifica-servizi-editoriale > li {
+        grid-template-columns: 2.35rem minmax(0,1fr);
+    }
+
+    .area-proprietario .classifica-servizi-editoriale .quantita-servizio {
+        grid-column: 2;
+        justify-items: start;
+    }
+}
+
+/* Ulteriore differenziazione delle superfici informative. */
+.area-proprietario .clienti-proprietario .pannello-proprietario {
+    background: #f7faf8;
+}
+
+.area-proprietario .elenco-clienti-proprietario .scheda-cliente:nth-child(odd) {
+    background: #fffdf8;
+}
+
+.area-proprietario .elenco-clienti-proprietario .scheda-cliente:nth-child(even) {
+    background: #f2f6f3;
+}
+
+.area-proprietario .categoria-servizi-uomo .scheda-servizio {
+    background: #fbfdfb;
+}
+
+.area-proprietario .categoria-servizi-donna .scheda-servizio {
+    background: #fffcf7;
+}
+/* Rifinitura finale: superfici, ritmo e controlli proprietario. */
+.area-proprietario {
+    --proprietario-sfondo: #e9eeea;
+    --proprietario-superficie: #fbfaf5;
+    --proprietario-carta: #f8f6ef;
+    --proprietario-bordo: #cbd7ce;
+    background: linear-gradient(130deg, #e9eee9, #f3f1e9 65%, #e9efea);
+}
+
+.area-proprietario .pannello-proprietario {
+    border-color: #cbd8cf;
+    box-shadow: 0 12px 30px rgba(25, 52, 43, .08);
+}
+
+.area-proprietario .titolo-pagina {
+    border-bottom: 1px solid #cbd7cc;
+}
+
+.area-proprietario .prossimi-sette-giorni {
+    background: #e9f0e9;
+}
+
+.area-proprietario .card-appuntamento-settimana {
+    border: 1px solid #c9d9cf;
+    border-left: 4px solid #678d79;
+    background: #f8f9f2;
+    box-shadow: 0 4px 12px rgba(27, 59, 46, .05);
+}
+
+.area-proprietario .card-appuntamento-settimana:nth-child(even) {
+    border-color: #d8d0be;
+    border-left-color: #aa8b5b;
+    background: #f9f5eb;
+}
+
+.area-proprietario .data-appuntamento-settimana strong {
+    color: #1b4d3d;
+}
+
+.area-proprietario .data-appuntamento-settimana span {
+    color: #63553b;
+    font-weight: 750;
+}
+
+.area-proprietario .barra-filtri,
+.area-proprietario .dettaglio-incassi-oggi,
+.area-proprietario .navigazione-statistiche {
+    background: #eaf0e9;
+}
+
+.area-proprietario .lista-agenda-proprietario,
+.area-proprietario .elenco-incassi-oggi {
+    gap: .65rem;
+}
+
+.area-proprietario .lista-agenda-proprietario .scheda-appuntamento-proprietario,
+.area-proprietario .riga-incasso-oggi {
+    border-left: 4px solid #789988;
+    background: #f8faf5;
+}
+
+.area-proprietario .lista-agenda-proprietario .scheda-appuntamento-proprietario:nth-child(even),
+.area-proprietario .riga-incasso-oggi:nth-child(odd) {
+    border-left-color: #b39a72;
+    background: #fbf6ed;
+}
+
+.area-proprietario .riga-incasso-oggi:hover,
+.area-proprietario .scheda-cliente:hover {
+    box-shadow: 0 9px 23px rgba(28, 58, 45, .11);
+}
+
+.area-proprietario .card-incasso-residuo > span:not(.sovratitolo) {
+    color: #253d32;
+}
+
+.area-proprietario .giorno-standard {
+    display: flex;
+    flex-direction: column;
+    min-height: 20rem;
+    border-color: #c8d8cc;
+    background: #f7faf5;
+}
+
+.area-proprietario .giorno-standard-chiuso {
+    border-color: #d8c8b4;
+    background: #f1ede4;
+}
+
+.area-proprietario .giorno-standard-chiuso .fasce-standard {
+    opacity: .42;
+}
+
+.area-proprietario .campo-orario-hhmm {
+    width: 6.2rem;
+    max-width: 100%;
+    min-height: 2.6rem;
+    padding: .5rem .6rem;
+    border: 1px solid #aabcb0;
+    border-radius: .48rem;
+    background: #fffdf7;
+    color: #193e31;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.03rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-align: center;
+}
+
+.area-proprietario .campo-orario-hhmm:focus-visible {
+    outline: 3px solid #c3b085;
+    outline-offset: 2px;
+}
+
+.area-proprietario .campo-orario-hhmm:disabled {
+    background: #e2e0d8;
+    color: #6e766e;
+    cursor: not-allowed;
+}
+
+.area-proprietario .giorno-calendario.giorno-trascorso {
+    border-top-color: #6e8275;
+}
+
+.area-proprietario .giorno-trascorso .stato-trascorso {
+    background: #506c5b;
+    border-color: #506c5b;
+    color: #fff;
+}
+
+.area-proprietario .elenco-clienti-proprietario .scheda-cliente {
+    border-color: #cbd9cd;
+    border-left: 4px solid #809b88;
+    transition: box-shadow .16s ease, transform .16s ease;
+}
+
+.area-proprietario .elenco-clienti-proprietario .scheda-cliente:nth-child(even) {
+    border-left-color: #ac946b;
+    background: #f6f2e9;
+}
+
+.area-proprietario .scheda-cliente:hover {
+    transform: translateY(-2px);
+}
+
+.area-proprietario .card-periodo-statistiche:not(.periodo-selezionato) {
+    background: #f3f0e7;
+    border-color: #d7d0c2;
+}
+
+.area-proprietario .card-periodo-statistiche:nth-child(2):not(.periodo-selezionato) {
+    background: #eaf1e9;
+    border-color: #c8d8c8;
+}
+
+.area-proprietario .metrica-statistica {
+    border-top: 4px solid #779985;
+    box-shadow: 0 7px 17px rgba(28, 58, 45, .055);
+}
+
+.area-proprietario .metrica-statistica-incasso { border-top-color: #a88b59; }
+.area-proprietario .metrica-statistica-completati { border-top-color: #346b56; }
+
+.area-proprietario .grafico-linea-contenitore {
+    overflow-x: auto;
+    padding: .6rem;
+    border: 1px solid #cad8cd;
+    border-radius: .78rem;
+    background: #f5f8f1;
+}
+
+.area-proprietario .grafico-linea-contenitore .grafico-canvas {
+    max-width: none;
+    background: transparent;
+}
+
+.area-proprietario .classifica-servizi-editoriale > li {
+    border-color: #cbdacf;
+}
+
+@media (max-width: 46rem) {
+    .area-proprietario .giorno-standard { min-height: 0; }
+    .area-proprietario .grafico-linea-contenitore .tooltip-grafico { max-width: 11rem; }
+}
+
+
+/* Leggibilità dei pannelli proprietario e modifica degli orari. */
+.area-proprietario .riga-prossimo-oggi,
+.area-proprietario .card-appuntamento-settimana,
+.area-proprietario .lista-agenda-proprietario .scheda-appuntamento-proprietario,
+.area-proprietario .riga-incasso-oggi {
+    border: 2px solid #bdcfc2;
+    box-shadow: 0 5px 16px rgba(24, 56, 43, .07);
+}
+
+.area-proprietario .card-appuntamento-settimana:nth-child(even),
+.area-proprietario .lista-agenda-proprietario .scheda-appuntamento-proprietario:nth-child(even),
+.area-proprietario .riga-incasso-oggi:nth-child(odd) {
+    border-color: #d0bea0;
+}
+
+.area-proprietario .categoria-servizi-uomo {
+    background: #eaf2ed;
+}
+
+.area-proprietario .categoria-servizi-donna {
+    background: #f4ede1;
+}
+
+.area-proprietario .categoria-servizi .scheda-servizio {
+    border: 2px solid #b9cfc1;
+    background: #fffefa;
+    box-shadow: 0 6px 16px rgba(23, 58, 43, .08);
+}
+
+.area-proprietario .categoria-servizi-donna .scheda-servizio {
+    border-color: #d5bea0;
+}
+
+.area-proprietario .giorno-calendario.giorno-chiuso {
+    background: #f4eee5;
+}
+
+.area-proprietario .giorno-calendario.giorno-trascorso {
+    background: #eef1ef;
+}
+
+.area-proprietario .modifica-giornata summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: .6rem .8rem;
+    border: 1px solid #a9beb0;
+    border-radius: .55rem;
+    background: #e8f1eb;
+    color: #17483b;
+    list-style: none;
+}
+
+.area-proprietario .modifica-giornata summary::-webkit-details-marker {
+    display: none;
+}
+
+.area-proprietario .modifica-giornata summary::after {
+    content: '+';
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.area-proprietario .modifica-giornata[open] summary {
+    border-color: #17483b;
+    background: #17483b;
+    color: #fff;
+}
+
+.area-proprietario .modifica-giornata[open] summary::after {
+    content: '−';
+}
+
+.area-proprietario .giorno-calendario:has(> .modifica-giornata[open]) {
+    grid-column: span 2;
+    border-color: #8ba99a;
+    box-shadow: 0 10px 24px rgba(23, 58, 43, .1);
+}
+
+.area-proprietario .modifica-giornata[open] form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .8rem;
+    margin-top: .75rem;
+}
+
+.area-proprietario .modifica-giornata[open] .fascia-oraria {
+    min-width: 0;
+    margin: 0;
+    background: #f6f8f5;
+}
+
+.area-proprietario .modifica-giornata[open] form > button {
+    grid-column: 1 / -1;
+    justify-self: start;
+}
+
+.area-proprietario .elenco-clienti-proprietario .scheda-cliente,
+.area-proprietario .elenco-clienti-proprietario .scheda-cliente:nth-child(even) {
+    border: 2px solid #b8cdbf;
+    background: #fffefa;
+    box-shadow: 0 6px 16px rgba(23, 58, 43, .08);
+}
+
+.area-proprietario .elenco-clienti-proprietario .scheda-cliente:nth-child(even) {
+    border-color: #d3bea1;
+    background: #fbf7ef;
+}
+
+@media (max-width: 46rem) {
+    .area-proprietario .giorno-calendario:has(> .modifica-giornata[open]) {
+        grid-column: 1 / -1;
+    }
+
+    .area-proprietario .modifica-giornata[open] form {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Monogramma più leggibile nella navigazione proprietario. */
+.area-proprietario .sidebar-monogramma {
+    width: 3rem;
+    height: 3rem;
+    flex-basis: 3rem;
+    box-sizing: border-box;
+    border: 1.5px solid #d9be84;
+    background: rgba(255, 255, 255, .045);
+    color: #f1d79e;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+    box-shadow: inset 0 0 0 3px rgba(17, 58, 48, .65);
+}
+
+/* Rifiniture finali area proprietario: agenda e campi orario. */
+.area-proprietario .dati-appuntamento-agenda {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+}
+
+.area-proprietario .dati-appuntamento-agenda > div {
+    min-width: 0;
+    padding: 0 1rem;
+}
+
+.area-proprietario .dati-appuntamento-agenda > div:first-child {
+    padding-left: 0;
+}
+
+.area-proprietario .dati-appuntamento-agenda > div + div {
+    border-left: 1px solid #e3e9e5;
+}
+
+.area-proprietario .dati-appuntamento-agenda dd {
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+.area-proprietario .dato-non-registrato {
+    color: #7b8782;
+    font-size: .88rem;
+    font-weight: 650;
+}
+
+.area-proprietario .selettore-giornata {
+    width: fit-content;
+    max-width: 100%;
+    padding: .5rem;
+    border: 1px solid #c5d4ca;
+    border-radius: .78rem;
+    background: #edf3ee;
+}
+
+.area-proprietario .selettore-giornata label {
+    gap: .1rem;
+    padding: .3rem .42rem;
+    border-radius: .58rem;
+}
+
+.area-proprietario .selettore-giornata label > span {
+    margin: 0 0 .2rem;
+    color: #65746e;
+    font-size: .67rem;
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.area-proprietario .selettore-giornata input,
+.area-proprietario .selettore-giornata select {
+    min-height: 2.55rem;
+    border-color: #b8c9be;
+    background-color: #fffdf8;
+    color: #173f34;
+    font-weight: 760;
+    font-variant-numeric: tabular-nums;
+}
+
+.area-proprietario .selettore-giornata select {
+    appearance: none;
+    padding-right: 2.25rem;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #49685d 50%),
+        linear-gradient(135deg, #49685d 50%, transparent 50%);
+    background-position:
+        calc(100% - 15px) 50%,
+        calc(100% - 10px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+}
+
+.area-proprietario .azione-pericolosa summary {
+    min-height: 2.45rem;
+    box-sizing: border-box;
+    border-color: #d2aaa1;
+    background: #fbf2ef;
+    box-shadow: 0 3px 10px rgba(111, 48, 37, .045);
+    cursor: pointer;
+}
+
+.area-proprietario .azione-pericolosa summary::before {
+    content: "×";
+    display: inline-grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: #f3ded8;
+    color: #8e3a2e;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.area-proprietario .azione-pericolosa[open] summary::before {
+    transform: none;
+    content: "−";
+}
+
+.area-proprietario .campo-orario-hhmm::placeholder {
+    color: #91a098;
+    opacity: 1;
+    font-weight: 650;
+    letter-spacing: .03em;
+}
+
+@media (max-width: 46rem) {
+    .area-proprietario .dati-appuntamento-agenda {
+        grid-template-columns: 1fr;
+        gap: .55rem;
+    }
+
+    .area-proprietario .dati-appuntamento-agenda > div,
+    .area-proprietario .dati-appuntamento-agenda > div:first-child {
+        padding: 0;
+    }
+
+    .area-proprietario .dati-appuntamento-agenda > div + div {
+        padding-top: .55rem;
+        border-top: 1px solid #e3e9e5;
+        border-left: 0;
+    }
+
+    .area-proprietario .selettore-giornata {
+        width: 100%;
+    }
+
+    .area-proprietario .selettore-giornata label {
+        flex: 1 1 7rem;
+    }
+
+    .area-proprietario .selettore-giornata .giorno-agenda,
+    .area-proprietario .selettore-giornata .anno-agenda,
+    .area-proprietario .selettore-giornata select {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+.area-proprietario .giorno-agenda,
+.area-proprietario .anno-agenda {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.area-proprietario .giorno-agenda::-webkit-inner-spin-button,
+.area-proprietario .giorno-agenda::-webkit-outer-spin-button,
+.area-proprietario .anno-agenda::-webkit-inner-spin-button,
+.area-proprietario .anno-agenda::-webkit-outer-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+
+/* =========================================================
+   Ultime rifiniture area proprietario - 07/10/2026
+   ========================================================= */
+
+/* Le azioni in alto a destra restano visivamente staccate dalla riga di separazione. */
+.area-proprietario .titolo-pagina > .pulsante-secondario,
+.area-proprietario .titolo-pagina > .collegamento-come-pulsante,
+.area-proprietario .titolo-pagina > .pill-giornata {
+    align-self: flex-end;
+    margin-bottom: .72rem;
+}
+
+/* Agenda sette giorni: testate più pulite e appuntamenti distinguibili per stato. */
+.area-proprietario .testata-giorno-settimana {
+    min-height: 4.35rem;
+}
+
+.area-proprietario .appuntamento-settimana-operativa {
+    position: relative;
+    padding: .75rem;
+    border: 1px solid #c7d8ce;
+    border-left: 4px solid #6f9783;
+    background: #eaf3ed;
+    box-shadow: 0 5px 14px rgba(25, 52, 43, .07);
+}
+
+.area-proprietario .appuntamento-settimana-operativa:nth-child(even) {
+    border-color: #ddcfb8;
+    border-left-color: #a88755;
+    background: #f4ead9;
+}
+
+.area-proprietario .appuntamento-settimana-completata {
+    border-left-color: #4f7f70;
+    background: #e2eee9;
+}
+
+.area-proprietario .appuntamento-settimana-no_show {
+    border-left-color: #a96b58;
+    background: #f4e6e1;
+}
+
+.area-proprietario .appuntamento-settimana-prenotata {
+    border-left-color: #9a7a45;
+}
+
+/* Agenda giornaliera: card vere, non semplici righe. */
+.area-proprietario .lista-agenda-proprietario {
+    gap: .82rem;
+}
+
+.area-proprietario .lista-agenda-proprietario .scheda-appuntamento-proprietario {
+    border: 1px solid #c5d6cc;
+    border-left: 5px solid #6f9783;
+    border-radius: .9rem;
+    background: #eef5f0;
+    box-shadow: 0 7px 18px rgba(25, 52, 43, .07);
+}
+
+.area-proprietario .lista-agenda-proprietario .scheda-appuntamento-proprietario:nth-child(even) {
+    border-color: #ddcfb7;
+    border-left-color: #a88755;
+    background: #f8efe1;
+}
+
+.area-proprietario .scheda-agenda-stato-completata {
+    border-left-color: #4f7f70 !important;
+}
+
+.area-proprietario .scheda-agenda-stato-no_show {
+    border-left-color: #a96b58 !important;
+    background: #f7ebe7 !important;
+}
+
+.area-proprietario .scheda-agenda-stato-prenotata {
+    border-left-color: #9a7a45 !important;
+}
+
+.area-proprietario .dati-appuntamento-agenda {
+    margin-top: .72rem;
+    padding: .7rem .8rem;
+    border: 1px solid rgba(73, 104, 93, .13);
+    border-radius: .65rem;
+    background: rgba(255, 255, 255, .58);
+}
+
+.area-proprietario .dato-pagamento-incoerente {
+    color: #8b3f32;
+    font-weight: 800;
+}
+
+/* Totale giornata è un filtro vero. */
+.area-proprietario .totale-giornata-collegamento {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.area-proprietario .totale-giornata-collegamento:hover,
+.area-proprietario .totale-giornata-collegamento:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(21, 59, 48, .16);
+}
+
+/* Dashboard: sette giorni reali, non cinque appuntamenti. */
+.area-proprietario .riepilogo-giorni-dashboard {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(9.6rem, 1fr));
+    gap: .7rem;
+    overflow-x: auto;
+    padding-bottom: .25rem;
+    scroll-snap-type: x proximity;
+}
+
+.area-proprietario .card-giorno-dashboard {
+    display: grid;
+    align-content: start;
+    gap: .34rem;
+    min-height: 8.4rem;
+    box-sizing: border-box;
+    padding: .9rem;
+    border: 1px solid #c6d6cc;
+    border-top: 4px solid #6f9783;
+    border-radius: .78rem;
+    background: #f0f5ee;
+    color: #183e33;
+    text-decoration: none;
+    box-shadow: 0 5px 14px rgba(25, 52, 43, .055);
+    scroll-snap-align: start;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.area-proprietario .card-giorno-dashboard:nth-child(even) {
+    border-color: #ded0b9;
+    border-top-color: #a88755;
+    background: #f7efe1;
+}
+
+.area-proprietario .card-giorno-dashboard-oggi {
+    border-color: #779b89;
+    border-top-color: #174b3c;
+    background: #e2eee8;
+}
+
+.area-proprietario .card-giorno-dashboard:hover,
+.area-proprietario .card-giorno-dashboard:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(25, 52, 43, .12);
+}
+
+.area-proprietario .card-giorno-dashboard > strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.03rem;
+    font-weight: 600;
+}
+
+.area-proprietario .numero-appuntamenti-giorno {
+    margin-top: .3rem;
+    font-size: .85rem;
+    font-weight: 800;
+    color: #3d5e52;
+}
+
+.area-proprietario .apri-giorno-dashboard {
+    margin-top: auto;
+    color: #174b3c;
+    font-size: .76rem;
+    font-weight: 800;
+}
+
+/* Servizi: niente bubble native, errore inline coerente col gestionale. */
+.area-proprietario .errore-campo-servizio {
+    display: block;
+    min-height: 1.05rem;
+    margin-top: .28rem;
+    color: #8d3d31;
+    font-size: .73rem;
+    font-weight: 700;
+}
+
+.area-proprietario .campo-servizio-errore {
+    border-color: #b76e60 !important;
+    background: #fff7f4 !important;
+    box-shadow: 0 0 0 3px rgba(183, 110, 96, .12);
+}
+
+/* Notifiche di esito: evidenti e temporanee. */
+.area-proprietario .messaggio-esito,
+.area-proprietario .messaggio-errore {
+    position: relative;
+    overflow: hidden;
+    margin: 0 0 1rem;
+    padding: .82rem 1rem;
+    border: 1px solid transparent;
+    border-left-width: 4px;
+    border-radius: .68rem;
+    color: #fff;
+    box-shadow: 0 9px 22px rgba(20, 47, 39, .15);
+    transition: opacity .28s ease, transform .28s ease, max-height .28s ease, margin .28s ease, padding .28s ease;
+}
+
+.area-proprietario .messaggio-esito {
+    border-color: #2d6554;
+    background: #174b3c;
+}
+
+.area-proprietario .messaggio-errore {
+    border-color: #934d40;
+    background: #783a31;
+}
+
+.area-proprietario .messaggio-in-uscita {
+    opacity: 0;
+    transform: translateY(-5px);
+}
+
+@media (max-width: 64rem) {
+    .area-proprietario .riepilogo-giorni-dashboard {
+        grid-template-columns: repeat(7, minmax(10.5rem, 1fr));
+    }
+}
+
+@media (max-width: 46rem) {
+    .area-proprietario .titolo-pagina > .pulsante-secondario,
+    .area-proprietario .titolo-pagina > .collegamento-come-pulsante,
+    .area-proprietario .titolo-pagina > .pill-giornata {
+        margin-bottom: .35rem;
+    }
+
+    .area-proprietario .dati-appuntamento-agenda {
+        padding: .7rem;
+    }
+}
+
+
+/* =========================================================
+   Chiusura area proprietario + area pubblica - 07/10/2026
+   ========================================================= */
+
+/* Validazione orari interamente Lumèa: niente bubble native del browser. */
+.area-proprietario .errore-orario-lumea {
+    display: block;
+    margin-top: .35rem;
+    padding: .42rem .55rem;
+    border-left: 3px solid #a95747;
+    border-radius: .38rem;
+    background: #f8ebe7;
+    color: #783a31;
+    font-size: .72rem;
+    font-weight: 750;
+    line-height: 1.35;
+}
+.area-proprietario .errore-orario-lumea[hidden] { display: none; }
+.area-proprietario .campo-orario-errore {
+    border-color: #a95747 !important;
+    background: #fff9f6 !important;
+    box-shadow: 0 0 0 3px rgba(169, 87, 71, .12) !important;
+}
+
+/* Servizi: campi perfettamente allineati e titolo servizio sottolineato. */
+.area-proprietario .scheda-servizio form label,
+.area-proprietario .form-servizio-nuovo label {
+    grid-template-rows: auto 2.75rem 1.05rem;
+    align-content: start;
+}
+.area-proprietario .scheda-servizio form input,
+.area-proprietario .scheda-servizio form select,
+.area-proprietario .form-servizio-nuovo input,
+.area-proprietario .form-servizio-nuovo select {
+    height: 2.75rem;
+    box-sizing: border-box;
+}
+.area-proprietario .errore-placeholder { visibility: hidden; }
+.area-proprietario .scheda-servizio h4 {
+    text-align: left;
+    text-decoration: underline;
+    text-decoration-color: rgba(23, 75, 60, .35);
+    text-decoration-thickness: 1px;
+    text-underline-offset: .2rem;
+}
+
+/* Totale giornata: testo sempre leggibile sul verde scuro. */
+.area-proprietario .totale-giornata-operativa,
+.area-proprietario .totale-giornata-operativa .sovratitolo,
+.area-proprietario .totale-giornata-operativa strong,
+.area-proprietario .totale-giornata-operativa span {
+    color: #fff !important;
+}
+.area-proprietario .totale-giornata-operativa .sovratitolo { color: #f1d79e !important; }
+
+/* Agenda: telefono, prezzo e incasso sono tre vere card informative. */
+.area-proprietario .dati-appuntamento-agenda {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .65rem;
+    margin-top: .78rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+.area-proprietario .dati-appuntamento-agenda > div,
+.area-proprietario .dati-appuntamento-agenda > div:first-child,
+.area-proprietario .dati-appuntamento-agenda > div + div {
+    min-width: 0;
+    padding: .72rem .82rem;
+    border: 1px solid #c7d7ce;
+    border-left: 1px solid #c7d7ce;
+    border-radius: .62rem;
+    background: #fffdf8;
+    box-shadow: 0 3px 10px rgba(28, 59, 49, .045);
+}
+.area-proprietario .dati-appuntamento-agenda > div:nth-child(2) {
+    border-color: #d9c8aa;
+    background: #fbf5e9;
+}
+.area-proprietario .dati-appuntamento-agenda > div:nth-child(3) {
+    border-color: #b8d0c3;
+    background: #eaf3ee;
+}
+.area-proprietario .dati-appuntamento-agenda dt {
+    margin-bottom: .16rem;
+    color: #687771;
+    font-size: .72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .045em;
+}
+.area-proprietario .dati-appuntamento-agenda dd { color: #173f34; font-weight: 760; }
+.area-proprietario .dati-appuntamento-agenda .dato-non-registrato { color: #6f7b76; }
+.area-proprietario .dati-appuntamento-agenda .dato-pagamento-incoerente { color: #8b3f32; }
+
+/* Icona X annullamento: disegnata in CSS e centrata geometricamente. */
+.area-proprietario .azione-pericolosa summary::before {
+    content: "";
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: 0 0 1.25rem;
+    border-radius: 50%;
+    background:
+        linear-gradient(45deg, transparent 46%, #8e3a2e 46%, #8e3a2e 54%, transparent 54%),
+        linear-gradient(-45deg, transparent 46%, #8e3a2e 46%, #8e3a2e 54%, transparent 54%),
+        #f3ded8;
+}
+.area-proprietario .azione-pericolosa[open] summary::before {
+    content: "";
+    transform: none;
+    background:
+        linear-gradient(0deg, transparent 46%, #8e3a2e 46%, #8e3a2e 54%, transparent 54%),
+        #f3ded8;
+}
+
+/* Agenda nella sidebar: mini blocco-notes coerente con le altre icone. */
+.area-proprietario .nav-icon-agenda {
+    position: relative;
+    width: .9rem;
+    height: .82rem;
+    box-sizing: border-box;
+    border: 1.5px solid currentColor;
+    border-radius: .12rem;
+    background:
+        linear-gradient(currentColor, currentColor) .18rem .28rem / .5rem 1px no-repeat,
+        linear-gradient(currentColor, currentColor) .18rem .48rem / .5rem 1px no-repeat;
+}
+.area-proprietario .nav-icon-agenda::before,
+.area-proprietario .nav-icon-agenda::after {
+    content: "";
+    position: absolute;
+    top: -.18rem;
+    width: .12rem;
+    height: .3rem;
+    border-radius: .1rem;
+    background: currentColor;
+}
+.area-proprietario .nav-icon-agenda::before { left: .2rem; }
+.area-proprietario .nav-icon-agenda::after { right: .2rem; }
+
+/* No-show visibili al proprietario. */
+.area-proprietario .riepilogo-no-show-cliente {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem .6rem;
+    margin-top: .28rem;
+    color: #566a62;
+    font-size: .75rem;
+}
+.area-proprietario .riepilogo-no-show-cliente strong { color: #7e4035; }
+.area-proprietario .avviso-sospensione-proprietario {
+    display: grid;
+    gap: .2rem;
+    margin: .85rem 0 0;
+    padding: .75rem .9rem;
+    border: 1px solid #d0a99f;
+    border-left: 4px solid #9c5748;
+    border-radius: .62rem;
+    background: #f8ece8;
+    color: #6f382f;
+}
+
+/* Conferme: sostituisce window.confirm di Chrome. */
+.conferma-lumea[hidden] { display: none; }
+.conferma-lumea { position: fixed; z-index: 9999; inset: 0; display: grid; place-items: center; padding: 1rem; }
+.conferma-lumea__sfondo { position: absolute; inset: 0; background: rgba(12, 35, 29, .62); backdrop-filter: blur(3px); }
+.conferma-lumea__dialogo {
+    position: relative;
+    z-index: 1;
+    width: min(27rem, 100%);
+    padding: 1.35rem;
+    border: 1px solid #b9cbbf;
+    border-radius: 1rem;
+    background: #fffdf8;
+    color: #173f34;
+    box-shadow: 0 24px 65px rgba(10, 31, 25, .28);
+}
+.conferma-lumea__chiudi { position: absolute; top: .65rem; right: .72rem; width: 2rem; height: 2rem; border: 0; border-radius: 50%; background: #edf2ee; color: #174b3c; font-size: 1.25rem; cursor: pointer; }
+.conferma-lumea__icona { display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem; margin-bottom: .8rem; border: 1px solid #b89a63; border-radius: 50%; background: #174b3c; color: #f0d59b; font-family: Georgia, 'Times New Roman', serif; font-weight: 700; }
+.conferma-lumea__dialogo h2 { margin: 0 2rem .45rem 0; font-family: Georgia, 'Times New Roman', serif; font-size: 1.45rem; }
+.conferma-lumea__dialogo p { margin: 0; color: #5e6d67; line-height: 1.55; }
+.conferma-lumea__azioni { display: flex; justify-content: flex-end; gap: .65rem; margin-top: 1.2rem; }
+.conferma-lumea__annulla,
+.conferma-lumea__conferma { min-height: 2.65rem; padding: .65rem 1rem; border-radius: .55rem; font-weight: 800; cursor: pointer; }
+.conferma-lumea__annulla { border: 1px solid #b9c9bf; background: #fff; color: #174b3c; }
+.conferma-lumea__conferma { border: 1px solid #174b3c; background: #174b3c; color: #fff; }
+.conferma-lumea-aperta { overflow: hidden; }
+
+/* Cliente sospeso: stato evidente ma non punitivo. */
+.area-cliente .blocco-prenotazioni-sospese {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    border: 1px solid #d2afa4;
+    border-left: 5px solid #985546;
+    background: #f7ebe7;
+}
+.area-cliente .icona-sospensione { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #985546; color: #fff; font-weight: 900; }
+.area-cliente .etichetta-sospensione { color: #985546; font-size: .72rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.area-cliente .blocco-prenotazioni-sospese h3 { margin: .2rem 0 .4rem; }
+.area-cliente .blocco-prenotazioni-sospese p { margin: .2rem 0; }
+.area-cliente .nota-sospensione { color: #745047; font-size: .88rem; }
+.area-cliente .azione-rapida-disabilitata { display: grid; gap: .15rem; padding: .8rem; border: 1px dashed #c5c9c6; border-radius: .5rem; background: #f0f1f0; color: #818985; font-weight: 750; }
+.area-cliente .azione-rapida-disabilitata small { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }
+
+/* Area pubblica / home / accesso */
+.area-pubblica { width: 100%; max-width: none; margin: 0; padding: 0; min-height: 100vh; background: #f3f1e9; color: #173f34; font-family: Arial, Helvetica, sans-serif; box-sizing: border-box; }
+.header-pubblico { display: flex; align-items: center; justify-content: space-between; gap: 1rem; max-width: 78rem; margin: 0 auto; padding: 1.1rem 1.4rem; }
+.brand-pubblico { display: inline-flex; align-items: center; gap: .7rem; color: #173f34; text-decoration: none; }
+.brand-pubblico-marchio { display: grid; place-items: center; width: 2.9rem; height: 2.9rem; border: 1.5px solid #b89758; border-radius: 50%; background: #174b3c; color: #f2d89e; font-family: Georgia, 'Times New Roman', serif; font-weight: 700; }
+.brand-pubblico > span:last-child { display: grid; }
+.brand-pubblico strong { font-family: Georgia, 'Times New Roman', serif; font-size: 1.25rem; }
+.brand-pubblico small { margin-top: .08rem; color: #66736d; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
+.nav-pubblico { display: flex; align-items: center; gap: .45rem; }
+.nav-pubblico a, .link-home-pubblica { padding: .65rem .82rem; border-radius: .5rem; color: #234f42; text-decoration: none; font-weight: 750; }
+.nav-pubblico .cta-pubblica { background: #174b3c; color: #fff; }
+.home-pubblica { max-width: 78rem; margin: 0 auto; padding: 1rem 1.4rem 3rem; }
+.hero-pubblico { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(20rem, .85fr); gap: 2.2rem; align-items: center; min-height: 38rem; padding: 3.4rem; border: 1px solid #cbd5cf; border-radius: 1.4rem; background: #eef2eb; box-shadow: 0 18px 42px rgba(22, 57, 45, .09); }
+.sovratitolo-pubblico { color: #967440; font-size: .72rem; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+.hero-pubblico h1 { max-width: 12ch; margin: .6rem 0 1rem; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2.7rem, 6vw, 5.3rem); line-height: .98; font-weight: 500; letter-spacing: -.03em; }
+.hero-pubblico-testo > p { max-width: 42rem; color: #5b6a64; font-size: 1.06rem; line-height: 1.65; }
+.azioni-hero-pubblico { display: flex; flex-wrap: wrap; gap: .7rem; margin: 1.5rem 0; }
+.pulsante-pubblico-primario, .pulsante-pubblico-secondario { display: inline-flex; justify-content: center; align-items: center; min-height: 2.8rem; padding: .7rem 1.05rem; border-radius: .55rem; text-decoration: none; font-weight: 850; }
+.pulsante-pubblico-primario { border: 1px solid #174b3c; background: #174b3c; color: #fff; }
+.pulsante-pubblico-secondario { border: 1px solid #9fb5a8; background: #fffdf8; color: #174b3c; }
+.garanzie-pubbliche { display: flex; flex-wrap: wrap; gap: .65rem 1rem; margin-top: 2rem; color: #5c6c65; font-size: .82rem; }
+.garanzie-pubbliche strong { color: #a07d46; }
+.hero-pubblico-visual { position: relative; min-height: 26rem; }
+.card-hero { position: absolute; display: grid; gap: .6rem; padding: 1.35rem; border-radius: 1rem; box-shadow: 0 18px 36px rgba(22, 54, 43, .14); }
+.card-hero-principale { inset: 2.3rem 1rem auto 0; min-height: 12rem; border: 1px solid #aac1b4; background: #174b3c; color: #fff; transform: rotate(-3deg); }
+.card-hero-principale span, .card-hero-principale small { color: #d7e5dd; }
+.card-hero-principale strong { margin-top: 1.2rem; font-family: Georgia, 'Times New Roman', serif; font-size: 2rem; }
+.card-hero-secondaria { right: 0; bottom: 2rem; width: 72%; border: 1px solid #d7c39f; background: #f5ead8; color: #23483d; transform: rotate(4deg); }
+.card-hero-secondaria strong { font-family: Georgia, 'Times New Roman', serif; font-size: 1.45rem; }
+.sezione-pubblica { padding: 5rem 0 2.5rem; }
+.intestazione-sezione-pubblica h2, .richiamo-pubblico h2 { margin: .45rem 0 0; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 500; }
+.passaggi-pubblici { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.7rem; }
+.passaggi-pubblici article { padding: 1.25rem; border: 1px solid #c7d4cc; border-radius: .9rem; background: #fffdf8; }
+.passaggi-pubblici article > span { color: #9b7841; font-family: Georgia, 'Times New Roman', serif; font-size: 1.4rem; }
+.passaggi-pubblici h3 { margin: .7rem 0 .35rem; font-family: Georgia, 'Times New Roman', serif; }
+.passaggi-pubblici p { margin: 0; color: #65736d; line-height: 1.55; }
+.richiamo-pubblico { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding: 2rem; border-radius: 1rem; background: #e6eee9; border: 1px solid #bfd0c6; }
+.richiamo-pubblico p { margin-bottom: 0; color: #61716a; }
+.footer-pubblico { display: flex; justify-content: space-between; gap: 1rem; max-width: 78rem; margin: 0 auto; padding: 1.5rem 1.4rem 2.4rem; color: #697771; font-size: .82rem; }
+
+/* Login/registrazione nello stesso linguaggio visivo della home. */
+.header-accesso { border-bottom: 1px solid #d1d8d3; }
+.pagina-accesso { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, .7fr); gap: 1rem; max-width: 64rem; margin: 0 auto; padding: 3rem 1.4rem; align-items: stretch; }
+.pagina-registrazione { grid-template-columns: 1fr; max-width: 46rem; }
+.pannello-accesso, .visual-accesso { border: 1px solid #c8d5cd; border-radius: 1rem; box-shadow: 0 12px 28px rgba(22, 55, 44, .07); }
+.pannello-accesso { padding: 2rem; background: #fffdf8; }
+.intro-accesso h1 { margin: .45rem 0 .6rem; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 500; }
+.intro-accesso p { color: #66736d; line-height: 1.55; }
+.form-accesso { display: grid; gap: .8rem; margin-top: 1.5rem; }
+.form-accesso label { display: grid; gap: .3rem; }
+.form-accesso label span { font-size: .78rem; font-weight: 800; color: #52645c; }
+.form-accesso input { min-height: 2.8rem; padding: .65rem .75rem; border: 1px solid #b8c9bf; border-radius: .5rem; background: #fff; color: #173f34; font: inherit; }
+.form-accesso input:focus { outline: none; border-color: #174b3c; box-shadow: 0 0 0 3px rgba(23, 75, 60, .11); }
+.form-accesso button { margin-top: .35rem; cursor: pointer; }
+.errore-accesso, .errore-campo-accesso { color: #7d3e33; }
+.errore-accesso { padding: .7rem .8rem; border-left: 4px solid #a35d50; border-radius: .45rem; background: #f8eae6; }
+.errore-campo-accesso { margin: -.45rem 0 0; font-size: .78rem; font-weight: 700; }
+.alternativa-accesso { margin: 1.2rem 0 0; color: #63716b; }
+.alternativa-accesso a { color: #174b3c; font-weight: 800; }
+.visual-accesso { display: flex; flex-direction: column; justify-content: space-between; min-height: 28rem; padding: 2rem; background: #174b3c; color: #fff; }
+.visual-accesso > span { color: #e0c381; font-family: Georgia, 'Times New Roman', serif; font-size: 3rem; }
+.visual-accesso strong { max-width: 10ch; margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 2.5rem; line-height: 1.05; }
+.visual-accesso small { margin-top: 1rem; color: #bed0c7; letter-spacing: .08em; text-transform: uppercase; }
+
+@media (max-width: 56rem) {
+    .hero-pubblico { grid-template-columns: 1fr; padding: 2rem; }
+    .hero-pubblico-visual { min-height: 20rem; }
+    .passaggi-pubblici { grid-template-columns: 1fr; }
+    .pagina-accesso { grid-template-columns: 1fr; }
+    .visual-accesso { display: none; }
+}
+@media (max-width: 46rem) {
+    .header-pubblico { align-items: flex-start; padding: .9rem 1rem; }
+    .nav-pubblico a:first-child { display: none; }
+    .home-pubblica { padding: .5rem 1rem 2rem; }
+    .hero-pubblico { min-height: auto; padding: 1.35rem; border-radius: 1rem; }
+    .hero-pubblico h1 { font-size: 2.65rem; }
+    .richiamo-pubblico { align-items: flex-start; flex-direction: column; }
+    .footer-pubblico { flex-direction: column; padding: 1.2rem 1rem 2rem; }
+    .area-proprietario .dati-appuntamento-agenda { grid-template-columns: 1fr; }
+    .conferma-lumea__azioni { flex-direction: column-reverse; }
+    .conferma-lumea__annulla, .conferma-lumea__conferma { width: 100%; }
+    .area-cliente .blocco-prenotazioni-sospese { grid-template-columns: 1fr; }
+}
+
+.area-proprietario .form-servizio-nuovo > .pulsante-primario { align-self: start; margin-top: 1.32rem; }
+
+
+/* =========================================================
+   Ultime micro-rifiniture proprietario - 07/10/2026
+   ========================================================= */
+
+/* Agenda: validazione giorno/anno senza messaggi nativi del browser. */
+.area-proprietario .selettore-giornata label {
+    align-content: start;
+}
+
+.area-proprietario .errore-agenda-lumea {
+    display: block;
+    max-width: 13rem;
+    margin-top: .35rem;
+    padding: .42rem .55rem;
+    border-left: 3px solid #a95747;
+    border-radius: .38rem;
+    background: #f8ebe7;
+    color: #783a31;
+    font-size: .72rem;
+    font-weight: 750;
+    line-height: 1.35;
+}
+
+.area-proprietario .errore-agenda-lumea[hidden] {
+    display: none;
+}
+
+.area-proprietario .campo-agenda-errore {
+    border-color: #a95747 !important;
+    background: #fff9f6 !important;
+    box-shadow: 0 0 0 3px rgba(169, 87, 71, .12) !important;
+}
+
+/* X dell'azione "Annulla appuntamento": più piccola e centrata nel cerchio. */
+.area-proprietario .azione-pericolosa summary::before {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: 0 0 1.25rem;
+    background:
+        linear-gradient(45deg, transparent 42%, #8e3a2e 42%, #8e3a2e 58%, transparent 58%) center / .52rem .52rem no-repeat,
+        linear-gradient(-45deg, transparent 42%, #8e3a2e 42%, #8e3a2e 58%, transparent 58%) center / .52rem .52rem no-repeat,
+        #f3ded8;
+}
+
+.area-proprietario .azione-pericolosa[open] summary::before {
+    background:
+        linear-gradient(0deg, transparent 43%, #8e3a2e 43%, #8e3a2e 57%, transparent 57%) center / .52rem .52rem no-repeat,
+        #f3ded8;
+}
+
+/* X del modal: geometrica, piccola e centrata. */
+.conferma-lumea__chiudi {
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    font-size: 0;
+    line-height: 1;
+}
+
+.conferma-lumea__chiudi::before,
+.conferma-lumea__chiudi::after {
+    content: "";
+    position: absolute;
+    width: .72rem;
+    height: 1.5px;
+    border-radius: 999px;
+    background: currentColor;
+}
+
+.conferma-lumea__chiudi::before {
+    transform: rotate(45deg);
+}
+
+.conferma-lumea__chiudi::after {
+    transform: rotate(-45deg);
+}
+
+/* Icona Agenda: stessa colonna e stesso centro verticale delle altre voci. */
+.area-proprietario .nav-icon-agenda {
+    width: 1.25rem;
+    height: 1.05rem;
+    flex: 0 0 1.25rem;
+    justify-self: center;
+    align-self: center;
+    border-width: 1.5px;
+    background:
+        linear-gradient(currentColor, currentColor) .28rem .36rem / .62rem 1px no-repeat,
+        linear-gradient(currentColor, currentColor) .28rem .59rem / .62rem 1px no-repeat;
+}
+
+.area-proprietario .nav-icon-agenda::before {
+    left: .28rem;
+}
+
+.area-proprietario .nav-icon-agenda::after {
+    right: .28rem;
+}
+
+/* Scheda cliente: consultazione coupon esistenti (sola lettura). */
+.area-proprietario .sezione-coupon-proprietario { margin-top: 1.5rem; }
+.area-proprietario .sezione-coupon-proprietario .intestazione-pannello { align-items: center; }
+.area-proprietario .sezione-coupon-proprietario h4 { margin: .15rem 0 .4rem; color: #173f37; font: 500 1.45rem Georgia,serif; }
+.area-proprietario .nota-coupon-proprietario { color: #64736c; font-size: .89rem; max-width: 48rem; }
+.area-proprietario .elenco-coupon-proprietario { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: .85rem; margin-top: 1rem; }
+.area-proprietario .scheda-coupon-proprietario { margin: 0; padding: 1.15rem; background: #fffdf9; border: 1px solid #dfe5df; border-top: 3px solid #b08a52; border-radius: .85rem; }
+.area-proprietario .scheda-coupon-esaurita { border-top-color: #b3bdb4; background: #fafbf9; }
+.area-proprietario .scheda-coupon-testa { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; align-items: start; }
+.area-proprietario .scheda-coupon-testa > div { display: grid; gap: .14rem; min-width: 0; }
+.area-proprietario .scheda-coupon-testa small { color: #687a70; font-size: .66rem; font-weight: 800; letter-spacing: .11em; }
+.area-proprietario .scheda-coupon-testa strong { color: #183e33; overflow-wrap: anywhere; font-size: 1.07rem; }
+.area-proprietario .dati-coupon-proprietario { margin: 1.1rem 0 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+.area-proprietario .dati-coupon-proprietario div { display: block; min-width: 0; }
+.area-proprietario .dati-coupon-proprietario dt { color: #65756b; font-size: .75rem; }
+.area-proprietario .dati-coupon-proprietario dd { margin: .15rem 0 0; color: #21372e; font-weight: 650; }
+.area-proprietario .nota-coupon-stato { margin: 1rem 0 0; padding-top: .65rem; border-top: 1px dashed #dfe5de; color: #64756a; font-size: .82rem; }
+@media(max-width:42rem){.area-proprietario .dati-coupon-proprietario { gap: .7rem; }}
+
+/* Rifinitura sidebar proprietario: icone più leggibili e ritmo uniforme. */
+.area-proprietario .sidebar-proprietario nav a {
+    gap: .82rem;
+    min-height: 2.9rem;
+    padding: .68rem .78rem;
+}
+.area-proprietario .gruppo-gestione { gap: .27rem; }
+.area-proprietario .etichetta-gruppo { padding-bottom: .48rem; }
+.area-proprietario .nav-icon {
+    width: 1.45rem;
+    height: 1.45rem;
+    flex: 0 0 1.45rem;
+    line-height: 1;
+    font-size: 1.12rem;
+}
+.area-proprietario .nav-icon-agenda {
+    width: 1.08rem;
+    height: .96rem;
+    margin: 0 .185rem;
+    flex: 0 0 1.08rem;
+    background:
+        linear-gradient(currentColor, currentColor) .23rem .32rem / .58rem 1px no-repeat,
+        linear-gradient(currentColor, currentColor) .23rem .54rem / .58rem 1px no-repeat;
+}
+.area-proprietario .nav-icon-agenda::before { left: .23rem; }
+.area-proprietario .nav-icon-agenda::after { right: .23rem; }
+.area-proprietario .sidebar-proprietario nav a[aria-current="page"] {
+    box-shadow: inset 3px 0 0 #e0c076, 0 5px 13px rgba(5, 27, 22, .12);
+}
+@media (max-width: 68rem) {
+    .area-proprietario .sidebar-proprietario nav a { min-height: 2.8rem; }
+}
+
+/* Home pubblica · sezione "Come funziona".
+   Regole circoscritte alla sezione: nessun impatto sulle aree cliente/proprietario. */
+.area-pubblica #come-funziona {
+    box-sizing: border-box;
+    min-width: 0;
+    margin: 3.25rem 0 2rem;
+    padding: clamp(1.4rem, 3.5vw, 3.1rem);
+    border: 1px solid #c8d9cd;
+    border-radius: 1.35rem;
+    background: linear-gradient(125deg, #e5efe8 0%, #f3f4ec 55%, #f5f0e5 100%);
+    box-shadow: 0 15px 38px rgba(25, 68, 51, .07);
+    scroll-margin-top: 1.5rem;
+}
+.area-pubblica #come-funziona .intestazione-sezione-pubblica {
+    max-width: 45rem;
+    min-width: 0;
+}
+.area-pubblica #come-funziona .sovratitolo-pubblico {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    color: #7d613a;
+    font-size: .75rem;
+    line-height: 1.45;
+    letter-spacing: .115em;
+}
+.area-pubblica #come-funziona .sovratitolo-pubblico::before {
+    content: "";
+    display: inline-block;
+    width: .6rem;
+    height: .6rem;
+    flex: 0 0 .6rem;
+    border-radius: 50%;
+    background: #b99553;
+}
+.area-pubblica #come-funziona h2 {
+    max-width: 25ch;
+    margin: .8rem 0 0;
+    color: #173e32;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.85rem, 3.15vw, 2.8rem);
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: -.025em;
+    overflow-wrap: break-word;
+}
+.area-pubblica #come-funziona .passaggi-pubblici {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+.area-pubblica #come-funziona .passaggi-pubblici article {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    min-height: 13.5rem;
+    margin: 0;
+    padding: 1.4rem 1.35rem 1.45rem;
+    border: 1px solid #d5e0d7;
+    border-top: 3px solid #b89358;
+    border-radius: .95rem;
+    background: #fffdf9;
+    box-shadow: 0 6px 18px rgba(24, 63, 50, .035);
+}
+.area-pubblica #come-funziona .passaggi-pubblici article:nth-child(2) {
+    border-top-color: #628773;
+}
+.area-pubblica #come-funziona .passaggi-pubblici article:nth-child(3) {
+    border-top-color: #2e634d;
+}
+.area-pubblica #come-funziona .passaggi-pubblici article > span {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: .7rem;
+    background: #f2e9d7;
+    color: #806039;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    line-height: 1;
+    font-weight: 800;
+}
+.area-pubblica #come-funziona .passaggi-pubblici article:nth-child(2) > span {
+    background: #e8f0e8;
+    color: #3f6855;
+}
+.area-pubblica #come-funziona .passaggi-pubblici article:nth-child(3) > span {
+    background: #e1eee6;
+    color: #205c43;
+}
+.area-pubblica #come-funziona .passaggi-pubblici h3 {
+    margin: 1rem 0 .45rem;
+    color: #163e32;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    line-height: 1.28;
+    font-weight: 600;
+    overflow-wrap: break-word;
+}
+.area-pubblica #come-funziona .passaggi-pubblici p {
+    margin: 0;
+    color: #586b60;
+    font-size: .93rem;
+    line-height: 1.65;
+    overflow-wrap: break-word;
+}
+@media (max-width: 56rem) {
+    .area-pubblica #come-funziona .passaggi-pubblici {
+        grid-template-columns: 1fr;
+        gap: .8rem;
+        margin-top: 1.5rem;
+    }
+    .area-pubblica #come-funziona .passaggi-pubblici article {
+        min-height: 0;
+        padding: 1.1rem 1.2rem 1.2rem;
+    }
+}
+@media (max-width: 36rem) {
+    .area-pubblica #come-funziona {
+        margin: 2rem 0 1.5rem;
+        padding: 1.2rem;
+        border-radius: 1rem;
+    }
+    .area-pubblica #come-funziona h2 {
+        font-size: clamp(1.65rem, 8vw, 2.15rem);
+        line-height: 1.23;
+    }
+}
+
+
+/* Lumèa · piccoli accenti proprietario: continuita' con la palette cliente. */
+body.area-proprietario {
+    background-color: #f0f3ec;
+    background-image: radial-gradient(circle at 92% 5%, rgba(179, 144, 84, .11), transparent 27rem);
+}
+body.area-proprietario .header-proprietario {
+    background-color: #f9f5ed;
+    border-bottom-color: #d7e1d7;
+}
+body.area-proprietario .sidebar-proprietario nav a[aria-current="page"] {
+    background: rgba(211, 231, 214, .17);
+    border-color: rgba(228, 201, 151, .26);
+    box-shadow: inset 3px 0 #dfbe7f, 0 4px 14px rgba(5, 27, 22, .12);
+}
+body.area-proprietario .pannello-proprietario {
+    border-color: #d3dfd2;
+}
+
+/* =============================================================
+   Lumèa | Area proprietario - palette verde salvia e miele
+   Solo colori e superfici. Nessun layout, testo o icona modificato.
+   Scope stretto: non influenza l'area cliente e la Home pubblica.
+   ============================================================= */
+body.area-proprietario {
+    --proprietario-sfondo: #d1e3d5;
+    --proprietario-superficie: #dceadd;
+    --proprietario-carta: #e1eee1;
+    --proprietario-verde-tenue: #c8dfcf;
+    --proprietario-bronzo-tenue: #f0ddb5;
+    --proprietario-crema: #f0e1c6;
+    --proprietario-bordo: #abc5b3;
+    background: #d1e3d5;
+    color: #173d32;
+}
+
+body.area-proprietario .header-proprietario {
+    background: #dfecdf;
+    border-bottom-color: #b3cbbc;
+}
+
+/* La sidebar resta scura; selezione in oro, più riconoscibile. */
+body.area-proprietario .sidebar-proprietario {
+    background: #103d33;
+}
+body.area-proprietario .sidebar-proprietario nav a[aria-current="page"] {
+    background: #e8c887;
+    border-color: #efdaa9;
+    color: #173d32;
+    box-shadow: inset 3px 0 0 #a37838;
+}
+body.area-proprietario .sidebar-proprietario nav a[aria-current="page"] .nav-icon {
+    color: #173d32;
+}
+body.area-proprietario .sidebar-proprietario nav a:hover:not([aria-current="page"]),
+body.area-proprietario .sidebar-proprietario nav a:focus-visible:not([aria-current="page"]) {
+    background: #28604e;
+    border-color: #498371;
+}
+body.area-proprietario .titolo-pagina {
+    border-bottom-color: #a5bfaa;
+}
+body.area-proprietario .pill-giornata,
+body.area-proprietario .contatore-righe {
+    background: #f0ddb5;
+    border-color: #d7b982;
+    color: #554426;
+}
+
+/* Pannelli principali: verde ben visibile, con campiture crema alternate. */
+body.area-proprietario .pannello-proprietario {
+    background: #e1eee2;
+    border-color: #a8c4b0;
+}
+body.area-proprietario .pannello-riepilogo {
+    background: #c9e1ce;
+    border-color: #8ab29b;
+}
+body.area-proprietario .prossimi-oggi-card {
+    background: #f0dfbd;
+    border-color: #d2b481;
+}
+body.area-proprietario .prossimi-sette-giorni,
+body.area-proprietario .riepilogo-giorni-dashboard {
+    background: #d3e6d6;
+}
+body.area-proprietario .empty-state-proprietario {
+    background: #d1e4d5;
+    border-color: #99bba5;
+}
+
+/* Metriche Dashboard: un colore diverso per ogni funzione. */
+body.area-proprietario .metrica-proprietario:not(.metrica-principale) {
+    background: #d9e9d9;
+    border-color: #a6c5ae;
+}
+body.area-proprietario .metrica-proprietario.metrica-principale {
+    background: #164839;
+    border-color: #164839;
+    color: #fff;
+}
+body.area-proprietario .metrica-proprietario.metrica-completati {
+    background: #bcd9c8;
+    border-color: #88b59b;
+}
+body.area-proprietario .metrica-proprietario.metrica-da-svolgere {
+    background: #f1ddb3;
+    border-color: #d4b37a;
+}
+body.area-proprietario .riga-prossimo-oggi,
+body.area-proprietario .card-appuntamento-settimana:nth-child(odd),
+body.area-proprietario .card-giorno-dashboard:nth-child(odd) {
+    background: #d2e6d7;
+    border-color: #9abca5;
+}
+body.area-proprietario .card-appuntamento-settimana:nth-child(even),
+body.area-proprietario .card-giorno-dashboard:nth-child(even) {
+    background: #efdcb8;
+    border-color: #d3b487;
+}
+body.area-proprietario .card-giorno-dashboard-oggi {
+    background: #b8d9c4;
+    border-color: #7ca68c;
+}
+
+/* Agenda, appuntamenti e incassi: alternanza netta, senza cambiare gli stati. */
+body.area-proprietario .barra-filtri,
+body.area-proprietario .dettaglio-incassi-oggi,
+body.area-proprietario .navigazione-statistiche {
+    background: #d0e3d3;
+    border-color: #a5c3ad;
+}
+body.area-proprietario .lista-agenda-proprietario .scheda-appuntamento-proprietario:nth-child(odd),
+body.area-proprietario .riga-incasso-oggi:nth-child(even) {
+    background: #d5e8d8;
+    border-color: #a3c1ab;
+}
+body.area-proprietario .lista-agenda-proprietario .scheda-appuntamento-proprietario:nth-child(even),
+body.area-proprietario .riga-incasso-oggi:nth-child(odd) {
+    background: #efdfc1;
+    border-color: #d4b98b;
+}
+/* Gli appuntamenti con stato speciale conservano i colori informativi originali. */
+
+/* Servizi: due categorie riconoscibili al primo sguardo. */
+body.area-proprietario .categoria-servizi-uomo {
+    background: #c8e1d0;
+    border-color: #98bea7;
+}
+body.area-proprietario .categoria-servizi-donna {
+    background: #eed9b4;
+    border-color: #cfac78;
+}
+body.area-proprietario .categoria-servizi-uomo .scheda-servizio {
+    background: #dbeade;
+    border-color: #9bbda8;
+}
+body.area-proprietario .categoria-servizi-donna .scheda-servizio {
+    background: #f5e6cd;
+    border-color: #d5b88d;
+}
+body.area-proprietario .scheda-servizio:not(.servizio-disattivato) {
+    background-color: #deebde;
+}
+body.area-proprietario .categoria-servizi-donna .scheda-servizio:not(.servizio-disattivato) {
+    background-color: #f5e6cd;
+}
+body.area-proprietario .servizio-disattivato {
+    background: #e3e4dc;
+}
+
+/* Disponibilità: giorni aperti verdi, chiusi sabbia desaturata. */
+body.area-proprietario .selettore-mese-elegante,
+body.area-proprietario .orario-standard {
+    background: #cfe3d3;
+}
+body.area-proprietario .giorno-standard:not(.giorno-standard-chiuso) {
+    background: #d6e8d9;
+    border-color: #9ec0a8;
+}
+body.area-proprietario .giorno-standard-chiuso {
+    background: #ebdcc1;
+    border-color: #d0b38a;
+}
+body.area-proprietario .giorno-calendario:not(.giorno-chiuso):not(.giorno-trascorso) {
+    background: #dcebdd;
+    border-color: #a5c4ae;
+}
+body.area-proprietario .giorno-calendario.giorno-chiuso {
+    background: #ecdfc7;
+    border-color: #d0b992;
+}
+body.area-proprietario .giorno-calendario.giorno-trascorso {
+    background: #d5dbd2;
+}
+body.area-proprietario .calendario-completo > summary {
+    background: #cfe4d4;
+    border-color: #9fbea9;
+}
+
+/* Rubrica e schede cliente: non più cartoncini bianchi. */
+body.area-proprietario .clienti-proprietario .pannello-proprietario {
+    background: #dceadd;
+}
+body.area-proprietario .elenco-clienti-proprietario .scheda-cliente:nth-child(odd),
+body.area-proprietario .dati-cliente > div:nth-child(odd) {
+    background: #d0e5d4;
+    border-color: #9ebda6;
+}
+body.area-proprietario .elenco-clienti-proprietario .scheda-cliente:nth-child(even),
+body.area-proprietario .dati-cliente > div:nth-child(even) {
+    background: #efdfc2;
+    border-color: #d4b98d;
+}
+body.area-proprietario .scheda-coupon-proprietario:not(.scheda-coupon-esaurita) {
+    background: #e6dcbf;
+    border-color: #d4b788;
+}
+
+/* Statistiche: alternanza riconoscibile in metriche, periodi, grafico. */
+body.area-proprietario .card-periodo-statistiche:not(.periodo-selezionato):nth-child(odd) {
+    background: #f1dfbd;
+    border-color: #d4b789;
+}
+body.area-proprietario .card-periodo-statistiche:not(.periodo-selezionato):nth-child(even) {
+    background: #cfe4d4;
+    border-color: #a4c3ad;
+}
+body.area-proprietario .card-periodo-statistiche.periodo-selezionato {
+    background: #174b3c;
+    border-color: #174b3c;
+    color: #fff;
+}
+body.area-proprietario .metrica-statistica-incasso {
+    background: #f0dbb3;
+    border-color: #d2b079;
+}
+body.area-proprietario .metrica-statistica-appuntamenti {
+    background: #cce3d3;
+    border-color: #9dbda7;
+}
+body.area-proprietario .metrica-statistica-completati {
+    background: #bcdac7;
+    border-color: #88b39a;
+}
+body.area-proprietario .grafico-linea-contenitore,
+body.area-proprietario .pannello-andamento-statistiche {
+    background: #d9e9d9;
+    border-color: #a9c3af;
+}
+body.area-proprietario .classifica-servizi-editoriale > li:nth-child(odd) {
+    background: #efdfc0;
+}
+body.area-proprietario .classifica-servizi-editoriale > li:nth-child(even) {
+    background: #d4e6d6;
+}
+
+/* Campi restano chiari per la lettura e l'accessibilità dei moduli. */
+body.area-proprietario .form-orario-mensile .fascia-oraria,
+body.area-proprietario .modifica-giornata .fascia-oraria {
+    background: #e6efe5;
+    border-color: #b1c8b7;
+}
+
+
+/* Lumèa: monogramma singolo, negli stessi colori e riquadri del marchio. */
+.area-proprietario .sidebar-monogramma,
+.brand-pubblico-marchio,
+.conferma-lumea__icona {
+    font-size: 1.4rem;
+    line-height: 1;
+    letter-spacing: 0;
+}
+body.area-cliente .marchio-cliente {
+    font-size: 1.3rem;
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+/* Agenda: card compatte e moduli in dialog, senza alterare le altre pagine. */
+body.area-proprietario .agenda-proprietario {
+    max-width: none;
+    padding: .5rem clamp(.75rem, 2vw, 1.5rem) 1rem;
+}
+.agenda-proprietario .titolo-pagina { margin-bottom: .35rem; padding-bottom: .2rem; }
+.agenda-proprietario .titolo-pagina h2 { font-size: 1.5rem; line-height: 1.1; }
+.agenda-proprietario .titolo-pagina p { display: none; }
+body.area-proprietario .agenda-proprietario > .pannello-proprietario {
+    padding: .4rem .6rem;
+    margin-bottom: .4rem;
+    background: #e3ecdf;
+    border: 1px solid #b5cbb8;
+    border-radius: .8rem;
+    box-shadow: none;
+}
+.agenda-proprietario .selettore-giornata { gap: .65rem; padding: 0; border: 0; background: transparent; }
+.agenda-proprietario .selettore-giornata label { display: flex; flex-direction: row; align-items: center; gap: .4rem; }
+.agenda-proprietario .selettore-giornata label > span { font-size: .75rem; }
+.agenda-proprietario .selettore-giornata input,
+.agenda-proprietario .selettore-giornata select,
+.agenda-proprietario .selettore-giornata button { min-height: 2rem; height: auto; padding: .3rem .65rem; font-size: .85rem; }
+.agenda-proprietario .intestazione-pannello { margin-bottom: .3rem; align-items: center; }
+.agenda-proprietario .intestazione-pannello h3 { margin: 0; font-size: 1.15rem; }
+.agenda-proprietario .intestazione-pannello .sovratitolo { display: none; }
+.agenda-proprietario .contatore-righe { padding: .15rem .55rem; font-size: .8rem; }
+.agenda-cards { display: grid; gap: 3px; }
+.agenda-card {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr) auto 84px;
+    align-items: center;
+    gap: .7rem;
+    padding: 3px 10px;
+    min-width: 0;
+    border: 1px solid #adc7b1;
+    border-left: 4px solid #557e69;
+    border-radius: .6rem;
+    background: #d5e7d7;
+    color: #173f34;
+    line-height: 1.15;
+}
+.agenda-card:nth-child(even) { background: #f0e3c5; border-color: #d4bd8d; border-left-color: #a18144; }
+.agenda-card--no_show { border-left-color: #ad6a54; }
+.agenda-card--cancellata { border-left-color: #778477; }
+.agenda-card-ora { display: grid; gap: 1px; border-right: 1px solid #a9bdac; }
+.agenda-card-ora strong { font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.agenda-card-ora span { font-size: .8rem; color: #476153; }
+.agenda-card-info { min-width: 0; display: grid; gap: 2px; }
+.agenda-card-titolo,
+.agenda-card-dettagli { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .85rem; }
+.agenda-card-titolo { font-size: .9rem; }
+.agenda-card-titolo a { color: #173f34; font-weight: 750; text-underline-offset: 2px; }
+.agenda-card-servizio { color: #365345; }
+.agenda-card-dettagli { font-size: .8rem; color: #435e4e; }
+.agenda-card-dettagli a { color: inherit; text-decoration: none; }
+.agenda-card-dettagli strong { color: #244d3c; font-weight: 650; }
+.agenda-card-info a,
+.agenda-card-servizio { overflow-wrap: anywhere; }
+.agenda-card-stato { padding: .25rem .55rem; border: 1px solid #adc4b5; border-radius: 1rem; font-size: .78rem; font-weight: 750; white-space: nowrap; background: #eef5e8; }
+.agenda-card-stato.stato-completata { background: #e5f0f3; color: #285866; border-color: #b4cdd3; }
+.agenda-card-stato.stato-no_show { background: #faeee2; color: #7b452a; border-color: #dbb89a; }
+.agenda-card-stato.stato-cancellata { background: #e7e9e4; color: #526153; }
+.agenda-proprietario .agenda-apri { margin: 0; min-height: 30px; padding: .25rem .6rem; border: 1px solid #819f88; border-radius: .5rem; background: #f7f4e8; color: #174739; font-size: .82rem; font-weight: 750; cursor: pointer; }
+.agenda-proprietario .agenda-apri:hover { background: #e7d6ab; }
+.agenda-proprietario button:focus-visible { outline: 3px solid #956d2e; outline-offset: 2px; }
+body.agenda-dialog-aperto { overflow: hidden; }
+.agenda-dialog:not([open]) { display: none; }
+.agenda-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    box-sizing: border-box;
+    width: min(520px, calc(100% - 24px));
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    padding: 1.25rem;
+    border: 1px solid #8eae96;
+    border-radius: 1rem;
+    color: #173f34;
+    background: #f3efdf;
+    box-shadow: 0 20px 70px #0c352f55;
+    line-height: 1.4;
+}
+.agenda-dialog::backdrop { background: #0b302db3; }
+.agenda-dialog-testata { display: flex; justify-content: space-between; align-items: start; gap: .7rem; }
+.agenda-dialog-testata h3 { margin: .25rem 0; font-size: 1.35rem; overflow-wrap: anywhere; }
+.agenda-proprietario .agenda-chiudi { flex: 0 0 38px; min-height: 38px; margin: 0; padding: 0; border: 1px solid #9cb7a2; border-radius: 50%; background: #d6e6d5; color: #173f34; font-size: 1.5rem; cursor: pointer; }
+.agenda-dialog-servizio { margin: .2rem 0 1rem; }
+.agenda-dialog-dati { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin: 0 0 1rem; padding: .8rem; border: 1px solid #aec7b3; border-radius: .65rem; background: #dae8d8; }
+.agenda-dialog-dati dt { font-size: .8rem; color: #476153; }
+.agenda-dialog-dati dd { margin: .1rem 0 0; font-size: .95rem; font-weight: 650; overflow-wrap: anywhere; }
+.agenda-dialog-dati a { color: inherit; }
+.agenda-dialog-form { display: grid; gap: .5rem; }
+.agenda-dialog-form label { font-weight: 650; }
+.agenda-dialog-form input { box-sizing: border-box; width: 100%; }
+.agenda-dialog-azioni { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .3rem; }
+.agenda-dialog-azioni button { flex: 1 1 auto; margin: 0; }
+.agenda-dialog .azione-pericolosa { margin-top: 1rem; }
+@media (max-width: 1100px) {
+    .agenda-card { grid-template-columns: 68px minmax(0, 1fr) auto; }
+    .agenda-card-stato { grid-column: 2; justify-self: start; }
+    .agenda-card .agenda-apri { grid-column: 3; grid-row: 1 / 3; }
+    .agenda-card-ora { grid-row: 1 / 3; }
+}
+@media (max-width: 52rem) {
+    body.area-proprietario:has(> main.agenda-proprietario) .sidebar-proprietario { transform: translateX(-105%); }
+    body.area-proprietario.sidebar-aperta:has(> main.agenda-proprietario) .sidebar-proprietario { transform: translateX(0); }
+    .agenda-proprietario .selettore-giornata { flex-wrap: wrap; }
+    .agenda-proprietario .selettore-giornata label { flex-direction: column; align-items: start; }
+    .agenda-card { padding: .6rem; gap: .4rem .6rem; grid-template-columns: 64px minmax(0, 1fr); }
+    .agenda-card-ora { grid-row: 1; }
+    .agenda-card-info { grid-column: 2; }
+    .agenda-card-stato { grid-column: 2; grid-row: 2; }
+    .agenda-card .agenda-apri { grid-column: 1; grid-row: 2; min-height: 40px; }
+    .agenda-card-titolo { flex-direction: column; }
+    .agenda-card-dettagli { gap: .4rem .65rem; margin-top: .3rem; line-height: 1.35; }
+    .agenda-card-dettagli a { flex-basis: 100%; }
+}
+
+/* Spazio dedicato ai dodici appuntamenti sul desktop, senza ridurre i testi. */
+body.area-proprietario .agenda-proprietario > section.pannello-proprietario:nth-of-type(n) {
+    background: #e3ecdf;
+}
+@media (min-width: 1101px) {
+    body.area-proprietario:has(.agenda-proprietario) .header-proprietario { padding-block: 4px; min-height: 0; height: auto; }
+    body.area-proprietario:has(.agenda-proprietario) .header-proprietario::after { padding-block: .3rem; }
+    .agenda-proprietario .selettore-giornata label { padding-block: 0; }
+    .agenda-proprietario .titolo-pagina .sovratitolo { display: none; }
+    .agenda-proprietario .titolo-pagina h2 { margin: 0; }
+    .agenda-proprietario .selettore-giornata { align-items: center; }
+    .agenda-proprietario .selettore-giornata button { margin: 0; align-self: center; }
+    .agenda-proprietario .contatore-righe { min-height: 0; line-height: 1.25; }
+}
+
+/* Agenda a orario: asse verticale e righe ogni mezz'ora. */
+.agenda-timeline { display: grid; gap: 1.2rem; padding: .4rem .25rem .75rem; }
+.agenda-fascia-testata { display: flex; align-items: baseline; gap: 1rem; margin-bottom: .8rem; color: #244f3c; }
+.agenda-fascia-testata strong { font-size: 1rem; }
+.agenda-fascia-testata span { font-size: .85rem; color: #5e7564; }
+.agenda-orario { --scala-minuto: 3.8px; position: relative; height: calc(var(--minuti-fascia) * var(--scala-minuto)); margin: 0 .4rem 1rem 0; border-radius: .7rem; background: #eff3e8; }
+.agenda-tacca { position: absolute; top: calc(var(--offset) * var(--scala-minuto)); left: 0; right: 0; display: flex; align-items: center; gap: .75rem; color: #466352; font-size: .85rem; }
+.agenda-tacca time { width: 58px; flex: 0 0 58px; font-variant-numeric: tabular-nums; text-align: right; transform: translateY(-50%); }
+.agenda-tacca > span { flex: 1; border-top: 1px solid #b9ccba; }
+.agenda-orario .agenda-card {
+    position: absolute;
+    box-sizing: border-box;
+    top: calc(var(--offset) * var(--scala-minuto) + 4px);
+    left: calc(74px + (100% - 74px) * var(--colonna) / var(--colonne));
+    width: calc((100% - 74px) / var(--colonne) - 8px);
+    height: calc(var(--durata) * var(--scala-minuto) - 8px);
+    min-height: 0;
+    padding: .4rem .75rem;
+    grid-template-columns: minmax(0, 1fr) auto 84px;
+    gap: .8rem;
+    border-radius: .6rem;
+    align-items: start;
+    background: #d2e6d3;
+}
+.agenda-orario .agenda-card:nth-of-type(even) { background: #eedfbf; }
+.agenda-orario .agenda-card-titolo { font-size: .95rem; gap: .3rem 1rem; }
+.agenda-orario .agenda-card-dettagli { font-size: .8rem; margin-top: .15rem; gap: .3rem 1rem; }
+.agenda-card-intervallo { font-weight: 650; color: #204b39; }
+.agenda-fascia-libera { position: absolute; left: 90px; top: 1rem; margin: 0; color: #56725f; font-size: .9rem; }
+@media (max-width: 1100px) {
+    .agenda-orario .agenda-card { grid-template-columns: minmax(0, 1fr) 80px; gap: .3rem .6rem; }
+    .agenda-orario .agenda-card-stato { grid-column: 1; grid-row: auto; font-size: .7rem; padding: .15rem .4rem; }
+    .agenda-orario .agenda-apri { grid-column: 2; grid-row: 1 / 3; }
+    .agenda-orario .agenda-card-dettagli > span:not(.agenda-card-intervallo),
+    .agenda-orario .agenda-card-telefono { display: none; }
+}
+@media (max-width: 52rem) {
+    .agenda-orario { --scala-minuto: 7px; }
+    .agenda-tacca time { width: 45px; flex-basis: 45px; font-size: .75rem; }
+    .agenda-orario .agenda-card { left: calc(58px + (100% - 58px) * var(--colonna) / var(--colonne)); width: calc((100% - 58px) / var(--colonne) - 4px); padding: .45rem; grid-template-columns: minmax(0, 1fr) 66px; }
+    .agenda-orario .agenda-card-info { grid-column: 1 / -1; }
+    .agenda-orario .agenda-card-titolo { flex-direction: row; font-size: .85rem; gap: .2rem .5rem; }
+    .agenda-orario .agenda-card-dettagli { font-size: .75rem; }
+    .agenda-orario .agenda-apri { grid-column: 2; grid-row: 2; min-height: 30px; font-size: .75rem; }
+    .agenda-orario .agenda-card-stato { grid-column: 1; grid-row: 2; }
+    .agenda-fascia-testata span { display: none; }
+    .agenda-fascia-libera { left: 65px; font-size: .8rem; }
+}
+body.area-proprietario .agenda-proprietario .agenda-fascia {
+    margin: 0;
+    padding: .85rem .6rem .4rem;
+    border: 1px solid #b8cbb4;
+    border-radius: .8rem;
+    background: #e8eedf;
+    box-shadow: none;
+}
+
+/* Revisione mirata 12/10: timeline con sole informazioni essenziali. */
+.agenda-orario { --scala-minuto: 4.8px; }
+.agenda-orario .agenda-card {
+    align-items: center;
+    background: #285c49;
+    border-color: #21513f;
+    border-left-color: #bb9a58;
+    color: #fff9ed;
+    padding: .45rem .9rem;
+    gap: 1rem;
+}
+.agenda-orario .agenda-card:nth-of-type(even) { background: #eeddb3; border-color: #d0b273; color: #254b38; }
+.agenda-evento-orario { margin: 0; font: 700 .98rem/1.25 Arial,sans-serif; color: inherit; overflow-wrap: anywhere; }
+.agenda-evento-cliente { margin: .25rem 0 0; font-size: .88rem; line-height: 1.3; color: inherit; }
+.agenda-evento-cliente a { color: inherit; text-decoration: none; }
+.agenda-evento-cliente a:hover { text-decoration: underline; }
+.agenda-libero {
+    position: absolute; box-sizing: border-box;
+    top: calc(var(--offset) * var(--scala-minuto) + 2px);
+    left: 74px; right: 8px;
+    height: calc(var(--durata) * var(--scala-minuto) - 4px);
+    display: flex; align-items: center; gap: .8rem;
+    padding: .35rem .9rem;
+    border: 1px dashed #8eb091; border-radius: .55rem;
+    background: #dfe9d9; color: #426249; font-size: .85rem;
+}
+@media (max-width: 52rem) {
+    .agenda-orario { --scala-minuto: 8px; }
+    .agenda-orario .agenda-card { padding: .55rem; gap: .3rem .5rem; align-items: center; }
+    .agenda-evento-orario { font-size: .83rem; }
+    .agenda-evento-cliente { margin-top: .2rem; font-size: .78rem; }
+    .agenda-libero { left: 58px; flex-wrap: wrap; gap: .15rem; padding: .35rem; font-size: .78rem; }
+}
+
+/* Area pubblica: salvia e crema, mantenendo struttura e collegamenti. */
+body.area-pubblica { background: #dce7d6; }
+.area-pubblica .header-pubblico { background: #e7eadc; border-bottom: 1px solid #b9cbb8; }
+.area-pubblica .hero-pubblico { background: #d0e1ce; border-color: #a6c2a6; }
+.area-pubblica #come-funziona { background: #e9e2cb; border-color: #c9bb92; }
+.area-pubblica #come-funziona .passaggi-pubblici article { background: #e4ecd9; border-color: #b1c7ab; }
+.area-pubblica #come-funziona .passaggi-pubblici article:nth-child(2) { background: #eddfbc; border-color: #d0b783; }
+.area-pubblica .richiamo-pubblico { background: #c2d9c2; border-color: #95b397; }
+.area-pubblica .pannello-accesso { background: #f0e8d4; border-color: #bfcca9; }
+.area-pubblica .visual-accesso { justify-content: center; gap: 1.6rem; min-height: 0; padding: 2rem; }
+.area-pubblica .visual-accesso > strong { max-width: 12ch; font-size: clamp(1.8rem,3vw,2.5rem); }
+.vantaggi-accesso { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.2rem; }
+.vantaggi-accesso li { display: flex; gap: .85rem; align-items: center; padding-top: 1rem; border-top: 1px solid #71967e; }
+.vantaggi-accesso li > span { display: grid; place-items: center; flex: 0 0 38px; height: 38px; border: 1px solid #94aa80; border-radius: .6rem; color: #edd59b; }
+.vantaggi-accesso b { display: block; font-size: .95rem; }
+.area-pubblica .vantaggi-accesso small { display: block; margin-top: .25rem; font-size: .8rem; text-transform: none; letter-spacing: 0; }
+@media (max-width: 58rem) {
+    .area-pubblica .visual-accesso { display: flex; padding: 1.5rem; }
+    .area-pubblica .visual-accesso > strong { max-width: none; }
+    .area-pubblica .pagina-accesso { grid-template-columns: 1fr; }
+}
+/* A larghezze intermedie lo stato va su una seconda riga: conserva spazio leggibile. */
+@media (min-width: 833px) and (max-width: 1100px) {
+    .agenda-orario { --scala-minuto: 7px; }
+}

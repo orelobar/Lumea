@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS hairbooking CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE hairbooking;
+CREATE DATABASE IF NOT EXISTS lumea CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE lumea;
 /* =========================================================
  UTENTI
  ========================================================= */
@@ -146,3 +146,7 @@ CREATE TABLE disponibilita (
         ora_fine
     )
 ) ENGINE = InnoDB;
+-- Date personalizzate da preservare quando si applica l'orario del mese.
+CREATE TABLE IF NOT EXISTS eccezioni_disponibilita (
+    data DATE PRIMARY KEY
+) ENGINE=InnoDB;

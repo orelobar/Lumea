@@ -13,7 +13,7 @@ class FEmail
             $prenotazione->getCliente();
 
         $oggetto =
-            'Conferma prenotazione HairBooking';
+            'Conferma prenotazione Lumèa';
 
         $testo =
             'Ciao '
@@ -42,7 +42,7 @@ class FEmail
             )
             . "\n\n"
             . "Puoi annullare online fino a 48 ore prima dell'appuntamento.\n\n"
-            . 'HairBooking';
+            . 'Lumèa';
 
         return self::invia(
             $cliente->getEmail(),
@@ -51,6 +51,38 @@ class FEmail
         );
     }
 
+    public static function assegnazioneListaAttesa(
+        EPrenotazione $prenotazione,
+        ?EPrenotazione $prenotazioneSostituita = null
+    ): bool {
+        $cliente = $prenotazione->getCliente();
+        $testoSostituzione = $prenotazioneSostituita === null
+            ? ''
+            : "\nIl precedente appuntamento del "
+                . self::formattaData($prenotazioneSostituita->getData())
+                . ' alle '
+                . self::formattaOra($prenotazioneSostituita->getOra())
+                . " è stato sostituito.\n";
+
+        $testo = 'Ciao '
+            . $cliente->getNome()
+            . ",\n\nl'orario richiesto in lista d'attesa si è liberato ed è stato assegnato a te.\n\n"
+            . 'Servizio: ' . $prenotazione->getNomeServizio() . "\n"
+            . 'Data: ' . self::formattaData($prenotazione->getData()) . "\n"
+            . 'Ora: ' . self::formattaOra($prenotazione->getOra()) . "\n"
+            . 'Durata: ' . $prenotazione->getDurata() . " minuti\n"
+            . $testoSostituzione
+            . "\nPuoi controllare la prenotazione nella tua area personale.\n\n"
+            . 'Lumèa';
+
+        return self::invia(
+            $cliente->getEmail(),
+            'Orario assegnato dalla lista d’attesa - Lumèa',
+            $testo
+        );
+    }
+
+
     public static function nuovoCouponFedelta(
         ECoupon $coupon
     ): bool {
@@ -58,7 +90,7 @@ class FEmail
             $coupon->getCliente();
 
         $oggetto =
-            'Nuovo coupon fedelta HairBooking';
+            'Nuovo coupon fedelta Lumèa';
 
         $testo =
             'Ciao '
@@ -81,7 +113,7 @@ class FEmail
             )
             . "\n\n"
             . "Il coupon è visibile nella tua area personale e può essere utilizzato in salone al momento del pagamento.\n\n"
-            . 'HairBooking';
+            . 'Lumèa';
 
         return self::invia(
             $cliente->getEmail(),
@@ -94,7 +126,7 @@ class FEmail
         EUtente $cliente
     ): bool {
         $oggetto =
-            'Prenotazioni online sospese - HairBooking';
+            'Prenotazioni online sospese - Lumèa';
 
         $testo =
             'Ciao '
@@ -105,7 +137,7 @@ class FEmail
             . "Per effettuare una prenotazione, contatta direttamente il salone.\n\n"
             . "Il credito residuo degli eventuali coupon disponibili "
             . "è stato ridotto del 50%.\n\n"
-            . 'HairBooking';
+            . 'Lumèa';
 
         return self::invia(
             $cliente->getEmail(),
@@ -121,7 +153,7 @@ class FEmail
             $prenotazione->getCliente();
 
         $oggetto =
-            'Appuntamento annullato - HairBooking';
+            'Appuntamento annullato - Lumèa';
 
         $testo =
             'Ciao '
@@ -142,7 +174,7 @@ class FEmail
             )
             . "\n\n"
             . "Contatta il salone per concordare una nuova prenotazione.\n\n"
-            . 'HairBooking';
+            . 'Lumèa';
 
         return self::invia(
             $cliente->getEmail(),
@@ -163,11 +195,35 @@ class FEmail
             ) === false
         ) {
             error_log(
-                'HairBooking: indirizzo email non valido: '
+                'Lumèa: indirizzo email non valido: '
                     . $destinatario
             );
 
             return false;
+        }
+
+        /*
+         * In QA le email vengono registrate in locale. Senza la variabile
+         * d'ambiente il comportamento dell'applicazione resta invariato.
+         */
+        if (getenv('LUMEA_EMAIL_MODE') === 'log') {
+            $percorsoLog = getenv('LUMEA_EMAIL_LOG')
+                ?: sys_get_temp_dir() . '/lumea_email.log';
+            $contenutoLog = '[' . date('c') . "]\n"
+                . 'A: ' . $destinatario . "\n"
+                . 'Oggetto: ' . $oggetto . "\n\n"
+                . $testo . "\n---\n";
+
+            if (@file_put_contents($percorsoLog, $contenutoLog, FILE_APPEND | LOCK_EX) === false) {
+                error_log(
+                    'Lumèa: scrittura log email QA non riuscita - '
+                        . $oggetto
+                );
+
+                return false;
+            }
+
+            return true;
         }
 
         $headers =
@@ -184,7 +240,7 @@ class FEmail
             );
         } catch (Throwable $e) {
             error_log(
-                'HairBooking: errore invio email - '
+                'Lumèa: errore invio email - '
                     . $oggetto
                     . ': '
                     . $e->getMessage()
@@ -195,7 +251,7 @@ class FEmail
 
         if (!$inviata) {
             error_log(
-                'HairBooking: invio email fallito verso '
+                'Lumèa: invio email fallito verso '
                     . $destinatario
                     . ' - '
                     . $oggetto

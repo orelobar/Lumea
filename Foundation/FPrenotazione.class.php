@@ -370,6 +370,29 @@ class FPrenotazione
     }
 
 
+    public static function countNoShowByCliente(
+        int $idCliente
+    ): int {
+        $connection = FConnectionDB::connect();
+
+        $query = "
+            SELECT COUNT(*) AS totale
+            FROM prenotazioni
+            WHERE id_cliente = :id_cliente
+            AND stato = 'no-show'
+        ";
+
+        $statement = $connection->prepare($query);
+        $statement->execute([
+            ':id_cliente' => $idCliente
+        ]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return (int) ($row['totale'] ?? 0);
+    }
+
+
     public static function countCompletateByCliente(
         int $idCliente
     ): int {

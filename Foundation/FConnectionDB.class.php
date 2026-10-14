@@ -2,13 +2,36 @@
 
 class FConnectionDB
 {
+/** Serializza le scritture del calendario del singolo salone.
+     * La riga proprietario esiste anche quando una giornata non ha fasce.
+     * Il blocco viene rilasciato automaticamente con commit o rollback.
+     */
+    public static function bloccaCalendario(): void
+    {
+        $connection = self::connect();
+        if (!$connection->inTransaction()) {
+            throw new LogicException('Il calendario richiede una transazione attiva.');
+        }
+        $statement = $connection->query(
+            "SELECT id FROM utenti WHERE ruolo = 'proprietario' ORDER BY id FOR UPDATE"
+        );
+        if (!$statement->fetchAll(PDO::FETCH_COLUMN)) {
+            throw new RuntimeException('Proprietario del salone non configurato.');
+        }
+    }
+
+
     public static function connect(): PDO
     {
         static $connection = null;
 
         if ($connection === null) {
             $host = "localhost";
-            $dbName = "hairbooking";
+            // Configurazione dell'ambiente: il valore predefinito resta il DB locale.
+            $dbName = getenv('LUMEA_DB_NAME') ?: 'lumea';
+            if (!preg_match('/^[a-zA-Z0-9_]+$/D', $dbName)) {
+                throw new RuntimeException('Nome database non valido.');
+            }
             $username = "root";
             $password = "";
 

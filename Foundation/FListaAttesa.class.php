@@ -51,19 +51,37 @@ class FListaAttesa
             return null;
         }
 
-        $cliente = FUtente::load((int) $row['id_cliente']);
-        $servizio = FServizio::load((int) $row['id_servizio']);
+        $cliente = FUtente::load(
+            (int) $row['id_cliente']
+        );
 
-        if ($cliente === null || $servizio === null) {
+        $servizio = FServizio::load(
+            (int) $row['id_servizio']
+        );
+
+        if (
+            $cliente === null
+            ||
+            $servizio === null
+        ) {
             return null;
         }
 
         $prenotazioneAlternativa = null;
 
-        if ($row['id_prenotazione_alternativa'] !== null) {
-            $prenotazioneAlternativa = FPrenotazione::load((int) $row['id_prenotazione_alternativa']);
+        if (
+            $row['id_prenotazione_alternativa']
+            !== null
+        ) {
+            $prenotazioneAlternativa =
+                FPrenotazione::load(
+                    (int) $row['id_prenotazione_alternativa']
+                );
 
-            if ($prenotazioneAlternativa === null) {
+            if (
+                $prenotazioneAlternativa
+                === null
+            ) {
                 return null;
             }
         }
@@ -80,37 +98,100 @@ class FListaAttesa
         );
     }
 
-    public static function loadAttivaByCliente(int $idCliente): ?EListaAttesa
-    {
-        $connection = FConnectionDB::connect();
+    public static function loadAttivaByCliente(
+        int $idCliente
+    ): ?EListaAttesa {
+        $connection =
+            FConnectionDB::connect();
 
         $query = "
             SELECT id
             FROM lista_attesa
             WHERE id_cliente = :id_cliente
             AND stato = 'attiva'
-            ORDER BY data_ora_inserimento ASC
+            ORDER BY
+                data_ora_inserimento ASC,
+                id ASC
             LIMIT 1
         ";
 
-        $statement = $connection->prepare($query);
+        $statement =
+            $connection->prepare(
+                $query
+            );
 
         $statement->execute([
-            ':id_cliente' => $idCliente
+            ':id_cliente' =>
+            $idCliente
         ]);
 
-        $row = $statement->fetch(PDO::FETCH_ASSOC);
+        $row =
+            $statement->fetch(
+                PDO::FETCH_ASSOC
+            );
 
         if ($row === false) {
             return null;
         }
 
-        return self::load((int) $row['id']);
+        return self::load(
+            (int) $row['id']
+        );
     }
 
-    public static function loadAttiveByServizioDataOra(int $idServizio, string $dataDesiderata, string $oraDesiderata): array
-    {
-        $connection = FConnectionDB::connect();
+    public static function loadByCliente(
+        int $idCliente
+    ): array {
+        $statement =
+            FConnectionDB
+            ::connect()
+            ->prepare(
+                '
+                    SELECT id
+                    FROM lista_attesa
+                    WHERE id_cliente = :id_cliente
+                    ORDER BY
+                        data_ora_inserimento DESC,
+                        id DESC
+                    '
+            );
+
+        $statement->execute([
+            ':id_cliente' =>
+            $idCliente
+        ]);
+
+        $richieste = [];
+
+        foreach (
+            $statement->fetchAll(
+                PDO::FETCH_COLUMN
+            )
+            as $id
+        ) {
+            $richiesta =
+                self::load(
+                    (int) $id
+                );
+
+            if (
+                $richiesta !== null
+            ) {
+                $richieste[] =
+                    $richiesta;
+            }
+        }
+
+        return $richieste;
+    }
+
+    public static function loadAttiveByServizioDataOra(
+        int $idServizio,
+        string $dataDesiderata,
+        string $oraDesiderata
+    ): array {
+        $connection =
+            FConnectionDB::connect();
 
         $query = "
             SELECT id
@@ -119,53 +200,196 @@ class FListaAttesa
             AND data_desiderata = :data_desiderata
             AND ora_desiderata = :ora_desiderata
             AND stato = 'attiva'
-            ORDER BY data_ora_inserimento ASC
+            ORDER BY
+                data_ora_inserimento ASC,
+                id ASC
         ";
 
-        $statement = $connection->prepare($query);
+        $statement =
+            $connection->prepare(
+                $query
+            );
 
         $statement->execute([
-            ':id_servizio' => $idServizio,
-            ':data_desiderata' => $dataDesiderata,
-            ':ora_desiderata' => $oraDesiderata
+            ':id_servizio' =>
+            $idServizio,
+
+            ':data_desiderata' =>
+            $dataDesiderata,
+
+            ':ora_desiderata' =>
+            $oraDesiderata
         ]);
 
-        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $richieste = [];
 
-        $listaAttese = [];
+        foreach (
+            $statement->fetchAll(
+                PDO::FETCH_COLUMN
+            )
+            as $id
+        ) {
+            $richiesta =
+                self::load(
+                    (int) $id
+                );
 
-        foreach ($rows as $row) {
-            $listaAttesa = self::load((int) $row['id']);
-
-            if ($listaAttesa !== null) {
-                $listaAttese[] = $listaAttesa;
+            if (
+                $richiesta !== null
+            ) {
+                $richieste[] =
+                    $richiesta;
             }
         }
 
-        return $listaAttese;
+        return $richieste;
     }
 
-    public static function store(EListaAttesa $listaAttesa): bool
-    {
-        if ($listaAttesa->getCliente()->getId() === null) {
+    public static function loadAttiveByData(
+        string $dataDesiderata
+    ): array {
+        $statement =
+            FConnectionDB
+            ::connect()
+            ->prepare(
+                "
+                    SELECT id
+                    FROM lista_attesa
+                    WHERE data_desiderata = :data_desiderata
+                    AND stato = 'attiva'
+                    ORDER BY
+                        data_ora_inserimento ASC,
+                        id ASC
+                    "
+            );
+
+        $statement->execute([
+            ':data_desiderata' =>
+            $dataDesiderata
+        ]);
+
+        $richieste = [];
+
+        foreach (
+            $statement->fetchAll(
+                PDO::FETCH_COLUMN
+            )
+            as $id
+        ) {
+            $richiesta =
+                self::load(
+                    (int) $id
+                );
+
+            if (
+                $richiesta !== null
+            ) {
+                $richieste[] =
+                    $richiesta;
+            }
+        }
+
+        return $richieste;
+    }
+
+    public static function loadAttiveByDataOra(
+        string $dataDesiderata,
+        string $oraDesiderata
+    ): array {
+        $statement =
+            FConnectionDB
+            ::connect()
+            ->prepare(
+                "
+                    SELECT id
+                    FROM lista_attesa
+                    WHERE data_desiderata = :data_desiderata
+                    AND ora_desiderata = :ora_desiderata
+                    AND stato = 'attiva'
+                    ORDER BY
+                        data_ora_inserimento ASC,
+                        id ASC
+                    "
+            );
+
+        $statement->execute([
+            ':data_desiderata' =>
+            $dataDesiderata,
+
+            ':ora_desiderata' =>
+            $oraDesiderata
+        ]);
+
+        $richieste = [];
+
+        foreach (
+            $statement->fetchAll(
+                PDO::FETCH_COLUMN
+            )
+            as $id
+        ) {
+            $richiesta =
+                self::load(
+                    (int) $id
+                );
+
+            if (
+                $richiesta !== null
+            ) {
+                $richieste[] =
+                    $richiesta;
+            }
+        }
+
+        return $richieste;
+    }
+
+    public static function store(
+        EListaAttesa $listaAttesa
+    ): bool {
+        if (
+            $listaAttesa
+            ->getCliente()
+            ->getId()
+            === null
+        ) {
             return false;
         }
 
-        if ($listaAttesa->getServizio()->getId() === null) {
+        if (
+            $listaAttesa
+            ->getServizio()
+            ->getId()
+            === null
+        ) {
             return false;
         }
 
-        $idPrenotazioneAlternativa = null;
+        $idPrenotazioneAlternativa =
+            null;
 
-        if ($listaAttesa->getPrenotazioneAlternativa() !== null) {
-            if ($listaAttesa->getPrenotazioneAlternativa()->getId() === null) {
+        if (
+            $listaAttesa
+            ->getPrenotazioneAlternativa()
+            !== null
+        ) {
+            if (
+                $listaAttesa
+                ->getPrenotazioneAlternativa()
+                ->getId()
+                === null
+            ) {
                 return false;
             }
 
-            $idPrenotazioneAlternativa = $listaAttesa->getPrenotazioneAlternativa()->getId();
+            $idPrenotazioneAlternativa =
+                $listaAttesa
+                ->getPrenotazioneAlternativa()
+                ->getId();
         }
 
-        $connection = FConnectionDB::connect();
+        $connection =
+            FConnectionDB::connect();
 
         $query = "
             INSERT INTO lista_attesa (
@@ -188,50 +412,107 @@ class FListaAttesa
             )
         ";
 
-        $statement = $connection->prepare($query);
+        $statement =
+            $connection->prepare(
+                $query
+            );
 
-        $result = $statement->execute([
-            ':id_cliente' => $listaAttesa->getCliente()->getId(),
-            ':id_servizio' => $listaAttesa->getServizio()->getId(),
-            ':data_desiderata' => $listaAttesa->getDataDesiderata(),
-            ':ora_desiderata' => $listaAttesa->getOraDesiderata(),
-            ':data_ora_inserimento' => $listaAttesa->getDataOraInserimento(),
-            ':stato' => $listaAttesa->getStato(),
-            ':id_prenotazione_alternativa' => $idPrenotazioneAlternativa
-        ]);
+        $result =
+            $statement->execute([
+                ':id_cliente' =>
+                $listaAttesa
+                    ->getCliente()
+                    ->getId(),
+
+                ':id_servizio' =>
+                $listaAttesa
+                    ->getServizio()
+                    ->getId(),
+
+                ':data_desiderata' =>
+                $listaAttesa
+                    ->getDataDesiderata(),
+
+                ':ora_desiderata' =>
+                $listaAttesa
+                    ->getOraDesiderata(),
+
+                ':data_ora_inserimento' =>
+                $listaAttesa
+                    ->getDataOraInserimento(),
+
+                ':stato' =>
+                $listaAttesa
+                    ->getStato(),
+
+                ':id_prenotazione_alternativa' =>
+                $idPrenotazioneAlternativa
+            ]);
 
         if ($result) {
-            $listaAttesa->setId((int) $connection->lastInsertId());
+            $listaAttesa->setId(
+                (int)
+                $connection
+                    ->lastInsertId()
+            );
         }
 
         return $result;
     }
 
-    public static function update(EListaAttesa $listaAttesa): bool
-    {
-        if ($listaAttesa->getId() === null) {
+    public static function update(
+        EListaAttesa $listaAttesa
+    ): bool {
+        if (
+            $listaAttesa->getId()
+            === null
+        ) {
             return false;
         }
 
-        if ($listaAttesa->getCliente()->getId() === null) {
+        if (
+            $listaAttesa
+            ->getCliente()
+            ->getId()
+            === null
+        ) {
             return false;
         }
 
-        if ($listaAttesa->getServizio()->getId() === null) {
+        if (
+            $listaAttesa
+            ->getServizio()
+            ->getId()
+            === null
+        ) {
             return false;
         }
 
-        $idPrenotazioneAlternativa = null;
+        $idPrenotazioneAlternativa =
+            null;
 
-        if ($listaAttesa->getPrenotazioneAlternativa() !== null) {
-            if ($listaAttesa->getPrenotazioneAlternativa()->getId() === null) {
+        if (
+            $listaAttesa
+            ->getPrenotazioneAlternativa()
+            !== null
+        ) {
+            if (
+                $listaAttesa
+                ->getPrenotazioneAlternativa()
+                ->getId()
+                === null
+            ) {
                 return false;
             }
 
-            $idPrenotazioneAlternativa = $listaAttesa->getPrenotazioneAlternativa()->getId();
+            $idPrenotazioneAlternativa =
+                $listaAttesa
+                ->getPrenotazioneAlternativa()
+                ->getId();
         }
 
-        $connection = FConnectionDB::connect();
+        $connection =
+            FConnectionDB::connect();
 
         $query = "
             UPDATE lista_attesa
@@ -242,38 +523,72 @@ class FListaAttesa
                 ora_desiderata = :ora_desiderata,
                 data_ora_inserimento = :data_ora_inserimento,
                 stato = :stato,
-                id_prenotazione_alternativa = :id_prenotazione_alternativa
+                id_prenotazione_alternativa =
+                    :id_prenotazione_alternativa
             WHERE id = :id
         ";
 
-        $statement = $connection->prepare($query);
+        $statement =
+            $connection->prepare(
+                $query
+            );
 
-        return $statement->execute([
-            ':id_cliente' => $listaAttesa->getCliente()->getId(),
-            ':id_servizio' => $listaAttesa->getServizio()->getId(),
-            ':data_desiderata' => $listaAttesa->getDataDesiderata(),
-            ':ora_desiderata' => $listaAttesa->getOraDesiderata(),
-            ':data_ora_inserimento' => $listaAttesa->getDataOraInserimento(),
-            ':stato' => $listaAttesa->getStato(),
-            ':id_prenotazione_alternativa' => $idPrenotazioneAlternativa,
-            ':id' => $listaAttesa->getId()
-        ]);
+        return
+            $statement->execute([
+                ':id_cliente' =>
+                $listaAttesa
+                    ->getCliente()
+                    ->getId(),
+
+                ':id_servizio' =>
+                $listaAttesa
+                    ->getServizio()
+                    ->getId(),
+
+                ':data_desiderata' =>
+                $listaAttesa
+                    ->getDataDesiderata(),
+
+                ':ora_desiderata' =>
+                $listaAttesa
+                    ->getOraDesiderata(),
+
+                ':data_ora_inserimento' =>
+                $listaAttesa
+                    ->getDataOraInserimento(),
+
+                ':stato' =>
+                $listaAttesa
+                    ->getStato(),
+
+                ':id_prenotazione_alternativa' =>
+                $idPrenotazioneAlternativa,
+
+                ':id' =>
+                $listaAttesa
+                    ->getId()
+            ]);
     }
 
-    public static function delete(int $id): bool
-    {
-        $connection = FConnectionDB::connect();
+    public static function delete(
+        int $id
+    ): bool {
+        $connection =
+            FConnectionDB::connect();
 
         $query = "
             DELETE FROM lista_attesa
             WHERE id = :id
         ";
 
-        $statement = $connection->prepare($query);
+        $statement =
+            $connection->prepare(
+                $query
+            );
 
-        return $statement->execute([
-            ':id' => $id
-        ]);
+        return
+            $statement->execute([
+                ':id' => $id
+            ]);
     }
 }
-

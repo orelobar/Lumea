@@ -100,6 +100,22 @@ class FPagamento
         )));
     }
 
+    public static function loadByClientePeriodo(int $idCliente, string $inizio, string $fine): array
+    {
+        $statement = FConnectionDB::connect()->prepare('
+            SELECT p.id FROM pagamenti p
+            JOIN prenotazioni pr ON pr.id = p.id_prenotazione
+            WHERE pr.id_cliente = :cliente
+            AND p.data_ora_pagamento >= :inizio AND p.data_ora_pagamento < :fine
+            ORDER BY p.data_ora_pagamento DESC, p.id DESC
+        ');
+        $statement->execute([':cliente' => $idCliente, ':inizio' => $inizio, ':fine' => $fine]);
+        return array_values(array_filter(array_map(
+            static fn($id) => self::load((int) $id),
+            $statement->fetchAll(PDO::FETCH_COLUMN)
+        )));
+    }
+
     public static function loadByPeriodo(string $dataInizio, string $dataFine): array
     {
         $statement = FConnectionDB::connect()->prepare('

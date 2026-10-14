@@ -3,9 +3,67 @@
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Entity/EUtente.class.php';
+require_once __DIR__ . '/../View/VRegistrazione.class.php';
 
 class CRegistrazione
 {
+    public function mostraRegistrazione(
+        array $request = []
+    ): void {
+        if (FSessione::isAutenticato()) {
+            $this->redirect(
+                'index.php'
+            );
+        }
+
+        $view =
+            new VRegistrazione();
+
+        $view->mostraRegistrazione();
+    }
+
+
+    public function gestisciRegistrazione(
+        array $request
+    ): void {
+        if (FSessione::isAutenticato()) {
+            $this->redirect(
+                'index.php'
+            );
+        }
+
+        $post =
+            $request['post']
+            ?? [];
+
+        $risultato =
+            $this->registra(
+                $post['nome'] ?? '',
+                $post['cognome'] ?? '',
+                $post['email'] ?? '',
+                $post['telefono'] ?? '',
+                $post['password'] ?? '',
+                $post['conferma_password'] ?? ''
+            );
+
+        if (!$risultato['successo']) {
+            $view =
+                new VRegistrazione();
+
+            $view->mostraRegistrazione(
+                $risultato['errori'],
+                $risultato['valori']
+            );
+
+            return;
+        }
+
+        $this->redirect(
+            'index.php'
+        );
+    }
+
+
     public function registra(
         string $nome,
         string $cognome,
@@ -26,9 +84,22 @@ class CRegistrazione
             ];
         }
 
-        $nome = trim($nome);
-        $cognome = trim($cognome);
-        $email = strtolower(trim($email));
+        $nome =
+            trim(
+                $nome
+            );
+
+        $cognome =
+            trim(
+                $cognome
+            );
+
+        $email =
+            strtolower(
+                trim(
+                    $email
+                )
+            );
 
         $valori = [
             'nome' => $nome,
@@ -42,7 +113,11 @@ class CRegistrazione
         if ($nome === '') {
             $errori['nome'] =
                 'Inserisci un nome.';
-        } elseif (mb_strlen($nome) > 50) {
+        } elseif (
+            mb_strlen(
+                $nome
+            ) > 50
+        ) {
             $errori['nome'] =
                 'Il nome non può superare 50 caratteri.';
         }
@@ -50,7 +125,11 @@ class CRegistrazione
         if ($cognome === '') {
             $errori['cognome'] =
                 'Inserisci un cognome.';
-        } elseif (mb_strlen($cognome) > 50) {
+        } elseif (
+            mb_strlen(
+                $cognome
+            ) > 50
+        ) {
             $errori['cognome'] =
                 'Il cognome non può superare 50 caratteri.';
         }
@@ -66,14 +145,23 @@ class CRegistrazione
         ) {
             $errori['email'] =
                 'Inserisci un indirizzo email valido.';
-        } elseif (mb_strlen($email) > 150) {
+        } elseif (
+            mb_strlen(
+                $email
+            ) > 150
+        ) {
             $errori['email'] =
                 'L\'indirizzo email è troppo lungo.';
         }
 
-        $telefonoNormalizzato = null;
+        $telefonoNormalizzato =
+            null;
 
-        if ($this->isNumeroFissoItaliano($telefono)) {
+        if (
+            $this->isNumeroFissoItaliano(
+                $telefono
+            )
+        ) {
             $errori['telefono'] =
                 'Non puoi inserire un numero fisso. Inserisci un numero di cellulare italiano.';
         } else {
@@ -82,13 +170,20 @@ class CRegistrazione
                     $telefono
                 );
 
-            if ($telefonoNormalizzato === null) {
+            if (
+                $telefonoNormalizzato
+                === null
+            ) {
                 $errori['telefono'] =
                     'Inserisci un numero di cellulare italiano valido.';
             }
         }
 
-        if (strlen($password) < 8) {
+        if (
+            strlen(
+                $password
+            ) < 8
+        ) {
             $errori['password'] =
                 'La password deve contenere almeno 8 caratteri, una maiuscola e un numero.';
         } elseif (
@@ -106,16 +201,25 @@ class CRegistrazione
                 'La password deve contenere almeno 8 caratteri, una maiuscola e un numero.';
         }
 
-        if ($password !== $confermaPassword) {
+        if (
+            $password
+            !==
+            $confermaPassword
+        ) {
             $errori['confermaPassword'] =
                 'Le password non coincidono.';
         }
 
-        if (!isset($errori['email'])) {
+        if (
+            !isset(
+                $errori['email']
+            )
+        ) {
             if (
                 FUtente::loadByEmail(
                     $email
-                ) !== null
+                )
+                !== null
             ) {
                 $errori['email'] =
                     'Questa email è già associata a un account. Effettua il login.';
@@ -123,14 +227,18 @@ class CRegistrazione
         }
 
         if (
-            !isset($errori['telefono'])
+            !isset(
+                $errori['telefono']
+            )
             &&
-            $telefonoNormalizzato !== null
+            $telefonoNormalizzato
+            !== null
         ) {
             if (
                 FUtente::loadByTelefono(
                     $telefonoNormalizzato
-                ) !== null
+                )
+                !== null
             ) {
                 $errori['telefono'] =
                     'Questo numero è già associato a un account. Effettua il login.';
@@ -152,16 +260,21 @@ class CRegistrazione
                 PASSWORD_DEFAULT
             );
 
-        $utente = new EUtente(
-            $nome,
-            $cognome,
-            $email,
-            $telefonoNormalizzato,
-            $passwordHash,
-            'cliente'
-        );
+        $utente =
+            new EUtente(
+                $nome,
+                $cognome,
+                $email,
+                $telefonoNormalizzato,
+                $passwordHash,
+                'cliente'
+            );
 
-        if (!FUtente::store($utente)) {
+        if (
+            !FUtente::store(
+                $utente
+            )
+        ) {
             return [
                 'successo' => false,
                 'errori' => [
@@ -173,7 +286,8 @@ class CRegistrazione
             ];
         }
 
-        $idUtente = $utente->getId();
+        $idUtente =
+            $utente->getId();
 
         if ($idUtente === null) {
             throw new RuntimeException(
@@ -193,6 +307,7 @@ class CRegistrazione
         ];
     }
 
+
     private function isNumeroFissoItaliano(
         string $telefono
     ): bool {
@@ -202,7 +317,11 @@ class CRegistrazione
             );
 
         if (
-            substr($telefonoPulito, 0, 4)
+            substr(
+                $telefonoPulito,
+                0,
+                4
+            )
             === '0039'
         ) {
             $telefonoPulito =
@@ -211,7 +330,11 @@ class CRegistrazione
                     4
                 );
         } elseif (
-            substr($telefonoPulito, 0, 3)
+            substr(
+                $telefonoPulito,
+                0,
+                3
+            )
             === '+39'
         ) {
             $telefonoPulito =
@@ -228,6 +351,7 @@ class CRegistrazione
             ) === 1;
     }
 
+
     private function normalizzaTelefono(
         string $telefono
     ): ?string {
@@ -241,7 +365,11 @@ class CRegistrazione
         }
 
         if (
-            substr($telefono, 0, 4)
+            substr(
+                $telefono,
+                0,
+                4
+            )
             === '0039'
         ) {
             $telefono =
@@ -252,7 +380,11 @@ class CRegistrazione
                     4
                 );
         } elseif (
-            substr($telefono, 0, 3)
+            substr(
+                $telefono,
+                0,
+                3
+            )
             !== '+39'
         ) {
             $telefono =
@@ -273,10 +405,14 @@ class CRegistrazione
         return $telefono;
     }
 
+
     private function pulisciTelefono(
         string $telefono
     ): string {
-        $telefono = trim($telefono);
+        $telefono =
+            trim(
+                $telefono
+            );
 
         $telefonoPulito =
             preg_replace(
@@ -285,10 +421,24 @@ class CRegistrazione
                 $telefono
             );
 
-        if ($telefonoPulito === null) {
+        if (
+            $telefonoPulito
+            === null
+        ) {
             return '';
         }
 
         return $telefonoPulito;
+    }
+
+
+    private function redirect(
+        string $url
+    ): void {
+        header(
+            'Location: ' . $url
+        );
+
+        exit;
     }
 }
