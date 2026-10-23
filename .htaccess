@@ -1,0 +1,10 @@
+# Apache 2.4: le classi PHP e i template restano caricabili internamente.
+Options -Indexes
+RedirectMatch 403 "(?i)(?:^|/)(?:Control|Entity|Foundation|View|database|config)(?:/|$)"
+RedirectMatch 403 "(?:^|/)\."
+<FilesMatch "(?i)(?:\.(?:sql|tpl|json|ini|env|log|bak|backup|old|orig|save|swp|tmp|zip|tar|gz|7z|md|ya?ml|dist)$|~$|^\.)">
+    Require all denied
+</FilesMatch>
+<FilesMatch "(?i)^(?!index\.php$).*\.php(?:\..*)?$">
+    Require all denied
+</FilesMatch>

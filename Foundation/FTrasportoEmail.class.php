@@ -5,12 +5,14 @@ class FTrasportoEmail
 {
     public static function configurazione(): array
     {
-        $path = getenv('LUMEA_EMAIL_CONFIG') ?: '/Users/Shared/Lumea-email/email.json';
+        $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
+        $documentRoot = $documentRoot ?: dirname(__DIR__, 2);
+        $path = getenv('LUMEA_EMAIL_CONFIG') ?: dirname($documentRoot) . '/lumea-private/email.json';
         if (!is_file($path)) {
             return ['mode' => 'disabled'];
         }
         $real = realpath($path);
-        $root = realpath($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__, 2));
+        $root = realpath($documentRoot);
         if ($root && ($real === $root || str_starts_with($real, $root . DIRECTORY_SEPARATOR))) {
             throw new RuntimeException('La configurazione email deve essere fuori dal DocumentRoot.');
         }

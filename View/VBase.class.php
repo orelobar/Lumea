@@ -17,9 +17,11 @@ class VBase extends Smarty
         // In produzione usa la cartella del progetto; i test possono indicarne una isolata.
         $compileDir = getenv('LUMEA_SMARTY_COMPILE_DIR') ?: $baseDirSmarty . '/templates_c';
         $this->setCompileDir($compileDir);
+        // Non riutilizzare compilazioni create da una diversa versione della libreria.
+        $this->compile_id = 'smarty_' . self::SMARTY_VERSION;
 
         // Directory utilizzata per la cache
-        $this->setCacheDir($baseDirSmarty . '/cache');
+        $this->setCacheDir(getenv('LUMEA_SMARTY_CACHE_DIR') ?: $baseDirSmarty . '/cache');
 
         // Directory per eventuali file di configurazione Smarty
         $this->setConfigDir($baseDirSmarty . '/configs');

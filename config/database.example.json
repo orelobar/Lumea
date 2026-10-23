@@ -1,0 +1,9 @@
+{
+  "environment": "production",
+  "host": "HOST_FORNITO_DALL_HOSTING",
+  "port": 3306,
+  "name": "NOME_DATABASE_HOSTING",
+  "user": "UTENTE_DATABASE_HOSTING",
+  "password": "",
+  "socket": ""
+}
