@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lumèa - Scegli un altro orario</title>
-    <link rel="stylesheet" href="css/interazioni.css?v=lumea20261012">
-    <link rel="stylesheet" href="css/cliente.css?v=lumea20261012">
+    <link rel="stylesheet" href="css/interazioni.css?v=lumea-csrf-20261023">
+    <link rel="stylesheet" href="css/cliente.css?v=lumea-csrf-20261023">
     <script src="js/scelta-attesa-cliente.js?v=lumea20261012" defer></script>
 </head>
 <body class="area-cliente modalita-lista-attesa">
@@ -46,7 +46,9 @@
 
         <section class="pannello-cliente" aria-labelledby="orari-lista-attesa">
             <h3 id="orari-lista-attesa">Scegli l’orario che preferisci</h3>
-            <p><strong>{$servizio->getNome()|escape}</strong> · {$servizio->getDurata()} minuti</p>
+            {if $servizio !== null}
+                <p><strong>{$servizio->getNome()|escape}</strong> · {$servizio->getDurata()} minuti</p>
+            {/if}
             <p class="guida-contestuale">Gli orari sono occupati: puoi indicarne uno come preferenza, senza cancellare la tua prenotazione attuale.</p>
 
             {if $richiestaAttiva !== null}
@@ -54,8 +56,22 @@
                 <a href="index.php?pagina=lista_attesa">Vai alla lista d’attesa</a>
             {elseif !$puoAttendere}
                 <p class="empty-state">Non puoi inserire una nuova richiesta in questo momento.</p>
+            {elseif $servizio === null}
+                <form method="get" action="index.php" class="scelta-servizio-attesa">
+                    <input type="hidden" name="pagina" value="lista_attesa">
+                    <input type="hidden" name="azione" value="nuova">
+                    <label for="servizio-attesa">Quale servizio desideri?</label>
+                    <select name="servizio" id="servizio-attesa" required>
+                        <option value="">Scegli un servizio</option>
+                        {foreach $servizi as $opzione}
+                            <option value="{$opzione->getId()}">{$opzione->getCategoria()|escape} · {$opzione->getNome()|escape} · {$opzione->getDurata()} minuti</option>
+                        {/foreach}
+                    </select>
+                    <button class="azione-principale" type="submit">Mostra gli orari occupati</button>
+                </form>
             {elseif $slotAttesa}
                 <form class="form-lista-attesa" method="post" action="index.php?pagina=lista_attesa">
+                    <input type="hidden" name="csrf_token" value="{$csrfToken|escape:'html'}">
                     <input type="hidden" name="azione" value="inserisci_attesa">
                     <input type="hidden" name="id_servizio" value="{$servizio->getId()}">
                     <fieldset class="scelte-slot-attesa scelte-attesa-mensili">

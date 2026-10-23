@@ -21,8 +21,12 @@ document.addEventListener('DOMContentLoaded', function () {
     apri.addEventListener('click', function () {
         impostaSidebar(!body.classList.contains('sidebar-aperta'));
     });
-    chiudi.addEventListener('click', function () { impostaSidebar(false); });
-    sfondo.addEventListener('click', function () { impostaSidebar(false); });
+    chiudi.addEventListener('click', function () {
+        impostaSidebar(false);
+    });
+    sfondo.addEventListener('click', function () {
+        impostaSidebar(false);
+    });
     document.addEventListener('keydown', function (evento) {
         if (evento.key === 'Escape' && body.classList.contains('sidebar-aperta')) {
             impostaSidebar(false);

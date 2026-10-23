@@ -75,8 +75,7 @@ class CGestioneAppuntamenti
         $ripetibili = [];
 
         foreach (
-            $storico
-            as $prenotazioneStorica
+            $storico as $prenotazioneStorica
         ) {
             if (
                 $this->servizioDaRiprenotare(
@@ -225,8 +224,7 @@ class CGestioneAppuntamenti
         foreach (
             FPrenotazione::loadByCliente(
                 $idCliente
-            )
-            as $prenotazione
+            ) as $prenotazione
         ) {
             if (
                 $prenotazione->getStato()
@@ -269,8 +267,7 @@ class CGestioneAppuntamenti
         foreach (
             FPrenotazione::loadByCliente(
                 $idCliente
-            )
-            as $prenotazione
+            ) as $prenotazione
         ) {
             if (
                 $prenotazione->getStato()
@@ -656,8 +653,7 @@ class CGestioneAppuntamenti
             new CGestionePrenotazione();
 
         foreach (
-            $coda
-            as $richiesta
+            $coda as $richiesta
         ) {
             if (!$richiesta->isAttiva()) {
                 continue;
@@ -725,7 +721,8 @@ class CGestioneAppuntamenti
 
             // Ricontrolla gli intervalli dopo eventuali cambiamenti successivi alla richiesta.
             if ($prenotazioneAlternativa !== null && $prenotazioneAlternativa->siSovrapponeA(
-                $richiesta->getDataDesiderata(), $richiesta->getOraDesiderata(),
+                $richiesta->getDataDesiderata(),
+                $richiesta->getOraDesiderata(),
                 $richiesta->getServizio()->getDurata()
             )) {
                 continue;
@@ -913,8 +910,7 @@ class CGestioneAppuntamenti
         foreach (
             FPrenotazione::loadByCliente(
                 $idCliente
-            )
-            as $prenotazione
+            ) as $prenotazione
         ) {
             if (
                 $prenotazione->getStato()
@@ -947,8 +943,7 @@ class CGestioneAppuntamenti
         foreach (
             FDisponibilita::loadByData(
                 $data
-            )
-            as $fascia
+            ) as $fascia
         ) {
             $inizioFascia =
                 $this->oraInMinuti(
@@ -985,9 +980,9 @@ class CGestioneAppuntamenti
             );
 
         return ((int) (
-                $parti[0]
-                ?? 0
-            ) * 60)
+            $parti[0]
+            ?? 0
+        ) * 60)
             +
             (int) (
                 $parti[1]
@@ -1012,10 +1007,10 @@ class CGestioneAppuntamenti
         }
 
         return (
-                $dataOra
-                -
-                time()
-            )
+            $dataOra
+            -
+            time()
+        )
             >=
             (
                 48
@@ -1041,10 +1036,10 @@ class CGestioneAppuntamenti
         }
 
         return (
-                $dataOra
-                -
-                time()
-            )
+            $dataOra
+            -
+            time()
+        )
             >
             (
                 48
@@ -1084,20 +1079,16 @@ class CGestioneAppuntamenti
     ): ?string {
         switch ($esito) {
             case 'prenotata':
-                return
-                    'Prenotazione confermata correttamente.';
+                return 'Prenotazione confermata correttamente.';
 
             case 'annullata':
-                return
-                    'Prenotazione annullata correttamente.';
+                return 'Prenotazione annullata correttamente.';
 
             case 'attesa':
-                return
-                    'Richiesta inserita correttamente in lista d\'attesa.';
+                return 'Richiesta inserita correttamente in lista d\'attesa.';
 
             case 'attesa_annullata':
-                return
-                    'Richiesta in lista d\'attesa annullata.';
+                return 'Richiesta in lista d\'attesa annullata.';
 
             default:
                 return null;
@@ -1110,16 +1101,13 @@ class CGestioneAppuntamenti
     ): ?string {
         switch ($errore) {
             case 'annullamento':
-                return
-                    'Non è stato possibile annullare la prenotazione.';
+                return 'Non è stato possibile annullare la prenotazione.';
 
             case 'attesa':
-                return
-                    'Non è stato possibile modificare la lista d\'attesa.';
+                return 'Non è stato possibile modificare la lista d\'attesa.';
 
             case 'ripeti':
-                return
-                    'Il servizio non può essere riprenotato.';
+                return 'Il servizio non può essere riprenotato.';
 
             default:
                 return null;

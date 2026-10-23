@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lumèa - Orari e disponibilità</title>
-    <link rel="stylesheet" href="css/interazioni.css?v=lumea20261008">
+    <link rel="stylesheet" href="css/interazioni.css?v=lumea-csrf-20261023">
     <script src="js/disponibilita.js?v=lumea20261008" defer></script>
 </head>
 <body class="area-proprietario">
@@ -66,6 +66,7 @@
             </div>
 
             <form class="form-orario-mensile" method="post" action="index.php?pagina=disponibilita">
+                <input type="hidden" name="csrf_token" value="{$csrfToken|escape:'html'}">
                 <input type="hidden" name="azione" value="applica_orario_mensile">
                 <input type="hidden" name="anno" value="{$anno}">
                 <input type="hidden" name="mese" value="{$mese}">

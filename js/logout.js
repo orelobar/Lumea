@@ -46,7 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
         azioneConfermata = azione;
         overlay.hidden = false;
         document.body.classList.add('conferma-lumea-aperta');
-        window.setTimeout(function () { annulla.focus(); }, 0);
+        window.setTimeout(function () {
+            annulla.focus();
+        }, 0);
     }
 
     elementi.forEach(function (elemento) {

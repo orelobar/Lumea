@@ -14,7 +14,7 @@ require_once __DIR__ . '/../View/VDisponibilitaProprietario.class.php';
 
 class CGestioneDisponibilita
 {
-private function sostituisciFasce(string $data, array $fasce): void
+    private function sostituisciFasce(string $data, array $fasce): void
     {
         if (!FDisponibilita::deleteByData($data)) {
             throw new RuntimeException('Impossibile sostituire gli orari.');
@@ -128,11 +128,11 @@ private function sostituisciFasce(string $data, array $fasce): void
 
         $orario =
             $this
-            ->pulisciOrarioSettimanaleDaRequest(
-                is_array($orarioRicevuto)
-                    ? $orarioRicevuto
-                    : []
-            );
+                ->pulisciOrarioSettimanaleDaRequest(
+                    is_array($orarioRicevuto)
+                        ? $orarioRicevuto
+                        : []
+                );
 
         if ($orario === null) {
             $this->redirect(
@@ -246,10 +246,10 @@ private function sostituisciFasce(string $data, array $fasce): void
 
         $successo =
             $this
-            ->impostaEccezioneGiornaliera(
-                $data,
-                $fasce
-            );
+                ->impostaEccezioneGiornaliera(
+                    $data,
+                    $fasce
+                );
 
         if (!$successo) {
             $this->redirect(
@@ -688,8 +688,7 @@ private function sostituisciFasce(string $data, array $fasce): void
             );
 
         foreach (
-            $fasceOriginali
-            as $fasciaEsistente
+            $fasceOriginali as $fasciaEsistente
         ) {
 
             if (
@@ -728,8 +727,7 @@ private function sostituisciFasce(string $data, array $fasce): void
         $coinvolte = [];
 
         foreach (
-            $prenotazioni
-            as $prenotazione
+            $prenotazioni as $prenotazione
         ) {
 
             if (
@@ -825,12 +823,12 @@ private function sostituisciFasce(string $data, array $fasce): void
 
         $prenotazioniCoinvolte =
             $this
-            ->prenotazioniCoinvolteModifica(
-                $idDisponibilita,
-                $data,
-                $oraInizioNormalizzata,
-                $oraFineNormalizzata
-            );
+                ->prenotazioniCoinvolteModifica(
+                    $idDisponibilita,
+                    $data,
+                    $oraInizioNormalizzata,
+                    $oraFineNormalizzata
+                );
 
         if (
             count(
@@ -932,8 +930,7 @@ private function sostituisciFasce(string $data, array $fasce): void
             );
 
         foreach (
-            $fasce
-            as $fasciaEsistente
+            $fasce as $fasciaEsistente
         ) {
 
             if (
@@ -958,8 +955,7 @@ private function sostituisciFasce(string $data, array $fasce): void
         $coinvolte = [];
 
         foreach (
-            $prenotazioni
-            as $prenotazione
+            $prenotazioni as $prenotazione
         ) {
 
             if (
@@ -1007,9 +1003,9 @@ private function sostituisciFasce(string $data, array $fasce): void
 
         $prenotazioniCoinvolte =
             $this
-            ->prenotazioniCoinvolteEliminazione(
-                $idDisponibilita
-            );
+                ->prenotazioniCoinvolteEliminazione(
+                    $idDisponibilita
+                );
 
         if (
             count(
@@ -1199,8 +1195,7 @@ private function sostituisciFasce(string $data, array $fasce): void
             );
 
         foreach (
-            $prenotazioni
-            as $prenotazione
+            $prenotazioni as $prenotazione
         ) {
 
             if (
@@ -1248,8 +1243,7 @@ private function sostituisciFasce(string $data, array $fasce): void
             );
 
         foreach (
-            $fasce
-            as $fascia
+            $fasce as $fascia
         ) {
 
             if (
@@ -1304,8 +1298,7 @@ private function sostituisciFasce(string $data, array $fasce): void
             $prenotazione->getDurata();
 
         foreach (
-            $fasce
-            as $fascia
+            $fasce as $fascia
         ) {
 
             $inizioFascia =
@@ -1391,16 +1384,13 @@ private function sostituisciFasce(string $data, array $fasce): void
         switch ($esito) {
 
             case 'mensile':
-                return
-                    'Orario mensile applicato correttamente.';
+                return 'Orario mensile applicato correttamente.';
 
             case 'eccezione':
-                return
-                    'Orario della giornata modificato correttamente.';
+                return 'Orario della giornata modificato correttamente.';
 
             case 'chiusura':
-                return
-                    'Giornata chiusa correttamente.';
+                return 'Giornata chiusa correttamente.';
 
             default:
                 return null;
@@ -1414,28 +1404,22 @@ private function sostituisciFasce(string $data, array $fasce): void
         switch ($errore) {
 
             case 'orario':
-                return
-                    'Controlla Mattina e Pomeriggio: ogni intervallo deve essere completo, con apertura prima della chiusura. Il pomeriggio non può iniziare prima della chiusura della mattina. Per i giorni senza orari scegli Chiuso.';
+                return 'Controlla Mattina e Pomeriggio: ogni intervallo deve essere completo, con apertura prima della chiusura. Il pomeriggio non può iniziare prima della chiusura della mattina. Per i giorni senza orari scegli Chiuso.';
 
             case 'mensile':
-                return
-                    'Non è stato possibile applicare l\'orario mensile. Verifica anche le prenotazioni già presenti.';
+                return 'Non è stato possibile applicare l\'orario mensile. Verifica anche le prenotazioni già presenti.';
 
             case 'data':
-                return
-                    'La data selezionata non è valida.';
+                return 'La data selezionata non è valida.';
 
             case 'eccezione':
-                return
-                    'Non è stato possibile modificare la giornata. Potrebbero essere presenti prenotazioni incompatibili con il nuovo orario.';
+                return 'Non è stato possibile modificare la giornata. Potrebbero essere presenti prenotazioni incompatibili con il nuovo orario.';
 
             case 'eccezione_vuota':
-                return
-                    'Per chiudere completamente la giornata usa il pulsante "Imposta come chiuso".';
+                return 'Per chiudere completamente la giornata usa il pulsante "Imposta come chiuso".';
 
             case 'chiusura':
-                return
-                    'Non è possibile chiudere la giornata perché sono presenti prenotazioni attive oppure la data non è valida.';
+                return 'Non è possibile chiudere la giornata perché sono presenti prenotazioni attive oppure la data non è valida.';
 
             default:
                 return null;

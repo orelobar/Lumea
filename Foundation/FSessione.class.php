@@ -3,13 +3,13 @@
 class FSessione
 {
     private const DURATA_CLIENTE =
-    2 * 60 * 60;
+        2 * 60 * 60;
 
     private const DURATA_PROPRIETARIO =
-    12 * 60 * 60;
+        12 * 60 * 60;
 
     private const DURATA_MASSIMA =
-    self::DURATA_PROPRIETARIO;
+        self::DURATA_PROPRIETARIO;
 
     public static function avvia(): void
     {
@@ -46,6 +46,29 @@ class FSessione
         }
     }
 
+    /** Token riutilizzabile nei form della stessa sessione, mai negli URL. */
+    public static function tokenCsrf(): string
+    {
+        self::avvia();
+
+        if (!isset($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+
+        return $_SESSION['csrf_token'];
+    }
+
+    public static function verificaTokenCsrf($token): bool
+    {
+        self::avvia();
+        $atteso = $_SESSION['csrf_token'] ?? null;
+
+        return is_string($token)
+            && is_string($atteso)
+            && strlen($token) === 64
+            && hash_equals($atteso, $token);
+    }
+
     public static function impostaUtenteAutenticato(
         int $idUtente,
         string $ruolo = 'cliente'
@@ -80,6 +103,9 @@ class FSessione
         if (!session_regenerate_id(true)) {
             throw new RuntimeException('Impossibile aggiornare la sessione.');
         }
+
+        // Il token anonimo non deve restare valido dopo il cambio di identità.
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
         $durata =
             $ruolo === 'proprietario'

@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lumèa - Accedi</title>
-    <link rel="stylesheet" href="css/interazioni.css?v=lumea20261012">
+    <link rel="stylesheet" href="css/interazioni.css?v=lumea-csrf-20261023">
+    <script src="js/accesso.js?v=lumea-esame-20261015" defer></script>
 </head>
 <body class="area-pubblica area-accesso">
     <header class="header-pubblico header-accesso">
@@ -27,10 +28,18 @@
             {if isset($errori.generale)}<p class="errore-accesso" role="alert">{$errori.generale|escape}</p>{/if}
 
             <form class="form-accesso" method="post" action="index.php?pagina=login" novalidate>
+                <input type="hidden" name="csrf_token" value="{$csrfToken|escape:'html'}">
                 <label for="email"><span>Email</span><input type="email" id="email" name="email" value="{$valori.email|default:''|escape}" autocomplete="email" required></label>
                 {if isset($errori.email)}<p class="errore-campo-accesso">{$errori.email|escape}</p>{/if}
 
-                <label for="password"><span>Password</span><input type="password" id="password" name="password" autocomplete="current-password" required></label>
+                <label for="password"><span>Password</span><span class="campo-password">
+                        <input type="password" id="password" name="password" autocomplete="current-password" required>
+                        <button class="pulsante-visibilita-password" type="button" data-password-target="password"
+                            aria-controls="password" aria-label="Mostra password" aria-pressed="false" title="Mostra password">
+                            <svg class="icona-occhio" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg class="icona-occhio-chiuso" viewBox="0 0 24 24" aria-hidden="true" focusable="false" hidden><path d="m3 3 18 18M10.6 5.1A11 11 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-3.1 3.8M6.2 6.2A21 21 0 0 0 2 12s3.5 7 10 7a12 12 0 0 0 5.8-1.8M10 10a3 3 0 0 0 4 4"/></svg>
+                        </button>
+                    </span></label>
                 {if isset($errori.password)}<p class="errore-campo-accesso">{$errori.password|escape}</p>{/if}
 
                 <button class="pulsante-pubblico-primario" type="submit">Accedi</button>

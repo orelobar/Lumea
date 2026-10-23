@@ -22,10 +22,16 @@ document.addEventListener('DOMContentLoaded', function () {
     apri.addEventListener('click', function () {
         impostaSidebar(!body.classList.contains('sidebar-cliente-aperta'), true);
     });
-    chiudi.addEventListener('click', function () { impostaSidebar(false, true); });
-    sfondo.addEventListener('click', function () { impostaSidebar(false, true); });
+    chiudi.addEventListener('click', function () {
+        impostaSidebar(false, true);
+    });
+    sfondo.addEventListener('click', function () {
+        impostaSidebar(false, true);
+    });
     sidebar.querySelectorAll('nav a').forEach(function (link) {
-        link.addEventListener('click', function () { impostaSidebar(false, false); });
+        link.addEventListener('click', function () {
+            impostaSidebar(false, false);
+        });
     });
     document.addEventListener('keydown', function (evento) {
         if (!mobile.matches || !body.classList.contains('sidebar-cliente-aperta')) return;
@@ -46,6 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
             primo.focus();
         }
     });
-    mobile.addEventListener('change', function () { impostaSidebar(false, false); });
+    mobile.addEventListener('change', function () {
+        impostaSidebar(false, false);
+    });
     impostaSidebar(false, false);
 });

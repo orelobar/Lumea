@@ -117,7 +117,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!controlliStato.length || !contenitoreOrari) return;
 
         const aggiornaStatoOrari = function () {
-            const selezionato = controlliStato.find(function (controllo) { return controllo.checked; });
+            const selezionato = controlliStato.find(function (controllo) {
+                return controllo.checked;
+            });
             const chiuso = selezionato ? selezionato.value === 'chiuso' : false;
             contenitoreOrari.querySelectorAll('.campo-orario-hhmm').forEach(function (campo) {
                 campo.disabled = chiuso;

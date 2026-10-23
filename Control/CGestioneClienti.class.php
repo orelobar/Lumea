@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../View/VClientiProprietario.class.php';
 
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
@@ -8,7 +9,7 @@ require_once __DIR__ . '/../Foundation/FSessione.class.php';
 
 class CGestioneClienti
 {
-private function richiediProprietario(): void
+    private function richiediProprietario(): void
     {
         if (!$this->isProprietarioAutenticato()) {
             header('Location: index.php');
@@ -230,7 +231,7 @@ private function richiediProprietario(): void
 
         if (
             $cliente
-            ->isPrenotazioniOnlineAbilitate()
+                ->isPrenotazioniOnlineAbilitate()
         ) {
             return false;
         }

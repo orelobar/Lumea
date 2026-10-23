@@ -3,6 +3,8 @@
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
 require_once __DIR__ . '/../Entity/ECoupon.class.php';
 require_once __DIR__ . '/../Entity/EUtente.class.php';
+require_once __DIR__ . '/../View/VEmail.class.php';
+require_once __DIR__ . '/FTrasportoEmail.class.php';
 
 class FEmail
 {
@@ -47,7 +49,8 @@ class FEmail
         return self::invia(
             $cliente->getEmail(),
             $oggetto,
-            $testo
+            $testo,
+            self::datiAppuntamento($prenotazione, 'conferma')
         );
     }
 
@@ -78,7 +81,8 @@ class FEmail
         return self::invia(
             $cliente->getEmail(),
             'Orario assegnato dalla lista d’attesa - Lumèa',
-            $testo
+            $testo,
+            array_merge(self::datiAppuntamento($prenotazione, 'assegnazione'), ['precedente' => $prenotazioneSostituita === null ? null : ['data' => $prenotazioneSostituita->getData(), 'ora' => $prenotazioneSostituita->getOra()]])
         );
     }
 
@@ -118,7 +122,8 @@ class FEmail
         return self::invia(
             $cliente->getEmail(),
             $oggetto,
-            $testo
+            $testo,
+            ['tipo' => 'coupon', 'nome' => $cliente->getNome(), 'codice' => $coupon->getCodice(), 'valore' => $coupon->getValoreIniziale(), 'credito' => $coupon->getCreditoResiduo(), 'traguardo' => $coupon->getTraguardoCompletamenti()]
         );
     }
 
@@ -142,7 +147,8 @@ class FEmail
         return self::invia(
             $cliente->getEmail(),
             $oggetto,
-            $testo
+            $testo,
+            ['tipo' => 'sospensione', 'nome' => $cliente->getNome()]
         );
     }
 
@@ -179,86 +185,47 @@ class FEmail
         return self::invia(
             $cliente->getEmail(),
             $oggetto,
-            $testo
+            $testo,
+            self::datiAppuntamento($prenotazione, 'annullamento')
         );
     }
 
-    private static function invia(
-        string $destinatario,
-        string $oggetto,
-        string $testo
-    ): bool {
-        if (
-            filter_var(
-                $destinatario,
-                FILTER_VALIDATE_EMAIL
-            ) === false
-        ) {
-            error_log(
-                'Lumèa: indirizzo email non valido: '
-                    . $destinatario
-            );
+    private static function datiAppuntamento(EPrenotazione $p, string $tipo): array
+    {
+        return ['tipo' => $tipo, 'nome' => $p->getCliente()->getNome(),
+            'servizio' => $p->getNomeServizio(), 'data' => $p->getData(), 'ora' => $p->getOra(),
+            'durata' => $p->getDurata(), 'prezzo' => $p->getPrezzo()];
+    }
 
+    private static function invia(string $destinatario, string $oggetto, string $testo, array $dati): bool
+    {
+        if (filter_var($destinatario, FILTER_VALIDATE_EMAIL) === false || preg_match('/[\r\n]/', $destinatario)) {
+            error_log('Lumèa: indirizzo email non valido.');
             return false;
         }
-
-        /*
-         * In QA le email vengono registrate in locale. Senza la variabile
-         * d'ambiente il comportamento dell'applicazione resta invariato.
-         */
-        if (getenv('LUMEA_EMAIL_MODE') === 'log') {
-            $percorsoLog = getenv('LUMEA_EMAIL_LOG')
-                ?: sys_get_temp_dir() . '/lumea_email.log';
-            $contenutoLog = '[' . date('c') . "]\n"
-                . 'A: ' . $destinatario . "\n"
-                . 'Oggetto: ' . $oggetto . "\n\n"
-                . $testo . "\n---\n";
-
-            if (@file_put_contents($percorsoLog, $contenutoLog, FILE_APPEND | LOCK_EX) === false) {
-                error_log(
-                    'Lumèa: scrittura log email QA non riuscita - '
-                        . $oggetto
-                );
-
-                return false;
-            }
-
-            return true;
-        }
-
-        $headers =
-            "MIME-Version: 1.0\r\n"
-            . "Content-Type: text/plain; charset=UTF-8\r\n";
-
-        // Il mittente sarà configurato sull'hosting con il dominio definitivo.
         try {
-            $inviata = @mail(
-                $destinatario,
-                $oggetto,
-                $testo,
-                $headers
-            );
+            $config = FTrasportoEmail::configurazione();
+            $mode = getenv('LUMEA_EMAIL_MODE') ?: ($config['mode'] ?? 'disabled');
+            $contenuto = (new VEmail())->prepara($dati, $testo);
+            if ($mode === 'log') {
+                $path = getenv('LUMEA_EMAIL_LOG') ?: ($config['log_path'] ?? sys_get_temp_dir() . '/lumea_email.log');
+                $record = '[' . date('c') . "]\nA: " . $destinatario . "\nOggetto: " . $oggetto
+                    . "\n\n" . $contenuto['testo'] . "\n--- HTML ---\n" . $contenuto['html'] . "\n---\n";
+                if (@file_put_contents($path, $record, FILE_APPEND | LOCK_EX) === false) {
+                    throw new RuntimeException('Scrittura log email QA non riuscita.');
+                }
+                return true;
+            }
+            if (!in_array($mode, ['smtp_test', 'smtp'], true)) {
+                throw new RuntimeException('Trasporto email non abilitato o configurato.');
+            }
+            $config['mode'] = $mode;
+            return FTrasportoEmail::invia($destinatario, $oggetto, $contenuto, $config);
         } catch (Throwable $e) {
-            error_log(
-                'Lumèa: errore invio email - '
-                    . $oggetto
-                    . ': '
-                    . $e->getMessage()
-            );
-
+            // I trasporti non includono mai credenziali o risposte AUTH negli errori.
+            error_log('Lumèa: invio email fallito - ' . $e->getMessage());
             return false;
         }
-
-        if (!$inviata) {
-            error_log(
-                'Lumèa: invio email fallito verso '
-                    . $destinatario
-                    . ' - '
-                    . $oggetto
-            );
-        }
-
-        return $inviata;
     }
 
     private static function formattaData(

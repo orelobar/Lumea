@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../View/VServiziProprietario.class.php';
 
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
@@ -168,8 +169,7 @@ class CGestioneServizi
                 'categoria',
                 'prezzo',
                 'durata'
-            ]
-            as $campo
+            ] as $campo
         ) {
             if (
                 !isset($post[$campo])
@@ -242,12 +242,10 @@ class CGestioneServizi
     ): ?string {
         switch ($esito) {
             case 'salvato':
-                return
-                    'Servizio aggiornato.';
+                return 'Servizio aggiornato.';
 
             case 'eliminato':
-                return
-                    'Servizio eliminato definitivamente.';
+                return 'Servizio eliminato definitivamente.';
 
             default:
                 return null;

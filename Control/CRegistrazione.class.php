@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
+require_once __DIR__ . '/../Foundation/FValidazioneEmail.class.php';
 require_once __DIR__ . '/../Foundation/FSessione.class.php';
 require_once __DIR__ . '/../Entity/EUtente.class.php';
 require_once __DIR__ . '/../View/VRegistrazione.class.php';
@@ -152,6 +153,14 @@ class CRegistrazione
         ) {
             $errori['email'] =
                 'L\'indirizzo email è troppo lungo.';
+        }
+
+        // Il DNS è un controllo sul dominio, non sulla proprietà della casella.
+        if (!isset($errori['email'])) {
+            $erroreDominio = FValidazioneEmail::erroreDominio($email);
+            if ($erroreDominio !== null) {
+                $errori['email'] = $erroreDominio;
+            }
         }
 
         $telefonoNormalizzato =

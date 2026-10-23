@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lumèa - Prossime 7 giornate di apertura</title>
-    <link rel="stylesheet" href="css/interazioni.css?v=lumea20261012">
+    <link rel="stylesheet" href="css/interazioni.css?v=lumea-csrf-20261023">
 </head>
 <body class="area-proprietario">
     <header class="header-proprietario">

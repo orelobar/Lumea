@@ -14,17 +14,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!canvas || !dati.length) return;
         let punti = [];
-        const euro = new Intl.NumberFormat('it-IT', {style: 'currency', currency: 'EUR'});
+        const euro = new Intl.NumberFormat('it-IT', {
+            style: 'currency',
+            currency: 'EUR'
+        });
 
         function scala(massimo) {
-            if (massimo <= 0) return {passo: 10, cima: 50};
+            if (massimo <= 0) return {
+                passo: 10,
+                cima: 50
+            };
             const grezzo = massimo / 5;
             const potenza = Math.pow(10, Math.floor(Math.log10(grezzo)));
             const multiplo = [1, 2, 5, 10].find(function (numero) {
                 return numero * potenza >= grezzo;
             });
             const passo = multiplo * potenza;
-            return {passo: passo, cima: Math.ceil(massimo / passo) * passo};
+            return {
+                passo: passo,
+                cima: Math.ceil(massimo / passo) * passo
+            };
         }
 
         function disegna() {
@@ -32,10 +41,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const altezza = larghezza < 500 ? 300 : 355;
             const rapporto = window.devicePixelRatio || 1;
             const ctx = canvas.getContext('2d');
-            const margine = {sinistra: 68, destra: 25, alto: 25, basso: 55};
+            const margine = {
+                sinistra: 68,
+                destra: 25,
+                alto: 25,
+                basso: 55
+            };
             const areaX = larghezza - margine.sinistra - margine.destra;
             const areaY = altezza - margine.alto - margine.basso;
-            const asse = scala(Math.max.apply(null, dati.map(function (riga) { return riga.incasso; })));
+            const asse = scala(Math.max.apply(null, dati.map(function (riga) {
+                return riga.incasso;
+            })));
             const divisioni = Math.round(asse.cima / asse.passo);
 
             canvas.width = Math.round(larghezza * rapporto);
@@ -102,7 +118,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        function nascondi() { tooltip.classList.remove('tooltip-visibile'); }
+        function nascondi() {
+            tooltip.classList.remove('tooltip-visibile');
+        }
         canvas.addEventListener('mousemove', function (evento) {
             const rettangolo = canvas.getBoundingClientRect();
             const x = evento.clientX - rettangolo.left;
@@ -110,15 +128,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const vicino = punti.find(function (punto) {
                 return Math.abs(punto.x - x) <= 12 && Math.abs(punto.y - y) <= 12;
             });
-            if (!vicino) { nascondi(); return; }
+            if (!vicino) {
+                nascondi();
+                return;
+            }
             const riga = vicino.riga;
             const partiData = riga.data.split('-');
-            const dataCompleta = partiData.length === 3
-                ? partiData[2] + '/' + partiData[1] + '/' + partiData[0]
-                : (partiData.length === 2 ? riga.etichetta + ' ' + partiData[0] : riga.etichetta);
-            const riferimento = riga.etichetta.includes(':')
-                ? dataCompleta + ' · ' + riga.etichetta
-                : dataCompleta;
+            const dataCompleta = partiData.length === 3 ?
+                partiData[2] + '/' + partiData[1] + '/' + partiData[0] :
+                (partiData.length === 2 ? riga.etichetta + ' ' + partiData[0] : riga.etichetta);
+            const riferimento = riga.etichetta.includes(':') ?
+                dataCompleta + ' · ' + riga.etichetta :
+                dataCompleta;
             tooltip.textContent = riferimento + ' · ' + euro.format(riga.incasso) +
                 ' · ' + riga.appuntamenti + ' appuntamenti · ' + riga.completati + ' completati';
             tooltip.style.left = Math.max(8, Math.min(x + 12, rettangolo.width - 255)) + 'px';

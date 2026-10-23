@@ -254,6 +254,7 @@ class FPagamento
             AND data_ora_pagamento < :data_fine
         ";
 
+
         $statement = $connection->prepare($query);
 
         $statement->execute([
@@ -293,4 +294,3 @@ class FPagamento
         return $row['totale'] !== null ? (float) $row['totale'] : 0.0;
     }
 }
-

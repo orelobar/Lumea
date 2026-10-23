@@ -52,15 +52,15 @@ class CGestioneListaAttesa
                 'alternativa' => $alternativa === null || $alternativa->getStato() !== 'prenotata'
                     || strtotime($alternativa->getData() . ' ' . $alternativa->getOra()
                         . ' +' . $alternativa->getDurata() . ' minutes') <= time() ? null : [
-                    'data' => $this->formattaData(
-                        $alternativa->getData()
-                    ),
-                    'ora' => substr(
-                        $alternativa->getOra(),
-                        0,
-                        5
-                    )
-                ]
+                            'data' => $this->formattaData(
+                                $alternativa->getData()
+                            ),
+                            'ora' => substr(
+                                $alternativa->getOra(),
+                                0,
+                                5
+                            )
+                        ]
             ];
         }
 
@@ -75,7 +75,7 @@ class CGestioneListaAttesa
             'richieste' => $righe,
             'puo_cercare' => $puoCercare,
             'prenotazioni_abilitate' => $cliente->isPrenotazioniOnlineAbilitate(),
-            'url_ricerca' => $attuale === null ? 'index.php?pagina=prenota&nuova=1'
+            'url_ricerca' => $attuale === null ? 'index.php?pagina=lista_attesa&azione=nuova'
                 : 'index.php?pagina=lista_attesa&azione=nuova&servizio=' . $attuale->getServizio()->getId(),
             'messaggio' => $this->getMessaggio(
                 $get['esito'] ?? ''
@@ -102,15 +102,15 @@ class CGestioneListaAttesa
             : (int) $appuntamentoAttuale->getServizio()->getId();
         $servizio = FServizio::load($idServizio);
 
-        if ($servizio === null || !$servizio->isAttivo()) {
-            $this->redirect('index.php?pagina=prenota');
+        if ($idServizio > 0 && ($servizio === null || !$servizio->isAttivo())) {
+            $this->redirect('index.php?pagina=lista_attesa');
         }
 
         $richiestaAttiva = $this->richiestaAttivaPerCliente($cliente->getId());
         $puoAttendere = $cliente->isPrenotazioniOnlineAbilitate()
             && count($prenotazioniAttive) <= 1
             && $richiestaAttiva === null;
-        $slotAttesa = $puoAttendere
+        $slotAttesa = $puoAttendere && $servizio !== null
             ? $this->slotOccupatiRichiedibili($cliente->getId(), $idServizio)
             : [];
         $dettaglioAppuntamento = null;
@@ -131,6 +131,7 @@ class CGestioneListaAttesa
         (new VNuovaListaAttesaCliente())->mostraNuovaRichiesta([
             'utente' => $cliente,
             'servizio' => $servizio,
+            'servizi' => $servizio === null ? FServizio::loadAttivi() : [],
             'appuntamento_attuale' => $dettaglioAppuntamento,
             'slot_attesa' => $slotAttesa,
             'puo_attendere' => $puoAttendere,
@@ -170,8 +171,8 @@ class CGestioneListaAttesa
             $alternativa !== null
             &&
             $alternativa
-            ->getServizio()
-            ->getId()
+                ->getServizio()
+                ->getId()
             !== $idServizio
         ) {
             return [];
@@ -183,8 +184,7 @@ class CGestioneListaAttesa
         foreach (
             FDisponibilita::loadFromDate(
                 date('Y-m-d')
-            )
-            as $fascia
+            ) as $fascia
         ) {
             $data = $fascia->getData();
 
@@ -198,8 +198,7 @@ class CGestioneListaAttesa
                 $this->iniziSlotRichiedibiliPerData(
                     $data,
                     $servizio->getDurata()
-                )
-                as $inizioMinuti
+                ) as $inizioMinuti
             ) {
                 $ora =
                     $this->minutiInOra(
@@ -233,7 +232,9 @@ class CGestioneListaAttesa
                 }
 
                 if ($alternativa !== null && $alternativa->siSovrapponeA(
-                    $data, $oraNormalizzata, $servizio->getDurata()
+                    $data,
+                    $oraNormalizzata,
+                    $servizio->getDurata()
                 )) {
                     continue;
                 }
@@ -271,7 +272,7 @@ class CGestioneListaAttesa
                         ->modify(
                             '+'
                                 . $servizio
-                                ->getDurata()
+                                    ->getDurata()
                                 . ' minutes'
                         )
                         ->format('H:i')
@@ -474,8 +475,8 @@ class CGestioneListaAttesa
             $richiesta === null
             ||
             $richiesta
-            ->getCliente()
-            ->getId()
+                ->getCliente()
+                ->getId()
             !== $idCliente
         ) {
             return null;
@@ -489,8 +490,7 @@ class CGestioneListaAttesa
             return null;
         }
 
-        return
-            $richiesta->getStato();
+        return $richiesta->getStato();
     }
 
     public function inserisciInListaAttesa(
@@ -606,7 +606,9 @@ class CGestioneListaAttesa
                 ?? null;
 
             if ($alternativa !== null && $alternativa->siSovrapponeA(
-                $dataDesiderata, $ora, $servizio->getDurata()
+                $dataDesiderata,
+                $ora,
+                $servizio->getDurata()
             )) {
                 $this->richiestaSovrapposta = true;
                 $connection->rollBack();
@@ -624,8 +626,8 @@ class CGestioneListaAttesa
                 &&
                 (
                     $alternativa
-                    ->getServizio()
-                    ->getId()
+                        ->getServizio()
+                        ->getId()
                     !== $idServizio
                     ||
                     (
@@ -728,8 +730,8 @@ class CGestioneListaAttesa
             $richiesta === null
             ||
             $richiesta
-            ->getCliente()
-            ->getId()
+                ->getCliente()
+                ->getId()
             !== $idCliente
         ) {
             return false;
@@ -839,16 +841,14 @@ class CGestioneListaAttesa
         string $esito
     ): ?string {
         if ($esito === 'attesa') {
-            return
-                'Richiesta inserita correttamente nella lista d’attesa.';
+            return 'Richiesta inserita correttamente nella lista d’attesa.';
         }
 
         if (
             $esito
             === 'attesa_annullata'
         ) {
-            return
-                'Richiesta in lista d’attesa annullata.';
+            return 'Richiesta in lista d’attesa annullata.';
         }
 
         return null;
@@ -928,8 +928,7 @@ class CGestioneListaAttesa
         foreach (
             FPrenotazione::loadByCliente(
                 $idCliente
-            )
-            as $prenotazione
+            ) as $prenotazione
         ) {
             if (
                 $prenotazione->getStato()
@@ -987,10 +986,10 @@ class CGestioneListaAttesa
         }
 
         return (
-                $dataOra
-                -
-                time()
-            )
+            $dataOra
+            -
+            time()
+        )
             >
             (
                 48
@@ -1017,8 +1016,7 @@ class CGestioneListaAttesa
         foreach (
             FDisponibilita::loadByData(
                 $data
-            )
-            as $fascia
+            ) as $fascia
         ) {
             $inizioFascia =
                 $this->oraInMinuti(
@@ -1106,7 +1104,11 @@ class CGestioneListaAttesa
 
             // La griglia è la stessa usata per una prenotazione ordinaria.
             foreach (EDisponibilita::calcolaIniziSlot(
-                $inizioFascia, $fineFascia, $inizioFascia, $fineFascia, $durata
+                $inizioFascia,
+                $fineFascia,
+                $inizioFascia,
+                $fineFascia,
+                $durata
             ) as $inizio) {
                 $inizi[$inizio] = $inizio;
             }
@@ -1123,14 +1125,20 @@ class CGestioneListaAttesa
 
                 // Anche i bordi reali sono candidati per la lista d'attesa.
                 foreach (EDisponibilita::calcolaIniziSlot(
-                    $inizioFascia, $fineFascia,
-                    max($inizioFascia, $finePrenotazione), $fineFascia, $durata
+                    $inizioFascia,
+                    $fineFascia,
+                    max($inizioFascia, $finePrenotazione),
+                    $fineFascia,
+                    $durata
                 ) as $inizio) {
                     $inizi[$inizio] = $inizio;
                 }
                 foreach (EDisponibilita::calcolaIniziSlot(
-                    $inizioFascia, $fineFascia,
-                    $inizioFascia, min($fineFascia, $inizioPrenotazione), $durata
+                    $inizioFascia,
+                    $fineFascia,
+                    $inizioFascia,
+                    min($fineFascia, $inizioPrenotazione),
+                    $durata
                 ) as $inizio) {
                     $inizi[$inizio] = $inizio;
                 }

@@ -441,9 +441,15 @@ class CGestioneDashboard
             $pagamento = $id === null ? null : FPagamento::loadByPrenotazione($id);
 
             if ($stato !== 'cancellata') {
-                if ($stato === 'prenotata') { $conteggi['prenotata']++; }
-                if ($stato === 'completata') { $conteggi['completata']++; }
-                if ($stato === 'no-show') { $conteggi['no_show']++; }
+                if ($stato === 'prenotata') {
+                    $conteggi['prenotata']++;
+                }
+                if ($stato === 'completata') {
+                    $conteggi['completata']++;
+                }
+                if ($stato === 'no-show') {
+                    $conteggi['no_show']++;
+                }
                 $righeAppuntamenti[] = [
                     'id' => $id,
                     'ora' => substr($prenotazione->getOra(), 0, 5),

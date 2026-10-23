@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/CGestioneListaAttesa.class.php';
 
 require_once __DIR__ . '/../Foundation/FSessione.class.php';
@@ -106,9 +107,9 @@ class CGestionePrenotazione
 
         $appuntamentoAttivo =
             $gestioneAppuntamenti
-            ->appuntamentoAttivoPerCliente(
-                $cliente->getId()
-            );
+                ->appuntamentoAttivoPerCliente(
+                    $cliente->getId()
+                );
 
         $storicoPrenotazioni =
             $this->creaRigheStorico(
@@ -131,7 +132,7 @@ class CGestionePrenotazione
 
         $puoPrenotare =
             $cliente
-            ->isPrenotazioniOnlineAbilitate()
+                ->isPrenotazioniOnlineAbilitate()
             &&
             $appuntamentoAttivo === null;
 
@@ -140,13 +141,13 @@ class CGestionePrenotazione
 
         $richiestaAttiva =
             $gestioneListaAttesa
-            ->richiestaAttivaPerCliente(
-                $cliente->getId()
-            );
+                ->richiestaAttivaPerCliente(
+                    $cliente->getId()
+                );
 
         $puoAttendere =
             $cliente
-            ->isPrenotazioniOnlineAbilitate()
+                ->isPrenotazioniOnlineAbilitate()
             &&
             $richiestaAttiva === null
             &&
@@ -156,11 +157,11 @@ class CGestionePrenotazione
                 $appuntamentoAttivo === null
                 ||
                 $appuntamentoAttivo
-                ->getServizio()
-                ->getId()
+                    ->getServizio()
+                    ->getId()
                 ===
                 $servizioSelezionato
-                ->getId()
+                    ->getId()
             );
 
         $slotAttesa =
@@ -170,16 +171,16 @@ class CGestionePrenotazione
             $puoAttendere
             &&
             $servizioSelezionato
-            ->getId()
+                ->getId()
             !== null
         ) {
             $slotAttesa =
                 $gestioneListaAttesa
-                ->slotOccupatiRichiedibili(
-                    $cliente->getId(),
-                    $servizioSelezionato
-                        ->getId()
-                );
+                    ->slotOccupatiRichiedibili(
+                        $cliente->getId(),
+                        $servizioSelezionato
+                            ->getId()
+                    );
         }
 
         $view =
@@ -403,8 +404,7 @@ class CGestionePrenotazione
             [];
 
         foreach (
-            $fasceDisponibilita
-            as $fascia
+            $fasceDisponibilita as $fascia
         ) {
             $data =
                 $fascia->getData();
@@ -432,8 +432,7 @@ class CGestionePrenotazione
                 );
 
             foreach (
-                $blocchiLiberi
-                as $blocco
+                $blocchiLiberi as $blocco
             ) {
                 $iniziSlot =
                     $this->calcolaIniziSlot(
@@ -445,8 +444,7 @@ class CGestionePrenotazione
                     );
 
                 foreach (
-                    $iniziSlot
-                    as $inizio
+                    $iniziSlot as $inizio
                 ) {
                     $oraInizio =
                         $this->minutiInOra(
@@ -564,8 +562,7 @@ class CGestionePrenotazione
             );
 
         foreach (
-            $fasceDisponibilita
-            as $fascia
+            $fasceDisponibilita as $fascia
         ) {
             $inizioFascia =
                 $this->oraInMinuti(
@@ -585,8 +582,7 @@ class CGestionePrenotazione
                 );
 
             foreach (
-                $blocchiLiberi
-                as $blocco
+                $blocchiLiberi as $blocco
             ) {
                 $iniziSlot =
                     $this->calcolaIniziSlot(
@@ -687,8 +683,7 @@ class CGestionePrenotazione
             foreach (
                 FPrenotazione::loadByCliente(
                     $idCliente
-                )
-                as $esistente
+                ) as $esistente
             ) {
                 if (
                     $esistente->getStato()
@@ -764,7 +759,7 @@ class CGestionePrenotazione
         } catch (Throwable $e) {
             if (
                 $connection
-                ->inTransaction()
+                    ->inTransaction()
             ) {
                 $connection->rollBack();
             }
@@ -883,8 +878,7 @@ class CGestionePrenotazione
             );
 
         foreach (
-            $servizi
-            as $servizio
+            $servizi as $servizio
         ) {
             if (
                 $servizio->getId()
@@ -935,8 +929,7 @@ class CGestionePrenotazione
         }
 
         foreach (
-            $orari
-            as $orario
+            $orari as $orario
         ) {
             if (
                 $orario['oraInizio']
@@ -968,8 +961,7 @@ class CGestionePrenotazione
         ];
 
         foreach (
-            $prenotazioni
-            as $prenotazione
+            $prenotazioni as $prenotazione
         ) {
             $data =
                 DateTimeImmutable
@@ -998,9 +990,9 @@ class CGestionePrenotazione
                 'data' =>
                 $data === false
                     ? $prenotazione
-                    ->getData()
+                        ->getData()
                     : $data
-                    ->format('d/m/Y'),
+                        ->format('d/m/Y'),
 
                 'ora_inizio' =>
                 $oraInizio,
@@ -1009,13 +1001,13 @@ class CGestionePrenotazione
                 $ora === false
                     ? ''
                     : $ora
-                    ->modify(
-                        '+'
-                            . $prenotazione
-                            ->getDurata()
-                            . ' minutes'
-                    )
-                    ->format('H:i'),
+                        ->modify(
+                            '+'
+                                . $prenotazione
+                                    ->getDurata()
+                                . ' minutes'
+                        )
+                        ->format('H:i'),
 
                 'servizio' =>
                 $prenotazione
@@ -1026,7 +1018,7 @@ class CGestionePrenotazione
                     ->getStato()]
                     ??
                     $prenotazione
-                    ->getStato()
+                        ->getStato()
             ];
         }
 
@@ -1080,8 +1072,7 @@ class CGestionePrenotazione
     ): ?string {
         switch ($errore) {
             case 'attesa':
-                return
-                    'Non è stato possibile entrare in lista d\'attesa.';
+                return 'Non è stato possibile entrare in lista d\'attesa.';
 
             default:
                 return null;
@@ -1118,8 +1109,7 @@ class CGestionePrenotazione
             $inizioFascia;
 
         foreach (
-            $prenotazioni
-            as $prenotazione
+            $prenotazioni as $prenotazione
         ) {
             if (
                 $prenotazione->getStato()
@@ -1138,7 +1128,7 @@ class CGestionePrenotazione
                 $inizioPrenotazione
                 +
                 $prenotazione
-                ->getDurata();
+                    ->getDurata();
 
             if (
                 $finePrenotazione

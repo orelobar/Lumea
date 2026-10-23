@@ -20,12 +20,37 @@ class CFrontController
 {
     public function run(): void
     {
+        $richiesta = $this->creaRichiesta();
+
+        // Verifica prima del dispatch: anche login, registrazione e logout
+        // sono POST. Nessun controller viene eseguito con un token invalido.
+        if (!in_array($richiesta['method'], ['GET', 'HEAD', 'POST'], true)) {
+            header('Allow: GET, HEAD, POST');
+            http_response_code(405);
+            (new VBase())->mostraErroreRichiesta('Metodo di richiesta non consentito.');
+            return;
+        }
+
+        if ($richiesta['method'] === 'POST'
+            && !FSessione::verificaTokenCsrf($richiesta['post']['csrf_token'] ?? null)) {
+            http_response_code(403);
+            (new VBase())->mostraErroreRichiesta(
+                'La richiesta non è valida o la sessione è scaduta. Riapri la pagina e riprova.'
+            );
+            return;
+        }
+
+        if ($richiesta['method'] !== 'POST'
+            && ($richiesta['get']['azione'] ?? null) === 'logout') {
+            header('Allow: POST');
+            http_response_code(405);
+            (new VBase())->mostraErroreRichiesta('Per uscire usa il pulsante del menu.');
+            return;
+        }
+
         // Una sessione non deve restare autenticata se l'utente
         // e' stato eliminato dal database (es. pulizia dati demo).
         CAutenticazione::verificaSessioneCorrente();
-
-        $richiesta =
-            $this->creaRichiesta();
 
         [
             $classeControl,
@@ -96,7 +121,7 @@ class CFrontController
          * =====================================================
          */
 
-        if ($azioneGet === 'logout') {
+        if ($method === 'POST' && $azionePost === 'logout') {
             return [
                 CAutenticazione::class,
                 'gestisciLogout'

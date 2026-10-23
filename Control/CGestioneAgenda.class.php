@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../View/VAgendaProprietario.class.php';
 require_once __DIR__ . '/../View/VAgendaSetteGiorniProprietario.class.php';
 require_once __DIR__ . '/CGestioneAppuntamenti.class.php';
@@ -19,7 +20,7 @@ require_once __DIR__ . '/../Entity/EUtente.class.php';
 
 class CGestioneAgenda
 {
-private function richiediProprietario(): void
+    private function richiediProprietario(): void
     {
         if (!$this->isProprietarioAutenticato()) {
             header('Location: index.php');
@@ -39,8 +40,12 @@ private function richiediProprietario(): void
             && ctype_digit((string) $get['anno'])
             && strlen((string) $get['anno']) === 4
             && checkdate((int) $get['mese'], (int) $get['giorno'], (int) $get['anno'])) {
-            $data = sprintf('%04d-%02d-%02d',
-                (int) $get['anno'], (int) $get['mese'], (int) $get['giorno']);
+            $data = sprintf(
+                '%04d-%02d-%02d',
+                (int) $get['anno'],
+                (int) $get['mese'],
+                (int) $get['giorno']
+            );
         }
         $giorno = DateTimeImmutable::createFromFormat('!Y-m-d', $data);
         if ($giorno === false || $giorno->format('Y-m-d') !== $data) {
@@ -116,7 +121,8 @@ private function richiediProprietario(): void
         $post = $request['post'] ?? [];
         $coupon = is_string($post['coupon'] ?? null) ? trim($post['coupon']) : '';
         $this->esitoAgenda($request, $this->chiudiAppuntamento(
-            (int) ($post['id_prenotazione'] ?? 0), $coupon === '' ? null : $coupon
+            (int) ($post['id_prenotazione'] ?? 0),
+            $coupon === '' ? null : $coupon
         ));
     }
 
@@ -171,8 +177,7 @@ private function richiediProprietario(): void
         $agenda = [];
 
         foreach (
-            $prenotazioni
-            as $prenotazione
+            $prenotazioni as $prenotazione
         ) {
             if (
                 $prenotazione->getStato()

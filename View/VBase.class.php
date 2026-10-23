@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/smarty/libs/Smarty.class.php';
+require_once __DIR__ . '/../Foundation/FSessione.class.php';
 
 class VBase extends Smarty
 {
@@ -30,8 +31,17 @@ class VBase extends Smarty
         return substr(hash_file('sha256', __DIR__ . '/../' . $percorso), 0, 16);
     }
 
+    public function mostraErroreRichiesta(string $messaggio): void
+    {
+        $this->assign('messaggio', $messaggio);
+        $this->setTemplate('richiesta_non_valida.tpl');
+    }
+
     protected function setTemplate($template)
     {
+        // Il token è un dato della View; i template lo includono solo nei POST.
+        $this->assign('csrfToken', FSessione::tokenCsrf());
+        header('Cache-Control: no-store');
         $this->display($template);
     }
 

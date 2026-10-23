@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lumèa - Appuntamenti di oggi</title>
-    <link rel="stylesheet" href="css/interazioni.css?v=lumea20261008">
+    <link rel="stylesheet" href="css/interazioni.css?v=lumea-csrf-20261023">
 </head>
 <body class="area-proprietario">
     <header class="header-proprietario">
@@ -87,6 +87,7 @@
 
                             {if $riga.puo_aggiornare}
                                 <form class="azioni-appuntamento azioni-appuntamento-oggi" method="post" action="index.php?pagina=agenda">
+                                    <input type="hidden" name="csrf_token" value="{$csrfToken|escape:'html'}">
                                     <input type="hidden" name="id_prenotazione" value="{$riga.id}">
                                     <input type="hidden" name="data" value="{$data|escape}">
                                     <input type="hidden" name="ritorno" value="appuntamenti_oggi">

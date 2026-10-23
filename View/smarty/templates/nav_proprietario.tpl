@@ -52,10 +52,14 @@
             </a>
         </div>
 
-        <a class="js-conferma-logout js-conferma-azione voce-logout" href="index.php?azione=logout" data-confirm-title="Uscire da Lumèa?" data-confirm-message="La sessione verrà chiusa e tornerai alla pagina iniziale." data-confirm-action="Esci">
+        <form class="form-logout" method="post" action="index.php">
+            <input type="hidden" name="csrf_token" value="{$csrfToken|escape:'html'}">
+            <input type="hidden" name="azione" value="logout">
+            <button type="submit" class="js-conferma-logout js-conferma-azione voce-logout" data-confirm-title="Uscire da Lumèa?" data-confirm-message="La sessione verrà chiusa e tornerai alla pagina iniziale." data-confirm-action="Esci">
             <span class="nav-icon" aria-hidden="true">↪</span>
             <span>Logout</span>
-        </a>
+        </button>
+        </form>
     </nav>
 </aside>
 

@@ -2,10 +2,6 @@
 
 class FConnectionDB
 {
-/** Serializza le scritture del calendario del singolo salone.
-     * La riga proprietario esiste anche quando una giornata non ha fasce.
-     * Il blocco viene rilasciato automaticamente con commit o rollback.
-     */
     public static function bloccaCalendario(): void
     {
         $connection = self::connect();

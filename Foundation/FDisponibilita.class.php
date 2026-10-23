@@ -322,7 +322,6 @@ class FDisponibilita
             ]);
     }
 
-
     /*
      * =====================================================
      * ECCEZIONI GIORNALIERE
@@ -456,8 +455,7 @@ class FDisponibilita
         $date = [];
 
         foreach (
-            $rows
-            as $row
+            $rows as $row
         ) {
             $date[] =
                 $row['data'];
@@ -479,8 +477,7 @@ class FDisponibilita
         $disponibilita = [];
 
         foreach (
-            $rows
-            as $row
+            $rows as $row
         ) {
             $disponibilita[] =
                 new EDisponibilita(

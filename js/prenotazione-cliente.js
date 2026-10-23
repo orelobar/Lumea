@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 calendario.querySelector('[data-annuncio-mese]').textContent = destinazione.getAttribute('aria-label');
                 var precedente = destinazione.querySelector('[aria-label="Mese precedente"]');
                 var successivo = destinazione.querySelector('[aria-label="Mese successivo"]');
-                var nuovoFocus = pulsante.getAttribute('aria-label') === 'Mese successivo'
-                    ? (successivo || precedente) : (precedente || successivo);
+                var nuovoFocus = pulsante.getAttribute('aria-label') === 'Mese successivo' ?
+                    (successivo || precedente) : (precedente || successivo);
                 if (nuovoFocus) nuovoFocus.focus();
             });
         });

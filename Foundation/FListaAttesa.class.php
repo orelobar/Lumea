@@ -145,8 +145,8 @@ class FListaAttesa
         $statement =
             FConnectionDB
             ::connect()
-            ->prepare(
-                '
+                ->prepare(
+                    '
                     SELECT id
                     FROM lista_attesa
                     WHERE id_cliente = :id_cliente
@@ -154,7 +154,7 @@ class FListaAttesa
                         data_ora_inserimento DESC,
                         id DESC
                     '
-            );
+                );
 
         $statement->execute([
             ':id_cliente' =>
@@ -166,8 +166,7 @@ class FListaAttesa
         foreach (
             $statement->fetchAll(
                 PDO::FETCH_COLUMN
-            )
-            as $id
+            ) as $id
         ) {
             $richiesta =
                 self::load(
@@ -226,8 +225,7 @@ class FListaAttesa
         foreach (
             $statement->fetchAll(
                 PDO::FETCH_COLUMN
-            )
-            as $id
+            ) as $id
         ) {
             $richiesta =
                 self::load(
@@ -251,8 +249,8 @@ class FListaAttesa
         $statement =
             FConnectionDB
             ::connect()
-            ->prepare(
-                "
+                ->prepare(
+                    "
                     SELECT id
                     FROM lista_attesa
                     WHERE data_desiderata = :data_desiderata
@@ -261,7 +259,7 @@ class FListaAttesa
                         data_ora_inserimento ASC,
                         id ASC
                     "
-            );
+                );
 
         $statement->execute([
             ':data_desiderata' =>
@@ -273,8 +271,7 @@ class FListaAttesa
         foreach (
             $statement->fetchAll(
                 PDO::FETCH_COLUMN
-            )
-            as $id
+            ) as $id
         ) {
             $richiesta =
                 self::load(
@@ -299,8 +296,8 @@ class FListaAttesa
         $statement =
             FConnectionDB
             ::connect()
-            ->prepare(
-                "
+                ->prepare(
+                    "
                     SELECT id
                     FROM lista_attesa
                     WHERE data_desiderata = :data_desiderata
@@ -310,7 +307,7 @@ class FListaAttesa
                         data_ora_inserimento ASC,
                         id ASC
                     "
-            );
+                );
 
         $statement->execute([
             ':data_desiderata' =>
@@ -325,8 +322,7 @@ class FListaAttesa
         foreach (
             $statement->fetchAll(
                 PDO::FETCH_COLUMN
-            )
-            as $id
+            ) as $id
         ) {
             $richiesta =
                 self::load(
@@ -349,8 +345,8 @@ class FListaAttesa
     ): bool {
         if (
             $listaAttesa
-            ->getCliente()
-            ->getId()
+                ->getCliente()
+                ->getId()
             === null
         ) {
             return false;
@@ -358,8 +354,8 @@ class FListaAttesa
 
         if (
             $listaAttesa
-            ->getServizio()
-            ->getId()
+                ->getServizio()
+                ->getId()
             === null
         ) {
             return false;
@@ -370,13 +366,13 @@ class FListaAttesa
 
         if (
             $listaAttesa
-            ->getPrenotazioneAlternativa()
+                ->getPrenotazioneAlternativa()
             !== null
         ) {
             if (
                 $listaAttesa
-                ->getPrenotazioneAlternativa()
-                ->getId()
+                    ->getPrenotazioneAlternativa()
+                    ->getId()
                 === null
             ) {
                 return false;
@@ -384,8 +380,8 @@ class FListaAttesa
 
             $idPrenotazioneAlternativa =
                 $listaAttesa
-                ->getPrenotazioneAlternativa()
-                ->getId();
+                    ->getPrenotazioneAlternativa()
+                    ->getId();
         }
 
         $connection =
@@ -472,8 +468,8 @@ class FListaAttesa
 
         if (
             $listaAttesa
-            ->getCliente()
-            ->getId()
+                ->getCliente()
+                ->getId()
             === null
         ) {
             return false;
@@ -481,8 +477,8 @@ class FListaAttesa
 
         if (
             $listaAttesa
-            ->getServizio()
-            ->getId()
+                ->getServizio()
+                ->getId()
             === null
         ) {
             return false;
@@ -493,13 +489,13 @@ class FListaAttesa
 
         if (
             $listaAttesa
-            ->getPrenotazioneAlternativa()
+                ->getPrenotazioneAlternativa()
             !== null
         ) {
             if (
                 $listaAttesa
-                ->getPrenotazioneAlternativa()
-                ->getId()
+                    ->getPrenotazioneAlternativa()
+                    ->getId()
                 === null
             ) {
                 return false;
@@ -507,8 +503,8 @@ class FListaAttesa
 
             $idPrenotazioneAlternativa =
                 $listaAttesa
-                ->getPrenotazioneAlternativa()
-                ->getId();
+                    ->getPrenotazioneAlternativa()
+                    ->getId();
         }
 
         $connection =

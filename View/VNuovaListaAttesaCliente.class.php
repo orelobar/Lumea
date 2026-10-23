@@ -8,6 +8,7 @@ class VNuovaListaAttesaCliente extends VBase
     {
         $this->setDataIntoTemplate('utente', $dati['utente']);
         $this->setDataIntoTemplate('servizio', $dati['servizio']);
+        $this->setDataIntoTemplate('servizi', $dati['servizi']);
         $this->setDataIntoTemplate('appuntamentoAttuale', $dati['appuntamento_attuale']);
         $this->setDataIntoTemplate('slotAttesa', $dati['slot_attesa']);
         $this->setDataIntoTemplate('mesiAttesa', $this->raggruppaPerMese($dati['slot_attesa']));
