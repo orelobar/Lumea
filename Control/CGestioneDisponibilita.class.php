@@ -92,8 +92,8 @@ class CGestioneDisponibilita
             'calendario_restante' => $calendarioRestante,
             'numero_giorni_restanti' => count($calendarioRestante),
             'standard' => $standard,
-            'messaggio' => $this->getMessaggio($get['esito'] ?? ''),
-            'errore' => $request['errore_locale'] ?? $this->getErrore($get['errore'] ?? '')
+            'messaggio' => $this->getMessaggio(is_string($get['esito'] ?? null) ? $get['esito'] : ''),
+            'errore' => $request['errore_locale'] ?? $this->getErrore(is_string($get['errore'] ?? null) ? $get['errore'] : '')
         ]);
     }
 

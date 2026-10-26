@@ -43,7 +43,7 @@ class CGestioneServizi
             'servizi_per_categoria' => $serviziPerCategoria,
             'eliminabili' => $eliminabili,
             'messaggio' => $this->getMessaggioServizi(
-                $request['get']['esito'] ?? ''
+                is_string($request['get']['esito'] ?? null) ? $request['get']['esito'] : ''
             ),
             'errore' => $request['errore_locale'] ?? null,
             'valori' => $request['post'] ?? []

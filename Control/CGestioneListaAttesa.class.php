@@ -78,10 +78,10 @@ class CGestioneListaAttesa
             'url_ricerca' => $attuale === null ? 'index.php?pagina=lista_attesa&azione=nuova'
                 : 'index.php?pagina=lista_attesa&azione=nuova&servizio=' . $attuale->getServizio()->getId(),
             'messaggio' => $this->getMessaggio(
-                $get['esito'] ?? ''
+                is_string($get['esito'] ?? null) ? $get['esito'] : ''
             ),
             'errore' => $this->getErrore(
-                $get['errore'] ?? ''
+                is_string($get['errore'] ?? null) ? $get['errore'] : ''
             )
         ]);
     }
@@ -323,28 +323,37 @@ class CGestioneListaAttesa
             $post['slot_attesa']
             ?? '';
 
+        $richiesta = null;
+
+        // Gli input non testuali seguono l'errore di richiesta già previsto.
         if (
-            preg_match(
-                '/^(\d{4}-\d{2}-\d{2})\|((?:[01]\d|2[0-3]):[0-5]\d)$/D',
-                $slotAttesa,
-                $parti
-            )
-            === 1
+            is_string($slotAttesa)
+            && is_string($dataDesiderata)
+            && is_string($oraDesiderata)
         ) {
-            $dataDesiderata =
-                $parti[1];
+            if (
+                preg_match(
+                    '/^(\d{4}-\d{2}-\d{2})\|((?:[01]\d|2[0-3]):[0-5]\d)$/D',
+                    $slotAttesa,
+                    $parti
+                )
+                === 1
+            ) {
+                $dataDesiderata =
+                    $parti[1];
 
-            $oraDesiderata =
-                $parti[2];
+                $oraDesiderata =
+                    $parti[2];
+            }
+
+            $richiesta =
+                $this->inserisciInListaAttesa(
+                    $cliente->getId(),
+                    $idServizio,
+                    $dataDesiderata,
+                    $oraDesiderata
+                );
         }
-
-        $richiesta =
-            $this->inserisciInListaAttesa(
-                $cliente->getId(),
-                $idServizio,
-                $dataDesiderata,
-                $oraDesiderata
-            );
 
         if ($richiesta !== null) {
             $this->redirect(
