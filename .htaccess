@@ -8,3 +8,11 @@ RedirectMatch 403 "(?:^|/)\."
 <FilesMatch "(?i)^(?!index\.php$).*\.php(?:\..*)?$">
     Require all denied
 </FilesMatch>
+
+# Unico ingresso applicativo; percorso relativo valido anche nella sottocartella /Lumea.
+RewriteEngine On
+# Non riscrivere i percorsi riservati: devono conservare i divieti HTTP precedenti.
+RewriteRule "(^|/)(Control|Entity|Foundation|View|database|config)(/|$)|(^|/)\." - [END,NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [END]

@@ -12,7 +12,7 @@ class CGestioneClienti
     private function richiediProprietario(): void
     {
         if (!$this->isProprietarioAutenticato()) {
-            header('Location: index.php');
+            VBase::redirect('index.php');
             exit;
         }
     }
@@ -52,7 +52,7 @@ class CGestioneClienti
         $this->richiediProprietario();
         $id = (int) ($request['post']['id_cliente'] ?? 0);
         $ok = $this->riabilitaPrenotazioniOnline($id);
-        header('Location: index.php?pagina=clienti&id_cliente=' . $id . ($ok ? '&esito=salvato' : '&errore=operazione'));
+        VBase::redirect('index.php?pagina=clienti&id_cliente=' . $id . ($ok ? '&esito=salvato' : '&errore=operazione'));
         exit;
     }
 

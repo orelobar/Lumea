@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <base href="{$baseApplicazione|escape:'html'}">
     <link rel="icon" type="image/svg+xml" href="images/lumea.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

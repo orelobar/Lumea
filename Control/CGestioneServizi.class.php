@@ -12,7 +12,7 @@ class CGestioneServizi
     private function richiediProprietario(): void
     {
         if (!$this->isProprietarioAutenticato()) {
-            header('Location: index.php');
+            VBase::redirect('index.php');
             exit;
         }
     }
@@ -146,8 +146,7 @@ class CGestioneServizi
                 $idServizio
             )
         ) {
-            header(
-                'Location: index.php?pagina=servizi&esito=eliminato'
+            VBase::redirect('index.php?pagina=servizi&esito=eliminato'
             );
             exit;
         }
@@ -223,8 +222,7 @@ class CGestioneServizi
         bool $ok
     ): void {
         if ($ok) {
-            header(
-                'Location: index.php?pagina=servizi&esito=salvato'
+            VBase::redirect('index.php?pagina=servizi&esito=salvato'
             );
             exit;
         }

@@ -192,7 +192,7 @@ class CGestioneFedelta
 
     private function redirect(string $url): void
     {
-        header('Location: ' . $url);
+        VBase::redirect($url);
         exit;
     }
 }

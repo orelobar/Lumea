@@ -8,7 +8,7 @@ require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FServizio.class.php';
 require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
 require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
-require_once __DIR__ . '/../Foundation/FEmail.class.php';
+require_once __DIR__ . '/CGestioneNotifiche.class.php';
 
 require_once __DIR__ . '/../Entity/EUtente.class.php';
 require_once __DIR__ . '/../Entity/EServizio.class.php';
@@ -273,6 +273,14 @@ class CGestionePrenotazione
         $post =
             $request['post']
             ?? [];
+
+        // I valori HTTP non testuali seguono la validazione dei campi vuoti.
+        foreach (['id_servizio', 'data', 'ora'] as $campo) {
+            if (!is_string($post[$campo] ?? '')) {
+                $post[$campo] = '';
+                $request['get']['nuova'] = '1';
+            }
+        }
 
         $prenotazione =
             $this->confermaPrenotazione(
@@ -777,7 +785,7 @@ class CGestionePrenotazione
          * dopo il commit.
          */
         try {
-            FEmail::confermaPrenotazione(
+            CGestioneNotifiche::confermaPrenotazione(
                 $prenotazione
             );
         } catch (Throwable $e) {
@@ -1315,10 +1323,7 @@ class CGestionePrenotazione
     private function redirect(
         string $url
     ): void {
-        header(
-            'Location: '
-                . $url
-        );
+        VBase::redirect($url);
 
         exit;
     }

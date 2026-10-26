@@ -10,7 +10,7 @@ require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
 require_once __DIR__ . '/../Foundation/FPagamento.class.php';
 require_once __DIR__ . '/../Foundation/FUtente.class.php';
 require_once __DIR__ . '/../Foundation/FCoupon.class.php';
-require_once __DIR__ . '/../Foundation/FEmail.class.php';
+require_once __DIR__ . '/CGestioneNotifiche.class.php';
 require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
 
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
@@ -23,7 +23,7 @@ class CGestioneAgenda
     private function richiediProprietario(): void
     {
         if (!$this->isProprietarioAutenticato()) {
-            header('Location: index.php');
+            VBase::redirect('index.php');
             exit;
         }
     }
@@ -157,7 +157,7 @@ class CGestioneAgenda
             $pagina = 'agenda&data=' . rawurlencode($data);
         }
 
-        header('Location: index.php?pagina=' . $pagina . ($ok ? '&esito=salvato' : '&errore=operazione'));
+        VBase::redirect('index.php?pagina=' . $pagina . ($ok ? '&esito=salvato' : '&errore=operazione'));
         exit;
     }
 
@@ -306,7 +306,7 @@ class CGestioneAgenda
 
         if ($nuovoCoupon !== null) {
             try {
-                FEmail::nuovoCouponFedelta($nuovoCoupon);
+                CGestioneNotifiche::nuovoCouponFedelta($nuovoCoupon);
             } catch (Throwable $e) {
                 error_log('Lumèa: errore email nuovo coupon fedelta: ' . $e->getMessage());
             }
@@ -359,7 +359,7 @@ class CGestioneAgenda
 
         if ($terzoNoShow) {
             try {
-                FEmail::sospensioneTerzoNoShow($cliente);
+                CGestioneNotifiche::sospensioneTerzoNoShow($cliente);
             } catch (Throwable $e) {
                 error_log('Lumèa: errore email sospensione terzo no-show: ' . $e->getMessage());
             }
@@ -494,14 +494,14 @@ class CGestioneAgenda
         }
 
         try {
-            FEmail::cancellazioneProprietario($prenotazione);
+            CGestioneNotifiche::cancellazioneProprietario($prenotazione);
         } catch (Throwable $e) {
             error_log('Lumèa: errore email cancellazione proprietario: ' . $e->getMessage());
         }
 
         if ($assegnazione !== null) {
             try {
-                FEmail::assegnazioneListaAttesa(
+                CGestioneNotifiche::assegnazioneListaAttesa(
                     $assegnazione['prenotazione'],
                     $assegnazione['alternativa']
                 );

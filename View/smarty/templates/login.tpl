@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <base href="{$baseApplicazione|escape:'html'}">
     <link rel="icon" type="image/svg+xml" href="images/lumea.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,7 +28,7 @@
 
             {if isset($errori.generale)}<p class="errore-accesso" role="alert">{$errori.generale|escape}</p>{/if}
 
-            <form class="form-accesso" method="post" action="index.php?pagina=login" novalidate>
+            <form class="form-accesso" method="post" action="sessione" novalidate>
                 <input type="hidden" name="csrf_token" value="{$csrfToken|escape:'html'}">
                 <label for="email"><span>Email</span><input type="email" id="email" name="email" value="{$valori.email|default:''|escape}" autocomplete="email" required></label>
                 {if isset($errori.email)}<p class="errore-campo-accesso">{$errori.email|escape}</p>{/if}
@@ -45,7 +46,7 @@
                 <button class="pulsante-pubblico-primario" type="submit">Accedi</button>
             </form>
 
-            <p class="alternativa-accesso">Non hai ancora un account? <a href="index.php?pagina=registrazione">Registrati</a></p>
+            <p class="alternativa-accesso">Non hai ancora un account? <a href="clienti/registrazione">Registrati</a></p>
         </section>
         <aside class="visual-accesso" aria-label="I vantaggi di Lumèa">
             <span class="visual-accesso-logo" aria-hidden="true">L</span>

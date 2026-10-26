@@ -37,6 +37,13 @@ class CRegistrazione
             $request['post']
             ?? [];
 
+        // I valori HTTP non testuali seguono la validazione dei campi vuoti.
+        foreach (['nome', 'cognome', 'email', 'telefono', 'password', 'conferma_password'] as $campo) {
+            if (!is_string($post[$campo] ?? '')) {
+                $post[$campo] = '';
+            }
+        }
+
         $risultato =
             $this->registra(
                 $post['nome'] ?? '',
@@ -444,9 +451,7 @@ class CRegistrazione
     private function redirect(
         string $url
     ): void {
-        header(
-            'Location: ' . $url
-        );
+        VBase::redirect($url);
 
         exit;
     }

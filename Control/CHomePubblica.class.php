@@ -8,7 +8,7 @@ class CHomePubblica
     public function mostraHome(array $request = []): void
     {
         if (FSessione::isAutenticato()) {
-            header('Location: index.php?pagina=dashboard');
+            VBase::redirect('index.php?pagina=dashboard');
             exit;
         }
 

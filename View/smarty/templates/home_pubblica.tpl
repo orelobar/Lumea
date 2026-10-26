@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <base href="{$baseApplicazione|escape:'html'}">
     <link rel="icon" type="image/svg+xml" href="images/lumea.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,9 +15,9 @@
             <span><strong>Lumèa</strong><small>Prenotazioni salone</small></span>
         </a>
         <nav class="nav-pubblico" aria-label="Navigazione principale">
-            <a href="#come-funziona">Come funziona</a>
-            <a href="index.php?pagina=login">Accedi</a>
-            <a class="cta-pubblica" href="index.php?pagina=registrazione">Registrati</a>
+            <a href="{$urlCorrente|escape:'html'}#come-funziona">Come funziona</a>
+            <a href="sessione">Accedi</a>
+            <a class="cta-pubblica" href="clienti/registrazione">Registrati</a>
         </nav>
     </header>
 
@@ -27,8 +28,8 @@
                 <h1>Prenota il tuo prossimo appuntamento con semplicità.</h1>
                 <p>Scegli servizio, giorno e orario. Lumèa tiene insieme appuntamenti, lista d’attesa, coupon fedeltà e storico in un’unica area personale.</p>
                 <div class="azioni-hero-pubblico">
-                    <a class="pulsante-pubblico-primario" href="index.php?pagina=login">Accedi</a>
-                    <a class="pulsante-pubblico-secondario" href="index.php?pagina=registrazione">Crea un account</a>
+                    <a class="pulsante-pubblico-primario" href="sessione">Accedi</a>
+                    <a class="pulsante-pubblico-secondario" href="clienti/registrazione">Crea un account</a>
                 </div>
                 <div class="garanzie-pubbliche" aria-label="Funzioni principali">
                     <span><strong>01</strong> Prenotazione online</span>
@@ -63,7 +64,7 @@
 
         <section class="richiamo-pubblico">
             <div><span class="sovratitolo-pubblico">Lumèa</span><h2>Hai già un account?</h2><p>Accedi alla tua area per controllare il prossimo appuntamento o prenotarne uno nuovo.</p></div>
-            <a class="pulsante-pubblico-primario" href="index.php?pagina=login">Vai al login</a>
+            <a class="pulsante-pubblico-primario" href="sessione">Vai al login</a>
         </section>
     </main>
 

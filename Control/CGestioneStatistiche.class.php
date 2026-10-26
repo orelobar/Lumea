@@ -29,7 +29,7 @@ class CGestioneStatistiche
         );
 
         if ($dati === null) {
-            header('Location: index.php');
+            VBase::redirect('index.php');
             exit;
         }
 

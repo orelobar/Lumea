@@ -1,4 +1,4 @@
-<a class="salta-contenuto" href="#contenuto-principale">Vai al contenuto</a>
+<a class="salta-contenuto" href="{$urlCorrente|escape:'html'}#contenuto-principale">Vai al contenuto</a>
 <button class="pulsante-menu-cliente" type="button" aria-controls="sidebar-cliente" aria-expanded="false"
     aria-label="Apri il menu"><svg class="lm-icona" width="20" height="20" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -6,7 +6,7 @@
     </svg><span>Menu</span></button>
 <aside class="sidebar-cliente" id="sidebar-cliente" aria-label="Area personale cliente">
     <div class="sidebar-intestazione">
-        <a class="sidebar-brand-link" href="index.php?pagina=dashboard" aria-label="Lumèa, torna alla panoramica">
+        <a class="sidebar-brand-link" href="dashboard" aria-label="Lumèa, torna alla panoramica">
             <span class="marchio-cliente" aria-hidden="true">L</span>
             <span class="sidebar-brand"><strong>Lumèa</strong><small>Il mio spazio</small></span>
         </a>
@@ -18,45 +18,45 @@
     </div>
     <div class="sidebar-cliente-etichetta">AREA CLIENTE <span class="sidebar-punto" aria-hidden="true"></span></div>
     <nav aria-label="Navigazione cliente">
-        <a href="index.php?pagina=dashboard" {if $paginaAttiva == 'dashboard'}aria-current="page" {/if}><svg
+        <a href="dashboard" {if $paginaAttiva == 'dashboard'}aria-current="page" {/if}><svg
                 class="lm-icona" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
             </svg><span>Panoramica</span><span class="nav-trattino" aria-hidden="true"></span></a>
         <span class="etichetta-gruppo">APPUNTAMENTI</span>
-        <a href="index.php?pagina=prenota" {if $paginaAttiva == 'prenota'}aria-current="page" {/if}><svg
+        <a href="prenotazioni/nuova" {if $paginaAttiva == 'prenota'}aria-current="page" {/if}><svg
                 class="lm-icona" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="5" width="18" height="16" rx="2" />
                 <path d="M7 3v4M17 3v4M3 10h18M8 14h3" />
             </svg><span>Prenota appuntamento</span><span class="nav-trattino" aria-hidden="true"></span></a>
-        <a href="index.php?pagina=prenotazioni" {if $paginaAttiva == 'prenotazioni'}aria-current="page" {/if}><svg
+        <a href="prenotazioni" {if $paginaAttiva == 'prenotazioni'}aria-current="page" {/if}><svg
                 class="lm-icona" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="4" y="3" width="16" height="18" rx="2" />
                 <path d="M8 8h8M8 12h8M8 16h5" />
             </svg><span>Le mie prenotazioni</span><span class="nav-trattino" aria-hidden="true"></span></a>
-        <a href="index.php?pagina=lista_attesa" {if $paginaAttiva == 'lista_attesa'}aria-current="page" {/if}><svg
+        <a href="lista-attesa" {if $paginaAttiva == 'lista_attesa'}aria-current="page" {/if}><svg
                 class="lm-icona" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" />
                 <path d="M12 7v5l3.5 2" />
             </svg><span>Lista d’attesa</span><span class="nav-trattino" aria-hidden="true"></span></a>
         <span class="etichetta-gruppo">VANTAGGI E SPESE</span>
-        <a href="index.php?pagina=coupon" {if $paginaAttiva == 'coupon'}aria-current="page" {/if}><svg
+        <a href="coupon" {if $paginaAttiva == 'coupon'}aria-current="page" {/if}><svg
                 class="lm-icona" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="9" width="18" height="12" rx="2" />
                 <path
                     d="M2 9h20M12 9v12M12 9s-5-2-5-5a2.5 2.5 0 0 1 5 0c0 3 0 5 0 5zm0 0s5-2 5-5a2.5 2.5 0 0 0-5 0c0 3 0 5 0 5z" />
             </svg><span>Coupon e fedeltà</span><span class="nav-trattino" aria-hidden="true"></span></a>
-        <a href="index.php?pagina=spese" {if $paginaAttiva == 'spese'}aria-current="page" {/if}><svg
+        <a href="spese" {if $paginaAttiva == 'spese'}aria-current="page" {/if}><svg
                 class="lm-icona" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="6" width="18" height="15" rx="2" />
                 <path d="M3 10h18M7 3h11M16 15h2" />
             </svg><span>Le mie spese</span><span class="nav-trattino" aria-hidden="true"></span></a>
-        <form class="form-logout" method="post" action="index.php">
+        <form class="form-logout" method="post" action="sessione/uscita">
             <input type="hidden" name="csrf_token" value="{$csrfToken|escape:'html'}">
             <input type="hidden" name="azione" value="logout">
             <button type="submit" class="js-conferma-logout js-conferma-azione voce-logout"

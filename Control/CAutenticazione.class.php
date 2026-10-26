@@ -42,6 +42,13 @@ class CAutenticazione
             $request['post']
             ?? [];
 
+        // I valori HTTP non testuali seguono la validazione dei campi vuoti.
+        foreach (['email', 'password'] as $campo) {
+            if (!is_string($post[$campo] ?? '')) {
+                $post[$campo] = '';
+            }
+        }
+
         $risultato =
             $this->login(
                 $post['email'] ?? '',
@@ -189,9 +196,7 @@ class CAutenticazione
     private function redirect(
         string $url
     ): void {
-        header(
-            'Location: ' . $url
-        );
+        VBase::redirect($url);
 
         exit;
     }

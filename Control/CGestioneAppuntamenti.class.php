@@ -7,7 +7,7 @@ require_once __DIR__ . '/../Foundation/FPrenotazione.class.php';
 require_once __DIR__ . '/../Foundation/FListaAttesa.class.php';
 require_once __DIR__ . '/../Foundation/FPagamento.class.php';
 require_once __DIR__ . '/../Foundation/FDisponibilita.class.php';
-require_once __DIR__ . '/../Foundation/FEmail.class.php';
+require_once __DIR__ . '/CGestioneNotifiche.class.php';
 
 require_once __DIR__ . '/../Entity/EUtente.class.php';
 require_once __DIR__ . '/../Entity/EPrenotazione.class.php';
@@ -440,7 +440,7 @@ class CGestioneAppuntamenti
          */
         if ($assegnazione !== null) {
             try {
-                FEmail::assegnazioneListaAttesa(
+                CGestioneNotifiche::assegnazioneListaAttesa(
                     $assegnazione['prenotazione'],
                     $assegnazione['alternativa']
                 );
@@ -1118,10 +1118,7 @@ class CGestioneAppuntamenti
     private function redirect(
         string $url
     ): void {
-        header(
-            'Location: '
-                . $url
-        );
+        VBase::redirect($url);
 
         exit;
     }
