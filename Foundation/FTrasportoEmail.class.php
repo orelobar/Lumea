@@ -7,19 +7,40 @@ class FTrasportoEmail
     {
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
         $documentRoot = $documentRoot ?: dirname(__DIR__, 2);
-        $path = getenv('LUMEA_EMAIL_CONFIG') ?: dirname($documentRoot) . '/lumea-private/email.json';
-        if (!is_file($path)) {
+        $pathEsplicito = getenv('LUMEA_EMAIL_CONFIG');
+        $path = $pathEsplicito ?: dirname($documentRoot) . '/lumea-private/email.json';
+        $cartellaHosting = dirname(__DIR__) . '/config';
+        $fileHosting = $cartellaHosting . '/email.infinityfree.php';
+        if (@is_file($path)) {
+            $real = realpath($path);
+            $root = realpath($documentRoot);
+            if (!$real || !is_readable($real)
+                || ($root && ($real === $root || str_starts_with($real, $root . DIRECTORY_SEPARATOR)))) {
+                throw new RuntimeException('La configurazione email deve essere fuori dal DocumentRoot.');
+            }
+            if ((fileperms($real) & 0007) !== 0) {
+                throw new RuntimeException('Permessi della configurazione email non sicuri.');
+            }
+            try {
+                $config = json_decode(file_get_contents($real), true, 16, JSON_THROW_ON_ERROR);
+            } catch (Throwable $e) {
+                throw new RuntimeException('Configurazione email non valida.');
+            }
+        } elseif (!$pathEsplicito && is_file($fileHosting)) {
+            if (is_link($cartellaHosting) || is_link($fileHosting)
+                || realpath($fileHosting) !== realpath($cartellaHosting) . '/email.infinityfree.php'
+                || !is_readable($fileHosting) || !is_file($cartellaHosting . '/.htaccess')) {
+                throw new RuntimeException('Configurazione email privata non accessibile o non sicura.');
+            }
+            try {
+                $caricamentoConfigurazioneEmailLumea = true;
+                $config = require $fileHosting;
+            } catch (Throwable $e) {
+                throw new RuntimeException('Configurazione email non valida.');
+            }
+        } else {
             return ['mode' => 'disabled'];
         }
-        $real = realpath($path);
-        $root = realpath($documentRoot);
-        if ($root && ($real === $root || str_starts_with($real, $root . DIRECTORY_SEPARATOR))) {
-            throw new RuntimeException('La configurazione email deve essere fuori dal DocumentRoot.');
-        }
-        if ((fileperms($path) & 0007) !== 0) {
-            throw new RuntimeException('Permessi della configurazione email non sicuri.');
-        }
-        $config = json_decode(file_get_contents($path), true, 16, JSON_THROW_ON_ERROR);
         if (!is_array($config)) {
             throw new RuntimeException('Configurazione email non valida.');
         }
@@ -59,19 +80,29 @@ class FTrasportoEmail
         return implode("\r\n", $headers) . "\r\n\r\n" . $body . '--' . $boundary . "--\r\n";
     }
 
-    public static function invia(string $destinatario, string $oggetto, array $contenuto, array $config): bool
+    public static function invia(string $destinatario, string $oggetto, array $contenuto, array $config, bool $collaudoManuale = false): bool
     {
         self::indirizzo($destinatario);
         if ($config['mode'] === 'smtp_test') {
+            if (($config['test_manual_only'] ?? false) === true && !$collaudoManuale) {
+                throw new RuntimeException('Collaudo SMTP consentito solo dalla prova manuale.');
+            }
             // Il controllo riguarda la connessione effettiva, non soltanto una variabile.
             require_once __DIR__ . '/FConnectionDB.class.php';
-            if (FConnectionDB::connect()->query('SELECT DATABASE()')->fetchColumn() !== 'lumea_revisione_20261012') {
-                throw new RuntimeException('SMTP di prova consentito solo sul database QA.');
+            $databaseTest = $config['test_database'] ?? 'lumea_revisione_20261012';
+            if (!is_string($databaseTest) || !preg_match('/^[a-zA-Z0-9_]+$/D', $databaseTest)
+                || FConnectionDB::connect()->query('SELECT DATABASE()')->fetchColumn() !== $databaseTest) {
+                throw new RuntimeException('Database del collaudo SMTP non autorizzato.');
             }
             self::indirizzo($config['test_recipient'] ?? '');
             $destinatario = $config['test_recipient'];
         } elseif ($config['mode'] !== 'smtp' || ($config['production_enabled'] ?? false) !== true) {
             throw new RuntimeException('Invio ordinario non abilitato esplicitamente.');
+        }
+        // Gli indirizzi dimostrativi non devono mai essere destinatari SMTP effettivi.
+        $dominio = strtolower(substr(strrchr($destinatario, '@'), 1));
+        if ($dominio === 'test' || str_ends_with($dominio, '.test')) {
+            throw new RuntimeException('Invio SMTP a indirizzi dimostrativi non consentito.');
         }
         $message = self::messaggio($destinatario, $oggetto, $contenuto, $config);
         $socket = self::connessioneAutenticata($config);

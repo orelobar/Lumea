@@ -33,3 +33,15 @@ backups/
 /config/email.local.*
 /config/*secret*
 *.eml
+
+# Credenziali MySQL dell'hosting: mai nel repository o nei pacchetti pubblici.
+/config/database.infinityfree.php
+/config/database.infinityfree.php.*
+/config/database.infinityfree.php~
+
+# SMTP privato e blocchi temporanei del collaudo.
+/config/email.infinityfree.php
+/config/email.infinityfree.php.*
+/config/email.infinityfree.php~
+/config/.smtp-test-*
+/collaudo-smtp/

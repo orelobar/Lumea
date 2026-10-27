@@ -16,14 +16,18 @@ class FConnectionDB
         }
     }
 
-    /** Configurazione privata, esterna al DocumentRoot; le variabili ambiente hanno precedenza. */
+    /** File privato esterno oppure PHP protetto per hosting condivisi; ambiente prioritario. */
     private static function configurazione(): array
     {
         $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
         $documentRoot = realpath($documentRoot ?: dirname(__DIR__, 2));
-        $path = getenv('LUMEA_DB_CONFIG') ?: dirname($documentRoot) . '/lumea-private/database.json';
+        $pathEsplicito = getenv('LUMEA_DB_CONFIG');
+        $path = $pathEsplicito ?: dirname($documentRoot) . '/lumea-private/database.json';
+        $cartellaHosting = dirname(__DIR__) . '/config';
+        $fileHosting = $cartellaHosting . '/database.infinityfree.php';
         $config = [];
-        if (is_file($path)) {
+        // open_basedir può rendere inaccessibile il percorso esterno sull’hosting.
+        if (@is_file($path)) {
             $real = realpath($path);
             if (!$real || $real === $documentRoot || str_starts_with($real, $documentRoot . DIRECTORY_SEPARATOR)
                 || (fileperms($real) & 0007) !== 0 || !is_readable($real)) {
@@ -31,6 +35,24 @@ class FConnectionDB
             }
             try {
                 $config = json_decode(file_get_contents($real), true, 16, JSON_THROW_ON_ERROR);
+            } catch (Throwable $e) {
+                throw new RuntimeException('Configurazione database non valida.');
+            }
+            if (!is_array($config)) {
+                throw new RuntimeException('Configurazione database non valida.');
+            }
+        }
+        elseif (!$pathEsplicito && is_file($fileHosting)) {
+            // Percorso fisso: nessun URL o parametro HTTP può scegliere il file.
+            if (is_link($cartellaHosting) || is_link($fileHosting)
+                || realpath($fileHosting) !== realpath($cartellaHosting) . '/database.infinityfree.php'
+                || !is_readable($fileHosting) || !is_file($cartellaHosting . '/.htaccess')) {
+                throw new RuntimeException('Configurazione database privata non accessibile o non sicura.');
+            }
+            try {
+                // Il file PHP rifiuta l'esecuzione diretta senza questo consenso locale.
+                $caricamentoConfigurazioneDatabaseLumea = true;
+                $config = require $fileHosting;
             } catch (Throwable $e) {
                 throw new RuntimeException('Configurazione database non valida.');
             }

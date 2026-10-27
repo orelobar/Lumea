@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lumèa - Agenda</title>
     <link rel="stylesheet" href="css/interazioni.css?v=lumea-csrf-20261023">
+    <link rel="stylesheet" href="css/agenda-annullamento.css?v=20261026">
 </head>
 <body class="area-proprietario">
     <header class="header-proprietario">
@@ -162,16 +163,21 @@
                                 </form>
                                 {/if}
                                 {if $riga.puo_annullare}
-                                <details class="azione-pericolosa">
-                                    <summary>Annulla appuntamento</summary>
+                                <section class="annullamento-agenda" aria-labelledby="annullamento-titolo-{$p->getId()}">
+                                    <h4 id="annullamento-titolo-{$p->getId()}">Vuoi annullare questo appuntamento?</h4>
+                                    <p>L’orario verrà liberato e potrà essere assegnato a un cliente in lista d’attesa.</p>
                                     <form method="post" action="index.php?pagina=agenda">
                                         <input type="hidden" name="csrf_token" value="{$csrfToken|escape:'html'}">
                                         <input type="hidden" name="id_prenotazione" value="{$p->getId()}">
                                         <input type="hidden" name="data" value="{$data|escape}">
-                                        <button class="pulsante-pericolo" name="azione"
-                                            value="annulla_appuntamento">Conferma annullamento</button>
+                                        <div class="annullamento-agenda-azioni">
+                                            <button type="submit" class="pulsante-secondario" formmethod="dialog"
+                                                value="mantieni">Mantieni appuntamento</button>
+                                            <button type="submit" class="pulsante-pericolo" name="azione"
+                                                value="annulla_appuntamento">Sì, annulla</button>
+                                        </div>
                                     </form>
-                                </details>
+                                </section>
                                 {/if}
                             </dialog>
                         </article>
