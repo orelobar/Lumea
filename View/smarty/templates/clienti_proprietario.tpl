@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lumèa - Clienti</title>
     <link rel="stylesheet" href="css/interazioni.css?v=lumea-csrf-20261023">
+    <link rel="stylesheet" href="css/clienti-proprietario.css?v=20261028">
+    <script src="js/clienti-proprietario.js?v=20261028" defer></script>
 </head>
 <body class="area-proprietario">
     <header class="header-proprietario">
@@ -164,10 +166,32 @@
                 </div>
             </div>
 
-            <div class="elenco-clienti-proprietario">
+            {if $clienti}
+            <div class="ricerca-clienti" data-ricerca-clienti hidden>
+                <label for="ricerca-clienti">Cerca un cliente</label>
+                <div class="campo-ricerca-clienti">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                        <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                        <path d="m16 16 4.5 4.5"></path>
+                    </svg>
+                    <input id="ricerca-clienti" type="search" placeholder="Nome, cognome, email o telefono"
+                        autocomplete="off" aria-controls="lista-clienti" aria-describedby="conteggio-clienti">
+                    <button type="button" data-cancella-ricerca disabled aria-label="Cancella la ricerca">
+                        <span class="testo-cancella-clienti">Cancella</span><span class="icona-cancella-clienti" aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <p id="conteggio-clienti" class="conteggio-ricerca-clienti" data-conteggio-clienti role="status" aria-live="polite" aria-atomic="true"></p>
+            </div>
+            {/if}
+
+            <div id="lista-clienti" class="elenco-clienti-proprietario">
                 {foreach $clienti as $cliente}
                 {assign var=idCliente value=$cliente->getId()}
-                <article class="scheda-cliente">
+                <article class="scheda-cliente" data-cliente
+                    data-nome="{$cliente->getNome()|escape:'html'}"
+                    data-cognome="{$cliente->getCognome()|escape:'html'}"
+                    data-email="{$cliente->getEmail()|escape:'html'}"
+                    data-telefono="{$cliente->getTelefono()|escape:'html'}">
                     <div class="avatar-cliente" aria-hidden="true">♙</div>
                     <div class="identita-cliente">
                         <strong>{$cliente->getNome()|escape} {$cliente->getCognome()|escape}</strong>
@@ -195,6 +219,12 @@
                     </div>
                 </div>
                 {/foreach}
+            </div>
+            <div class="empty-state-proprietario" data-clienti-non-trovati hidden>
+                <span aria-hidden="true">⌕</span>
+                <div><strong>Nessun cliente trovato</strong>
+                    <p>Prova con un altro nome o recapito, oppure cancella la ricerca.</p>
+                </div>
             </div>
         </section>
     </main>
