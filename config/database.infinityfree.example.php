@@ -8,10 +8,10 @@ if (($caricamentoConfigurazioneDatabaseLumea ?? false) !== true) {
 
 return [
     'environment' => 'production',
-    'host' => 'sql311.infinityfree.com',
+    'host' => 'DB_HOST',
     'port' => 3306,
-    'name' => 'if0_43278145_lumea',
-    'user' => 'if0_43278145',
+    'name' => 'DB_NAME',
+    'user' => 'DB_USER',
     // Inserire la password del database nel solo file privato sul server.
-    'password' => ''
+    'password' => 'DB_PASSWORD'
 ];
